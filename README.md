@@ -29,6 +29,7 @@ k-cure 첫번째 연구
 - 표본: 4715명(Smoking quitters after diagnosis: 3414명/ Continuous smokers after diagnosis: 1301명)
 - 종속변수: stop_yn(금연 여부)
 - 독립변수: AGE,SEX,BMI,INCOME,CCI_SCORE(상병점수),STAGE(수술부위),수술여부,방사선치료여부,전신항암요법치료여부,폐암진단후전자담배사용여부
-- 목적: 폐암 진단 당시 흡연자들을 대상으로, 진단 이후 금연 성공(Smoking cessation)에 기여하는 인구통계학적 요인, 임상적 특성 및 치료 요인을 규명하고자 함. 특히 폐암 진단 후의 전자담배 사용 여부가 실제 금연 여부(stop_yn)에 미치는 영향을 단변량 및 다변량 로지스틱 회귀분석을 통해 파악함.
+- 목적: 진단 후 금연자와 현재 흡연중인 자를 대상으로 univariable, multivariable(univariable에서 p<0.2인 변수) 로지스틱 회귀분석을 활용하여 금연에 영향을 미치는 특성 요인 분석
 - 분석결과: tables_20250901파일에서 table3에서 확인 가능
+
 
