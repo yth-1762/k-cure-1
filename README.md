@@ -42,10 +42,10 @@ k-cure 첫번째 연구
 - 분석결과: tables_20250901파일에서 table4에서 확인 가능
 
 # 분석3
-- 사용모델: logistic regression 
-- 표본: 30550명(Smoking quitters after diagnosis: 3414명/ Continuous smokers after diagnosis: 1301명)
-- 종속변수: ntp_yn(전자담배 흡연여부)
+- 사용모델: cox proportional hazard regression
+- 표본: 30550명(Never-smokers: 18093명/ Smoking quitters before diagnosis: 7742명/ Smoking quitters after diagnosis: 3414명/ Continuous smokers after diagnosis: 1301명)
+- 사망원인: All cause mortality(전체), Lung cancer mortality(폐암), Non Lung cancer mortality(비폐암)
 - 독립변수: AGE,SEX,BMI,INCOME,CCI_SCORE(상병점수),STAGE(수술부위),수술여부,방사선치료여부,전신항암요법치료여부,흡연유형
 - 목적: 진단 후 금연자와 현재 흡연중인 자를 대상으로 univariable, multivariable(univariable에서 p<0.2인 변수) 로지스틱 회귀분석을 활용하여 전자담배 흡연에 영향을 미치는 특성 요인 분석
-- 분석결과: tables_20250901파일에서 table4에서 확인 가능
+- 분석결과: tables_20250901파일에서 table4에서 확인 가능 
 
