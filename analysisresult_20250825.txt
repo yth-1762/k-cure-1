@@ -1,0 +1,1425 @@
+#table3#
+
+#age#
+exp(fit1$coefficients)
+(Intercept)         AGE 
+ 30.4522660   0.9623444 
+> exp(confint(fit1))
+Waiting for profiling to be done...
+                 2.5 %     97.5 %
+(Intercept) 19.0700574 49.0329441
+AGE          0.9553573  0.9692867
+> summary(fit1)$coefficients
+               Estimate  Std. Error   z value     Pr(>|z|)
+(Intercept)  3.41616041 0.240874319  14.18234 1.178579e-45
+AGE         -0.03838286 0.003692038 -10.39612 2.582425e-25
+
+
+#sex#
+exp(fit2$coefficients)
+(Intercept)        SEX1 
+  2.8333333   0.9218399 
+> exp(confint(fit2))
+Waiting for profiling to be done...
+               2.5 %  97.5 %
+(Intercept) 2.177371 3.72972
+SEX1        0.695012 1.20949
+> summary(fit2)$coefficients
+               Estimate Std. Error    z value     Pr(>|z|)
+(Intercept)  1.04145387  0.1370796  7.5974386 3.020495e-14
+SEX1        -0.08138377  0.1411241 -0.5766823 5.641541e-01
+
+
+#pack_year#
+exp(fit3$coefficients)
+(Intercept)   pack_year 
+   1.512967    1.018801 
+> exp(confint(fit3))
+Waiting for profiling to be done...
+               2.5 %   97.5 %
+(Intercept) 1.353633 1.691119
+pack_year   1.015484 1.022205
+> summary(fit3)$coefficients
+              Estimate  Std. Error   z value     Pr(>|z|)
+(Intercept) 0.41407239 0.056780009  7.292574 3.040895e-13
+pack_year   0.01862618 0.001682699 11.069225 1.769240e-28
+
+
+#bmi#
+exp(fit4$coefficients)
+(Intercept)     G1E_BMI 
+  0.4481557   1.0776992 
+> exp(confint(fit4))
+Waiting for profiling to be done...
+                2.5 %    97.5 %
+(Intercept) 0.2549184 0.7855563
+G1E_BMI     1.0524621 1.1037722
+> summary(fit4)$coefficients
+               Estimate Std. Error   z value     Pr(>|z|)
+(Intercept) -0.80261453 0.28705843 -2.795997 5.173987e-03
+G1E_BMI      0.07482838 0.01214115  6.163203 7.128812e-10
+
+#income#
+exp(fit5$coefficients)
+(Intercept)      income 
+   1.742327    1.141477 
+> exp(confint(fit5))
+Waiting for profiling to be done...
+               2.5 %   97.5 %
+(Intercept) 1.511030 2.011474
+income      1.094331 1.190751
+> summary(fit5)$coefficients
+             Estimate Std. Error  z value     Pr(>|z|)
+(Intercept) 0.5552217 0.07296648 7.609270 2.756485e-14
+income      0.1323229 0.02153820 6.143636 8.065365e-10
+
+#cci_score#
+> fit6<- glm(stop_yn~cci_score,data=group34,family=binomial)
+> exp(fit6$coefficients)
+(Intercept)   cci_score 
+  2.9819691   0.9352169 
+> exp(confint(fit6))
+Waiting for profiling to be done...
+                2.5 %    97.5 %
+(Intercept) 2.7369109 3.2516229
+cci_score   0.9082811 0.9632167
+> summary(fit6)$coefficients
+              Estimate Std. Error   z value      Pr(>|z|)
+(Intercept)  1.0925838 0.04395586 24.856387 2.205744e-136
+cci_score   -0.0669768 0.01497280 -4.473231  7.704635e-066
+
+
+#non_small_yn#
+exp(fit7$coefficients)
+  (Intercept) non_small_yn1 
+     2.435644      1.083902 
+> exp(confint(fit7))
+Waiting for profiling to be done...
+                  2.5 %   97.5 %
+(Intercept)   1.9387792 3.082859
+non_small_yn1 0.8486668 1.374855
+> summary(fit7)$coefficients
+               Estimate Std. Error   z value     Pr(>|z|)
+(Intercept)   0.8902110  0.1181779 7.5328049 4.966177e-14
+non_small_yn1 0.0805679  0.1229431 0.6553268 5.122574e-01
+
+
+#seer_grp#
+exp(fit8$coefficients)
+(Intercept)   SEER_GRP2   SEER_GRP7   SEER_GRP9 
+  2.3614263   1.2758946   1.1356773   0.9367734 
+> exp(confint(fit8))
+Waiting for profiling to be done...
+                2.5 %   97.5 %
+(Intercept) 2.1505109 2.596138
+SEER_GRP2   1.1083122 1.469536
+SEER_GRP7   0.9244459 1.400638
+SEER_GRP9   0.6930861 1.278290
+> summary(fit8)$coefficients
+              Estimate Std. Error    z value     Pr(>|z|)
+(Intercept)  0.8592658 0.04803212 17.8893978 1.426415e-71
+SEER_GRP2    0.2436476 0.07195526  3.3860982 7.089402e-04
+SEER_GRP7    0.1272292 0.10593340  1.2010302 2.297395e-01
+SEER_GRP9   -0.0653139 0.15590991 -0.4189208 6.752740e-01
+
+#surgery_yn#
+exp(fit9$coefficients)
+(Intercept) surgery_yn1 
+   2.031835    1.494465 
+> exp(confint(fit9))
+Waiting for profiling to be done...
+               2.5 %   97.5 %
+(Intercept) 1.832936 2.255067
+surgery_yn1 1.309581 1.704897
+> summary(fit9)$coefficients
+             Estimate Std. Error   z value     Pr(>|z|)
+(Intercept) 0.7089394 0.05286130 13.411313 5.191166e-41
+surgery_yn1 0.4017680 0.06728643  5.971011 2.357874e-09
+
+
+#radio_yn#
+exp(fit10$coefficients)
+(Intercept)   radio_yn1 
+  2.6247655   0.9986708 
+> exp(confint(fit10))
+Waiting for profiling to be done...
+                2.5 %   97.5 %
+(Intercept) 2.4468745 2.817687
+radio_yn1   0.8469722 1.180645
+> summary(fit10)$coefficients
+                Estimate Std. Error     z value      Pr(>|z|)
+(Intercept)  0.964991550 0.03599281 26.81067387 2.426258e-158
+radio_yn1   -0.001330101 0.08470047 -0.01570359  9.874709e-01
+
+#system_yn#
+exp(fit11$coefficients)
+(Intercept)  system_yn1 
+   2.387133    1.311247 
+> exp(confint(fit11))
+Waiting for profiling to be done...
+               2.5 %  97.5 %
+(Intercept) 2.207958 2.58302
+system_yn1  1.145671 1.50243
+> summary(fit11)$coefficients
+             Estimate Std. Error   z value      Pr(>|z|)
+(Intercept) 0.8700931 0.04001849 21.742277 8.174121e-105
+system_yn1  0.2709784 0.06914431  3.919026  8.890753e-05
+
+#ntp_yn#
+> fit12 <- glm(stop_yn~ntp_yn,data=group34,family=binomial)
+> exp(fit12$coefficients)
+(Intercept)     ntp_yn1 
+  2.6640254   0.5004957 
+> exp(confint(fit12))
+Waiting for profiling to be done...
+                2.5 %   97.5 %
+(Intercept) 2.4978892 2.843016
+ntp_yn1     0.3296312 0.766069
+> summary(fit12)$coefficients
+              Estimate Std. Error   z value      Pr(>|z|)
+(Intercept)  0.9798383 0.03301262 29.680714 1.362198e-193
+ntp_yn1     -0.6921562 0.21438663 -3.228542  1.244231e-03
+
+
+
+
+
+
+#p<0.2인 것만 multivariable 로지스틱 회귀분석#
+> fit12 <-glm(stop_yn~AGE+pack_year+G1E_BMI+income+cci_score+SEER_GRP+surgery_yn+system_yn,
++             data=group34,family=binomial)
+> exp(fit12$coefficients)
+(Intercept)         AGE   pack_year     G1E_BMI      income   cci_score   SEER_GRP2 
+  2.8633420   0.9583343   1.0245540   1.0489016   1.1474964   0.9532628   1.1604031 
+  SEER_GRP7   SEER_GRP9 surgery_yn1  system_yn1 
+  1.2970693   1.2611086   1.5375709   1.2331069 
+> exp(confint(fit12))
+Waiting for profiling to be done...
+                2.5 %    97.5 %
+(Intercept) 1.2511811 6.5704040
+AGE         0.9509062 0.9657187
+pack_year   1.0209717 1.0282326
+G1E_BMI     1.0231295 1.0754978
+income      1.0979517 1.1993965
+cci_score   0.9235691 0.9842498
+SEER_GRP2   0.9857349 1.3668002
+SEER_GRP7   1.0098905 1.6707538
+SEER_GRP9   0.9043252 1.7734111
+surgery_yn1 1.3124036 1.8011342
+system_yn1  1.0442330 1.4572239
+> summary(fit12)$coefficients
+               Estimate  Std. Error    z value     Pr(>|z|)
+(Intercept)  1.05198946 0.422999368   2.486976 1.288339e-02
+AGE         -0.04255858 0.003942385 -10.795135 3.629306e-27
+pack_year    0.02425741 0.001807735  13.418673 4.700555e-41
+G1E_BMI      0.04774351 0.012731612   3.749997 1.768367e-04
+income       0.13758255 0.022540494   6.103795 1.035793e-09
+cci_score   -0.04786470 0.016225191  -2.950024 3.177495e-03
+SEER_GRP2    0.14876745 0.083361973   1.784596 7.432686e-02
+SEER_GRP7    0.26010730 0.128376087   2.026135 4.275094e-02
+SEER_GRP9    0.23199115 0.171600833   1.351923 1.763999e-01
+surgery_yn1  0.43020384 0.080739026   5.328326 9.912219e-08
+system_yn1   0.20953694 0.084994509   2.465300 1.368987e-02
+
+
+> fit13 <- glm(stop_yn~AGE+pack_year+G1E_BMI+income+cci_score+SEER_GRP+surgery_yn+system_yn+ntp_yn,
++              data=data.frame(group34),family=binomial)
+> exp(fit13$coefficients)
+(Intercept)         AGE   pack_year     G1E_BMI      income   cci_score   SEER_GRP2 
+  3.1675055   0.9569366   1.0245401   1.0498365   1.1467170   0.9523265   1.1590786 
+  SEER_GRP7   SEER_GRP9 surgery_yn1  system_yn1     ntp_yn1 
+  1.3095284   1.2488550   1.5320247   1.2276397   0.3916255 
+> exp(confint(fit13))
+Waiting for profiling to be done...
+                2.5 %    97.5 %
+(Intercept) 1.3791035 7.2961253
+AGE         0.9494566 0.9643707
+pack_year   1.0209567 1.0282202
+G1E_BMI     1.0239903 1.0765120
+income      1.0971436 1.1986498
+cci_score   0.9226134 0.9833330
+SEER_GRP2   0.9842944 1.3656720
+SEER_GRP7   1.0189097 1.6879710
+SEER_GRP9   0.8951007 1.7570166
+surgery_yn1 1.3073912 1.7950189
+system_yn1  1.0392473 1.4512466
+ntp_yn1     0.2516147 0.6135859
+> summary(fit13)$coefficients
+               Estimate  Std. Error    z value     Pr(>|z|)
+(Intercept)  1.15294438 0.424892744   2.713495 6.657755e-03
+AGE         -0.04401809 0.003975238 -11.073071 1.694912e-28
+pack_year    0.02424382 0.001808401  13.406220 5.560126e-41
+G1E_BMI      0.04863446 0.012757499   3.812225 1.377213e-04
+income       0.13690309 0.022569457   6.065857 1.312520e-09
+cci_score   -0.04884735 0.016251549  -3.005704 2.649664e-03
+SEER_GRP2    0.14762540 0.083524289   1.767455 7.715210e-02
+SEER_GRP7    0.26966704 0.128723408   2.094934 3.617686e-02
+SEER_GRP9    0.22222711 0.171847103   1.293168 1.959531e-01
+surgery_yn1  0.42659022 0.080847512   5.276479 1.316894e-07
+system_yn1   0.20509335 0.085166786   2.408138 1.603413e-02
+ntp_yn1     -0.93744933 0.226738042  -4.134504 3.557221e-05
+
+
+
+#table4#
+
+
+#age#
+ exp(fit1$coefficients)
+(Intercept)         AGE 
+ 0.07515022  0.95613754 
+> exp(confint(fit1))
+Waiting for profiling to be done...
+                2.5 %    97.5 %
+(Intercept) 0.0292801 0.1840358
+AGE         0.9419529 0.9708788
+> summary(fit1)$coefficients
+               Estimate  Std. Error   z value     Pr(>|z|)
+(Intercept) -2.58826630 0.468776869 -5.521318 3.364657e-08
+AGE         -0.04485351 0.007713586 -5.814872 6.068048e-09
+
+#sex#
+exp(fit2$coefficients)
+(Intercept)        SEX1 
+0.001165954 6.110477806 
+> exp(confint(fit2))
+Waiting for profiling to be done...
+                   2.5 %       97.5 %
+(Intercept) 0.0006707479  0.001859969
+SEX1        3.6983031939 10.888610759
+> summary(fit2)$coefficients
+             Estimate Std. Error    z value      Pr(>|z|)
+(Intercept) -6.754216  0.2583411 -26.144568 1.136171e-150
+SEX1         1.810005  0.2734906   6.618162  3.636929e-11
+
+
+#pack_year#
+> fit3<-glm(ntp_yn~pack_year,data=data1,family=binomial)
+> exp(fit3$coefficients)
+(Intercept)   pack_year 
+0.003646371 1.014893442 
+> exp(confint(fit3))
+Waiting for profiling to be done...
+                  2.5 %      97.5 %
+(Intercept) 0.002980572 0.004407092
+pack_year   1.009965466 1.019828278
+> summary(fit3)$coefficients
+               Estimate  Std. Error    z value     Pr(>|z|)
+(Intercept) -5.61402285 0.099713105 -56.301755 0.000000e+00
+pack_year    0.01478362 0.002503885   5.904273 3.542042e-09
+
+#BMI#
+exp(fit4$coefficients)
+ (Intercept)      G1E_BMI 
+0.0008416744 1.0735822702 
+> exp(confint(fit4))
+Waiting for profiling to be done...
+                   2.5 %      97.5 %
+(Intercept) 0.0002023839 0.003482432
+G1E_BMI     1.0122567998 1.137576874
+> summary(fit4)$coefficients
+               Estimate Std. Error   z value     Pr(>|z|)
+(Intercept) -7.08011737 0.72511419 -9.764141 1.604658e-22
+G1E_BMI      0.07100097 0.02974411  2.387060 1.698373e-02
+
+
+#income#
+exp(fit5$coefficients)
+(Intercept)      income 
+0.006347421 0.904071265 
+> exp(confint(fit5))
+Waiting for profiling to be done...
+                 2.5 %      97.5 %
+(Intercept) 0.00433835 0.009058419
+income      0.81240709 1.006612322
+> summary(fit5)$coefficients
+              Estimate Std. Error    z value      Pr(>|z|)
+(Intercept) -5.0597067  0.1875523 -26.977574 2.709334e-160
+income      -0.1008471  0.0545861  -1.847487  6.467663e-02
+
+#cci_score#
+> fit6<-glm(ntp_yn~cci_score,data=data1,family=binomial)
+> exp(fit6$coefficients)
+(Intercept)   cci_score 
+0.004646081 0.994835563 
+> exp(confint(fit6))
+Waiting for profiling to be done...
+                  2.5 %      97.5 %
+(Intercept) 0.003708681 0.005763015
+cci_score   0.911731218 1.075444406
+> summary(fit6)$coefficients
+                Estimate Std. Error     z value Pr(>|z|)
+(Intercept) -5.371731283 0.11235587 -47.8099745 0.000000
+cci_score   -0.005177819 0.04200417  -0.1232692 0.901894
+
+
+#non_small_yn#
+exp(fit7$coefficients)
+  (Intercept) non_small_yn1 
+  0.006036217   0.754668661 
+> exp(confint(fit7))
+Waiting for profiling to be done...
+                    2.5 %     97.5 %
+(Intercept)   0.002394628 0.01226834
+non_small_yn1 0.362955485 1.92792341
+> summary(fit7)$coefficients
+                Estimate Std. Error     z value     Pr(>|z|)
+(Intercept)   -5.1099777  0.4094785 -12.4792321 9.691683e-36
+non_small_yn1 -0.2814765  0.4185324  -0.6725322 5.012449e-01
+
+
+#seer_grp#
+ exp(fit8$coefficients)
+(Intercept)   SEER_GRP2   SEER_GRP7   SEER_GRP9 
+0.004268173 1.118229171 1.337423656 0.922410660 
+> exp(confint(fit8))
+Waiting for profiling to be done...
+                  2.5 %      97.5 %
+(Intercept) 0.003311292 0.005394509
+SEER_GRP2   0.765916491 1.621245126
+SEER_GRP7   0.805908385 2.135581186
+SEER_GRP9   0.322431007 2.075494922
+> summary(fit8)$coefficients
+               Estimate Std. Error     z value  Pr(>|z|)
+(Intercept) -5.45656951  0.1242988 -43.8988092 0.0000000
+SEER_GRP2    0.11174634  0.1907431   0.5858474 0.5579780
+SEER_GRP7    0.29074512  0.2473140   1.1756114 0.2397502
+SEER_GRP9   -0.08076475  0.4650111  -0.1736835 0.8621142
+
+
+#surgery_yn#
+exp(fit9$coefficients)
+  (Intercept) surgery_ynyes 
+  0.005894141   0.696374333 
+> exp(confint(fit9))
+Waiting for profiling to be done...
+                    2.5 %      97.5 %
+(Intercept)   0.004404456 0.007689035
+surgery_ynyes 0.494763216 0.991350674
+> summary(fit9)$coefficients
+                Estimate Std. Error    z value      Pr(>|z|)
+(Intercept)   -5.1337964  0.1418375 -36.194914 7.319447e-287
+surgery_ynyes -0.3618679  0.1768460  -2.046232  4.073356e-02
+
+#radio_yn#
+exp(fit10$coefficients)
+(Intercept) radio_ynyes 
+0.004455832 1.290169589 
+> exp(confint(fit10))
+Waiting for profiling to be done...
+                  2.5 %      97.5 %
+(Intercept) 0.003704008 0.005303513
+radio_ynyes 0.779426193 2.024598288
+> summary(fit10)$coefficients
+              Estimate Std. Error    z value  Pr(>|z|)
+(Intercept) -5.4135416 0.09149007 -59.170808 0.0000000
+radio_ynyes  0.2547737 0.24219384   1.051941 0.2928265
+
+#system_yn#
+exp(fit11$coefficients)
+ (Intercept) system_ynyes 
+ 0.004235513  1.296229261 
+> exp(confint(fit11))
+Waiting for profiling to be done...
+                   2.5 %      97.5 %
+(Intercept)  0.003422426 0.005168704
+system_ynyes 0.908798918 1.826673252
+> summary(fit11)$coefficients
+               Estimate Std. Error    z value  Pr(>|z|)
+(Intercept)  -5.4642508  0.1050499 -52.015747 0.0000000
+system_ynyes  0.2594595  0.1776392   1.460598 0.1441258
+
+#smk_behave#
+exp(fit12$coefficients)
+          (Intercept)  smk_behaveafter_stop smk_behavebefore_stop     smk_behavecurrent 
+          0.001439088          10.747769184           2.070520294          21.474247225 
+> exp(confint(fit12))
+Waiting for profiling to be done...
+                             2.5 %       97.5 %
+(Intercept)           9.541586e-04  0.002065873
+smk_behaveafter_stop  6.770450e+00 17.487212163
+smk_behavebefore_stop 1.172567e+00  3.632553219
+smk_behavecurrent     1.310474e+01 35.768769848
+> summary(fit12)$coefficients
+                        Estimate Std. Error    z value      Pr(>|z|)
+(Intercept)           -6.5437458  0.1962560 -33.342914 9.228130e-244
+smk_behaveafter_stop   2.3746982  0.2409245   9.856607  6.418137e-23
+smk_behavebefore_stop  0.7277999  0.2865732   2.539665  1.109588e-02
+smk_behavecurrent      3.0668544  0.2548525  12.033838  2.359312e-33
+
+
+
+#p<0.2인 변수만 포함하여 multivariabled 로지스틱 회귀분석 수행#
+exp(fit13$coefficients)
+          (Intercept)                   AGE                  SEX1             pack_year 
+          0.007951241           0.952571307           2.746825993           1.002619582 
+              G1E_BMI                income         surgery_ynyes          system_ynyes 
+          1.058024073           0.926310058           0.771810226           0.914383215 
+ smk_behaveafter_stop smk_behavebefore_stop     smk_behavecurrent 
+          5.033965961           1.205388906          11.838496237 
+> exp(confint(fit13))
+Waiting for profiling to be done...
+                            2.5 %      97.5 %
+(Intercept)           0.001140806  0.05304149
+AGE                   0.937077719  0.96865614
+SEX1                  1.456497009  5.41227486
+pack_year             0.993694432  1.01040081
+G1E_BMI               0.996843257  1.12193325
+income                0.828343406  1.03654852
+surgery_ynyes         0.534136903  1.12631456
+system_ynyes          0.626793239  1.31885839
+smk_behaveafter_stop  2.744303323  9.48864942
+smk_behavebefore_stop 0.620997113  2.35504590
+smk_behavecurrent     6.480060320 22.15736798
+> summary(fit13)$coefficients
+                          Estimate  Std. Error    z value     Pr(>|z|)
+(Intercept)           -4.834427236 0.978801897 -4.9391274 7.847295e-07
+AGE                   -0.048590311 0.008449999 -5.7503336 8.906751e-09
+SEX1                   1.010446061 0.333178750  3.0327446 2.423406e-03
+pack_year              0.002616156 0.004313209  0.6065453 5.441527e-01
+G1E_BMI                0.056403086 0.030123594  1.8723890 6.115280e-02
+income                -0.076546265 0.057109117 -1.3403511 1.801312e-01
+surgery_ynyes         -0.259016581 0.189950751 -1.3635986 1.726939e-01
+system_ynyes          -0.089505523 0.189397501 -0.4725803 6.365127e-01
+smk_behaveafter_stop   1.616208135 0.316174434  5.1117610 3.191695e-07
+smk_behavebefore_stop  0.186802258 0.338676819  0.5515649 5.812465e-01
+smk_behavecurrent      2.471356614 0.312914054  7.8978767 2.836946e-15
+
+
+
+
+#table5#
+
+> coxfit1 <- coxph(surv_all~smk_behave,data=data1)
+> summary(coxfit1)$coefficients
+                           coef exp(coef)   se(coef)        z     Pr(>|z|)
+smk_behaveafter_stop  0.5159563  1.675240 0.06521617 7.911478 2.543508e-15
+smk_behavebefore_stop 0.4169210  1.517283 0.04980077 8.371777 5.675593e-17
+smk_behavecurrent     0.7671519  2.153624 0.08715888 8.801764 1.346827e-18
+> exp(confint(coxfit1))
+                         2.5 %   97.5 %
+smk_behaveafter_stop  1.474229 1.903659
+smk_behavebefore_stop 1.376182 1.672850
+smk_behavecurrent     1.815432 2.554816
+
+> coxfit2 <- coxph(surv_lungcancer~smk_behave,data=data1)
+> summary(coxfit2)$coefficients
+                           coef exp(coef)   se(coef)        z     Pr(>|z|)
+smk_behaveafter_stop  0.4862892  1.626270 0.07095407 6.853578 7.202528e-12
+smk_behavebefore_stop 0.3850830  1.469736 0.05409578 7.118540 1.090761e-12
+smk_behavecurrent     0.6153484  1.850301 0.10028201 6.136180 8.452933e-10
+> exp(confint(coxfit2))
+                         2.5 %   97.5 %
+smk_behaveafter_stop  1.415131 1.868912
+smk_behavebefore_stop 1.321883 1.634127
+smk_behavecurrent     1.520135 2.252178
+
+
+> coxfit3 <- coxph(surv_nolungcancer~smk_behave,data=data1)
+> summary(coxfit3)$coefficients
+                           coef exp(coef)  se(coef)        z     Pr(>|z|)
+smk_behaveafter_stop  0.6860128  1.985782 0.1660039 4.132510 3.588234e-05
+smk_behavebefore_stop 0.5981921  1.818828 0.1280866 4.670217 3.008814e-06
+smk_behavecurrent     1.4037881  4.070591 0.1810720 7.752651 8.999367e-15
+> exp(confint(coxfit3))
+                         2.5 %   97.5 %
+smk_behaveafter_stop  1.434263 2.749377
+smk_behavebefore_stop 1.415025 2.337863
+smk_behavecurrent     2.854491 5.804786
+
+
+
+#table 5&6&7 univariable(all_cause_mortality)#
+
+> coxfitu1 <- coxph(surv_all~AGE,data=data1)
+> summary(coxfitu1)$coefficients
+          coef exp(coef)   se(coef)        z      Pr(>|z|)
+AGE 0.06028749  1.062142 0.00249079 24.20417 2.010913e-129
+> exp(confint(coxfitu1))
+       2.5 %  97.5 %
+AGE 1.056969 1.06734
+
+> coxfitu2 <- coxph(surv_all~SEX, data=data1)
+> summary(coxfitu2)$coefficients
+          coef exp(coef)   se(coef)        z     Pr(>|z|)
+SEX1 0.9164026   2.50028 0.05109888 17.93391 6.411283e-72
+> exp(confint(coxfitu2))
+        2.5 %   97.5 %
+SEX1 2.262003 2.763656
+
+> coxfitu3 <- coxph(surv_all~pack_year,data=data1)
+> summary(coxfitu3)$coefficients
+                 coef exp(coef)     se(coef)        z     Pr(>|z|)
+pack_year 0.007862853  1.007894 0.0006026755 13.04658 6.646664e-39
+> exp(confint(coxfitu3))
+             2.5 %   97.5 %
+pack_year 1.006704 1.009085
+
+> coxfitu4 <- coxph(surv_all~G1E_BMI,data=data1)
+> summary(coxfitu4)$coefficients
+               coef exp(coef)    se(coef)         z     Pr(>|z|)
+G1E_BMI -0.09585654 0.9085944 0.008482028 -11.30113 1.295336e-29
+> exp(confint(coxfitu4))
+            2.5 %    97.5 %
+G1E_BMI 0.8936143 0.9238255
+
+
+> coxfitu5 <- coxph(surv_all~income, data=data1)
+> summary(coxfitu5)$coefficients
+              coef exp(coef)   se(coef)         z    Pr(>|z|)
+income2 -0.1171496 0.8894522 0.07592861 -1.542891 0.122857260
+income3 -0.1082696 0.8973857 0.07233590 -1.496761 0.134455437
+income4 -0.1218983 0.8852384 0.06635398 -1.837091 0.066196467
+income5 -0.1789002 0.8361893 0.06029879 -2.966896 0.003008228
+> exp(confint(coxfitu5))
+            2.5 %    97.5 %
+income2 0.7664645 1.0321745
+income3 0.7787655 1.0340739
+income4 0.7772838 1.0081864
+income5 0.7429818 0.9410897
+
+
+
+> coxfitu6<- coxph(surv_all~cci_group, data=data1)
+> summary(coxfitu6)$coefficients
+                  coef exp(coef)   se(coef)         z     Pr(>|z|)
+cci_group>=5 0.9727889  2.645312 0.07760559 12.535036 4.801433e-36
+cci_group1-2 0.3781439  1.459573 0.06011206  6.290650 3.161401e-10
+cci_group3-4 0.7710793  2.162099 0.07797276  9.889086 4.642454e-23
+> exp(confint(coxfitu6))
+                2.5 %   97.5 %
+cci_group>=5 2.272055 3.079887
+cci_group1-2 1.297353 1.642076
+cci_group3-4 1.855688 2.519104
+
+> coxfitu7 <- coxph(surv_all~activity, data=data1)
+> summary(coxfitu7)$coefficients
+                    coef exp(coef)   se(coef)        z     Pr(>|z|)
+activityactive -0.302945 0.7386397 0.04504351 -6.72561 1.748589e-11
+> exp(confint(coxfitu7))
+                   2.5 %    97.5 %
+activityactive 0.6762255 0.8068146
+
+> coxfitu8 <- coxph(surv_all~non_small_yn, data=data1)
+> summary(coxfitu8)$coefficients
+                   coef exp(coef)   se(coef)         z     Pr(>|z|)
+non_small_yn1 -1.120865 0.3259976 0.07691398 -14.57297 4.173355e-48
+> exp(confint(coxfitu8))
+                  2.5 %    97.5 %
+non_small_yn1 0.2803788 0.3790388
+
+> coxfitu9 <- coxph(surv_all~SEER_GRP, data=data1)
+> summary(coxfitu9)$coefficients
+               coef exp(coef)   se(coef)        z      Pr(>|z|)
+SEER_GRP2 0.9421422  2.565471 0.05960870 15.80545  2.853550e-56
+SEER_GRP7 2.1195208  8.327146 0.05946263 35.64459 2.858248e-278
+SEER_GRP9 1.5848670  4.878643 0.09047691 17.51681  1.066358e-68
+> exp(confint(coxfitu9))
+             2.5 %   97.5 %
+SEER_GRP2 2.282591 2.883409
+SEER_GRP7 7.411080 9.356445
+SEER_GRP9 4.085874 5.825230
+
+> coxfitu10 <- coxph(surv_all~surgery_yn, data=data1)
+> summary(coxfitu10)$coefficients
+                   coef exp(coef)   se(coef)         z Pr(>|z|)
+surgery_ynyes -1.799764 0.1653378 0.04580258 -39.29395        0
+> exp(confint(coxfitu10))
+                  2.5 %   97.5 %
+surgery_ynyes 0.1511419 0.180867
+
+> coxfitu11 <- coxph(surv_all~radio_yn, data=data1)
+> summary(coxfitu11)$coefficients
+                 coef exp(coef)   se(coef)        z     Pr(>|z|)
+radio_ynyes 0.9966428  2.709171 0.04996692 19.94605 1.622044e-88
+> exp(confint(coxfitu11))
+               2.5 %   97.5 %
+radio_ynyes 2.456431 2.987916
+
+> coxfitu12 <- coxph(surv_all~system_yn, data=data1)
+> summary(coxfitu12)$coefficients
+                  coef exp(coef)   se(coef)        z      Pr(>|z|)
+system_ynyes 0.9757139  2.653061 0.04319405 22.58908 5.548883e-113
+> exp(confint(coxfitu12))
+              2.5 %   97.5 %
+system_ynyes 2.4377 2.887447
+
+
+#table5&6 lung cancer mortality#
+> coxfitu1 <- coxph(surv_lungcancer~AGE,data=data1)
+> summary(coxfitu1)$coefficients
+          coef exp(coef)    se(coef)        z     Pr(>|z|)
+AGE 0.05523025  1.056784 0.002684959 20.57024 5.071848e-94
+> exp(confint(coxfitu1))
+       2.5 %  97.5 %
+AGE 1.051237 1.06236
+
+> coxfitu2 <- coxph(surv_lungcancer~SEX, data=data1)
+> summary(coxfitu2)$coefficients
+          coef exp(coef)   se(coef)        z     Pr(>|z|)
+SEX1 0.8782937  2.406789 0.05509503 15.94143 3.267738e-57
+> exp(confint(coxfitu2))
+        2.5 %   97.5 %
+SEX1 2.160435 2.681236
+
+> coxfitu3 <- coxph(surv_lungcancer~pack_year,data=data1)
+> summary(coxfitu3)$coefficients
+                 coef exp(coef)     se(coef)        z     Pr(>|z|)
+pack_year 0.007470876  1.007499 0.0006927172 10.78489 4.057468e-27
+> exp(confint(coxfitu3))
+             2.5 %   97.5 %
+pack_year 1.006132 1.008868
+
+> coxfitu4 <- coxph(surv_lungcancer~G1E_BMI,data=data1)
+> summary(coxfitu4)$coefficients
+               coef exp(coef)    se(coef)         z     Pr(>|z|)
+G1E_BMI -0.09077185  0.913226 0.009193429 -9.873557 5.420754e-23
+> exp(confint(coxfitu4))
+            2.5 %    97.5 %
+G1E_BMI 0.8969182 0.9298304
+
+> coxfitu5 <- coxph(surv_lungcancer~income, data=data1)
+> summary(coxfitu5)$coefficients
+               coef exp(coef)   se(coef)          z    Pr(>|z|)
+income2 -0.15000189 0.8607063 0.08371035 -1.7919157 0.073146469
+income3 -0.06218651 0.9397076 0.07780091 -0.7993031 0.424114691
+income4 -0.11950604 0.8873587 0.07231199 -1.6526449 0.098403157
+income5 -0.17894828 0.8361491 0.06575202 -2.7215633 0.006497395
+> exp(confint(coxfitu5))
+            2.5 %    97.5 %
+income2 0.7304670 1.0141668
+income3 0.8068048 1.0945031
+income4 0.7701000 1.0224716
+income5 0.7350477 0.9511565
+
+
+> coxfitu6<- coxph(surv_lungcancer~cci_group, data=data1)
+> summary(coxfitu6)$coefficients
+                  coef exp(coef)   se(coef)         z     Pr(>|z|)
+cci_group>=5 0.9255567  2.523272 0.08301826 11.148833 7.255184e-29
+cci_group1-2 0.3090845  1.362177 0.06405835  4.825047 1.399706e-06
+cci_group3-4 0.6466635  1.909160 0.08520554  7.589454 3.212553e-14
+> exp(confint(coxfitu6))
+                2.5 %   97.5 %
+cci_group>=5 2.144366 2.969131
+cci_group1-2 1.201454 1.544402
+cci_group3-4 1.615531 2.256158
+
+> coxfitu7 <- coxph(surv_lungcancer~activity, data=data1)
+> summary(coxfitu7)$coefficients
+                     coef exp(coef)  se(coef)         z     Pr(>|z|)
+activityactive -0.2684245 0.7645831 0.0488003 -5.500468 3.787835e-08
+> exp(confint(coxfitu7))
+                   2.5 %    97.5 %
+activityactive 0.6948416 0.8413246
+
+> coxfitu8 <- coxph(surv_lungcancer~non_small_yn, data=data1)
+> summary(coxfitu8)$coefficients
+                   coef exp(coef)   se(coef)         z     Pr(>|z|)
+non_small_yn1 -1.214592 0.2968311 0.08057611 -15.07385 2.406854e-51
+> exp(confint(coxfitu8))
+                  2.5 %   97.5 %
+non_small_yn1 0.2534679 0.347613
+
+> coxfitu9 <- coxph(surv_lungcancer~SEER_GRP, data=data1)
+> summary(coxfitu9)$coefficients
+              coef exp(coef)   se(coef)        z      Pr(>|z|)
+SEER_GRP2 1.114060  3.046703 0.06886143 16.17829  7.176431e-59
+SEER_GRP7 2.399294 11.015392 0.06747719 35.55710 6.452880e-277
+SEER_GRP9 1.708174  5.518875 0.10309669 16.56866  1.174133e-61
+> exp(confint(coxfitu9))
+             2.5 %    97.5 %
+SEER_GRP2 2.662043  3.486945
+SEER_GRP7 9.650799 12.572934
+SEER_GRP9 4.509148  6.754708
+
+> coxfitu10 <- coxph(surv_lungcancer~surgery_yn, data=data1)
+> summary(coxfitu10)$coefficients
+                   coef exp(coef)   se(coef)       z      Pr(>|z|)
+surgery_ynyes -1.959077 0.1409885 0.05138833 -38.123 5.329704e-318
+> exp(confint(coxfitu10))
+                  2.5 %    97.5 %
+surgery_ynyes 0.1274799 0.1559285
+
+> coxfitu11 <- coxph(surv_lungcancer~radio_yn, data=data1)
+> summary(coxfitu11)$coefficients
+                coef exp(coef)   se(coef)       z     Pr(>|z|)
+radio_ynyes 1.048473  2.853291 0.05368827 19.5289 6.236492e-85
+> exp(confint(coxfitu11))
+               2.5 % 97.5 %
+radio_ynyes 2.568304 3.1699
+
+> coxfitu12 <- coxph(surv_lungcancer~system_yn, data=data1)
+> summary(coxfitu12)$coefficients
+                 coef exp(coef)   se(coef)        z      Pr(>|z|)
+system_ynyes 1.167705  3.214605 0.04737338 24.64896 3.775723e-134
+> exp(confint(coxfitu12))
+                2.5 %   97.5 %
+system_ynyes 2.929566 3.527378
+
+
+#table 5&6 univariable(no_lung_cancer_mortality)#
+
+> coxfitu1 <- coxph(surv_nolungcancer~AGE,data=data1)
+> summary(coxfitu1)$coefficients
+          coef exp(coef)    se(coef)        z     Pr(>|z|)
+AGE 0.08933834  1.093451 0.006654634 13.42498 4.316977e-41
+> exp(confint(coxfitu1))
+       2.5 %   97.5 %
+AGE 1.079281 1.107806
+
+> coxfitu2 <- coxph(surv_nolungcancer~SEX, data=data1)
+> summary(coxfitu2)$coefficients
+        coef exp(coef)  se(coef)        z     Pr(>|z|)
+SEX1 1.13603  3.114379 0.1373252 8.272553 1.311206e-16
+> exp(confint(coxfitu2))
+        2.5 %  97.5 %
+SEX1 2.379469 4.07627
+
+> coxfitu3 <- coxph(surv_nolungcancer~pack_year,data=data1)
+> summary(coxfitu3)$coefficients
+                 coef exp(coef)    se(coef)        z     Pr(>|z|)
+pack_year 0.009407677  1.009452 0.001188083 7.918366 2.406515e-15
+> exp(confint(coxfitu3))
+             2.5 %   97.5 %
+pack_year 1.007104 1.011805
+
+> coxfitu4 <- coxph(surv_nolungcancer~G1E_BMI,data=data1)
+> summary(coxfitu4)$coefficients
+              coef exp(coef)   se(coef)         z     Pr(>|z|)
+G1E_BMI -0.1241415 0.8832549 0.02200648 -5.641133 1.689352e-08
+> exp(confint(coxfitu4))
+            2.5 %    97.5 %
+G1E_BMI 0.8459683 0.9221849
+
+> coxfitu5 <- coxph(surv_nolungcancer~income, data=data1)
+> summary(coxfitu5)$coefficients
+               coef exp(coef)  se(coef)          z   Pr(>|z|)
+income2  0.03896239 1.0397314 0.1810327  0.2152229 0.82959351
+income3 -0.39488278 0.6737590 0.1986828 -1.9875038 0.04686659
+income4 -0.13468479 0.8739914 0.1669343 -0.8068133 0.41977407
+income5 -0.17873151 0.8363304 0.1512233 -1.1819045 0.23724360
+> exp(confint(coxfitu5))
+            2.5 %    97.5 %
+income2 0.7291650 1.4825743
+income3 0.4564419 0.9945432
+income4 0.6301043 1.2122770
+income5 0.6218081 1.1248624
+
+> coxfitu6<- coxph(surv_nolungcancer~cci_group, data=data1)
+> summary(coxfitu6)$coefficients
+                  coef exp(coef)  se(coef)        z     Pr(>|z|)
+cci_group>=5 1.3026429  3.679007 0.2214998 5.881010 4.077695e-09
+cci_group1-2 0.8289601  2.290935 0.1775638 4.668521 3.033762e-06
+cci_group3-4 1.4717508  4.356856 0.2061285 7.139967 9.335365e-13
+> exp(confint(coxfitu6))
+                2.5 %   97.5 %
+cci_group>=5 2.383360 5.678997
+cci_group1-2 1.617597 3.244557
+cci_group3-4 2.908816 6.525746
+
+> coxfitu7 <- coxph(surv_nolungcancer~activity, data=data1)
+> summary(coxfitu7)$coefficients
+                     coef exp(coef)  se(coef)         z     Pr(>|z|)
+activityactive -0.4962085 0.6088347 0.1177128 -4.215415 2.493191e-05
+> exp(confint(coxfitu7))
+                   2.5 %    97.5 %
+activityactive 0.4833949 0.7668258
+
+> coxfitu8 <- coxph(surv_nolungcancer~non_small_yn, data=data1)
+> summary(coxfitu8)$coefficients
+                    coef exp(coef) se(coef)         z Pr(>|z|)
+non_small_yn1 -0.4207757 0.6565374 0.264172 -1.592809 0.111203
+> exp(confint(coxfitu8))
+                  2.5 %   97.5 %
+non_small_yn1 0.3911973 1.101852
+
+> coxfitu9 <- coxph(surv_nolungcancer~SEER_GRP, data=data1)
+> summary(coxfitu9)$coefficients
+               coef exp(coef)  se(coef)        z     Pr(>|z|)
+SEER_GRP2 0.3460505  1.413474 0.1253248 2.761229 5.758424e-03
+SEER_GRP7 0.5743081  1.775901 0.1701236 3.375829 7.359363e-04
+SEER_GRP9 1.2078938  3.346429 0.1923558 6.279477 3.397143e-10
+> exp(confint(coxfitu9))
+             2.5 %   97.5 %
+SEER_GRP2 1.105633 1.807026
+SEER_GRP7 1.272358 2.478725
+SEER_GRP9 2.295345 4.878824
+
+> coxfitu10 <- coxph(surv_nolungcancer~surgery_yn, data=data1)
+> summary(coxfitu10)$coefficients
+                   coef exp(coef)  se(coef)         z     Pr(>|z|)
+surgery_ynyes -1.033755  0.355669 0.1094908 -9.441473 3.675741e-21
+> exp(confint(coxfitu10))
+                  2.5 %    97.5 %
+surgery_ynyes 0.2869771 0.4408033
+
+> coxfitu11 <- coxph(surv_nolungcancer~radio_yn, data=data1)
+> summary(coxfitu11)$coefficients
+                coef exp(coef)  se(coef)        z     Pr(>|z|)
+radio_ynyes 0.687169  1.988079 0.1381356 4.974595 6.538405e-07
+> exp(confint(coxfitu11))
+               2.5 %   97.5 %
+radio_ynyes 1.516535 2.606243
+
+> coxfitu12 <- coxph(surv_nolungcancer~system_yn, data=data1)
+> summary(coxfitu12)$coefficients
+                   coef exp(coef)  se(coef)         z  Pr(>|z|)
+system_ynyes -0.1473816 0.8629646 0.1255361 -1.174018 0.2403878
+> exp(confint(coxfitu12))
+               2.5 %   97.5 %
+system_ynyes 0.67474 1.103696
+
+
+#table5&6 multivariable#
+#all_cause_moratality#
+> coxfit7 <- coxph(surv_all~smk_behave+AGE+SEX+pack_year+G1E_BMI+income+cci_group+activity+non_small_yn+SEER_GRP+
++                    surgery_yn+radio_yn+system_yn,data=data1)
+> summary(coxfit7)$coefficients
+                             coef exp(coef)    se(coef)           z     Pr(>|z|)
+smk_behaveafter_stop   0.08768749 1.0916469 0.086427644   1.0145768 3.103076e-01
+smk_behavebefore_stop -0.08312187 0.9202390 0.067302899  -1.2350414 2.168151e-01
+smk_behavecurrent      0.14696226 1.1583102 0.097679348   1.5045377 1.324430e-01
+AGE                    0.04970894 1.0509652 0.002663357  18.6640152 9.714959e-78
+SEX1                   0.67841412 1.9707499 0.061383817  11.0520029 2.143779e-28
+pack_year              0.00231572 1.0023184 0.001229540   1.8834036 5.964570e-02
+G1E_BMI               -0.09260249 0.9115558 0.008523462 -10.8644222 1.702978e-27
+income2               -0.02778120 0.9726011 0.076301319  -0.3640986 7.157844e-01
+income3               -0.01413963 0.9859599 0.072748460  -0.1943633 8.458915e-01
+income4               -0.06136020 0.9404844 0.066541381  -0.9221359 3.564577e-01
+income5               -0.16640668 0.8467018 0.060717554  -2.7406684 6.131436e-03
+cci_group>=5           0.45106825 1.5699884 0.078587024   5.7397294 9.482795e-09
+cci_group1-2           0.15479233 1.1674155 0.060826460   2.5448190 1.093344e-02
+cci_group3-4           0.35324248 1.4236763 0.079826241   4.4251424 9.637870e-06
+activityactive        -0.27004222 0.7633473 0.045501224  -5.9348342 2.941425e-09
+non_small_yn1         -0.14988944 0.8608031 0.082181908  -1.8238739 6.817113e-02
+SEER_GRP2              0.68521800 1.9842043 0.063939056  10.7167363 8.494817e-27
+SEER_GRP7              1.35335279 3.8703804 0.073893896  18.3148116 6.304467e-75
+SEER_GRP9              0.61770027 1.8546579 0.095729795   6.4525393 1.099913e-10
+surgery_ynyes         -1.09960890 0.3330013 0.057712860 -19.0531002 6.192392e-81
+radio_ynyes           -0.11006173 0.8957788 0.056737465  -1.9398423 5.239886e-02
+system_ynyes           0.22298335 1.2497998 0.054196674   4.1143364 3.882948e-05
+> exp(confint(coxfit7))
+                          2.5 %    97.5 %
+smk_behaveafter_stop  0.9215414 1.2931519
+smk_behavebefore_stop 0.8065147 1.0499992
+smk_behavecurrent     0.9564892 1.4027159
+AGE                   1.0454933 1.0564656
+SEX1                  1.7473565 2.2227034
+pack_year             0.9999059 1.0047368
+G1E_BMI               0.8964541 0.9269118
+income2               0.8375042 1.1294905
+income3               0.8549400 1.1370586
+income4               0.8254894 1.0714989
+income5               0.7517053 0.9537035
+cci_group>=5          1.3458698 1.8314280
+cci_group1-2          1.0362150 1.3152280
+cci_group3-4          1.2174834 1.6647901
+activityactive        0.6982186 0.8345510
+non_small_yn1         0.7327410 1.0112469
+SEER_GRP2             1.7504970 2.2491137
+SEER_GRP7             3.3485366 4.4735495
+SEER_GRP9             1.5373702 2.2374285
+surgery_ynyes         0.2973861 0.3728818
+radio_ynyes           0.8015042 1.0011423
+system_ynyes          1.1238495 1.3898654
+
+#lung_cancer mortality#
+
+> coxfit8 <- coxph(surv_lungcancer~smk_behave+AGE+SEX+pack_year+G1E_BMI+income+cci_group+activity+non_small_yn+SEER_GRP+
++                    surgery_yn+radio_yn+system_yn,data=data1)
+> summary(coxfit8)$coefficients
+                               coef exp(coef)    se(coef)             z     Pr(>|z|)
+smk_behaveafter_stop   0.0495880714 1.0508381 0.094530045   0.524574715 5.998789e-01
+smk_behavebefore_stop -0.1093889011 0.8963817 0.073374277  -1.490834462 1.360050e-01
+smk_behavecurrent      0.0005271058 1.0005272 0.111384428   0.004732312 9.962242e-01
+AGE                    0.0464819031 1.0475791 0.002871509  16.187271550 6.201822e-59
+SEX1                   0.6613401194 1.9373869 0.066098417  10.005385131 1.443290e-23
+pack_year              0.0022091033 1.0022115 0.001373968   1.607826765 1.078731e-01
+G1E_BMI               -0.0893616105 0.9145148 0.009250643  -9.660043288 4.456756e-22
+income2               -0.0733469788 0.9292783 0.084132666  -0.871801430 3.833167e-01
+income3                0.0268170327 1.0271798 0.078273345   0.342607468 7.318938e-01
+income4               -0.0634634624 0.9385084 0.072521503  -0.875098559 3.815203e-01
+income5               -0.1665148363 0.8466103 0.066214547  -2.514777234 1.191076e-02
+cci_group>=5           0.3845483029 1.4689507 0.084084034   4.573380775 4.799168e-06
+cci_group1-2           0.1007971606 1.1060523 0.064864783   1.553958178 1.201944e-01
+cci_group3-4           0.2698355107 1.3097490 0.087273404   3.091841266 1.989192e-03
+activityactive        -0.2372906489 0.7887620 0.049305019  -4.812707807 1.488989e-06
+non_small_yn1         -0.1803339596 0.8349913 0.086109567  -2.094238377 3.623875e-02
+SEER_GRP2              0.7994677455 2.2243567 0.073757520  10.839135326 2.245836e-27
+SEER_GRP7              1.5006377672 4.4845483 0.083100531  18.058100792 6.812646e-73
+SEER_GRP9              0.6817752754 1.9773850 0.108535174   6.281606711 3.350917e-10
+surgery_ynyes         -1.2089482251 0.2985111 0.064149967 -18.845656125 3.189854e-79
+radio_ynyes           -0.1269538931 0.8807743 0.060757220  -2.089527669 3.666025e-02
+system_ynyes           0.3193866636 1.3762834 0.059139019   5.400608114 6.641537e-08
+> exp(confint(coxfit8))
+                          2.5 %    97.5 %
+smk_behaveafter_stop  0.8731155 1.2647362
+smk_behavebefore_stop 0.7763127 1.0350213
+smk_behavecurrent     0.8043005 1.2446279
+AGE                   1.0416998 1.0534916
+SEX1                  1.7019754 2.2053597
+pack_year             0.9995163 1.0049141
+G1E_BMI               0.8980832 0.9312470
+income2               0.7880104 1.0958716
+income3               0.8810896 1.1974927
+income4               0.8141562 1.0818538
+income5               0.7435696 0.9639299
+cci_group>=5          1.2457610 1.7321267
+cci_group1-2          0.9740083 1.2559972
+cci_group3-4          1.1038265 1.5540870
+activityactive        0.7161063 0.8687894
+non_small_yn1         0.7053186 0.9885043
+SEER_GRP2             1.9249609 2.5703185
+SEER_GRP7             3.8105126 5.2778130
+SEER_GRP9             1.5984753 2.4461132
+surgery_ynyes         0.2632424 0.3385049
+radio_ynyes           0.7818942 0.9921590
+system_ynyes          1.2256561 1.5454220
+
+> coxfit9 <- coxph(surv_nolungcancer~smk_behave+AGE+SEX+pack_year+G1E_BMI+income+cci_group+activity+non_small_yn+SEER_GRP+
++                    surgery_yn+radio_yn+system_yn,data=data1)
+> summary(coxfit9)$coefficients
+                              coef exp(coef)    se(coef)          z     Pr(>|z|)
+smk_behaveafter_stop   0.315456513 1.3708850 0.214653458  1.4696083 1.416679e-01
+smk_behavebefore_stop  0.066552783 1.0688174 0.170384426  0.3906037 6.960902e-01
+smk_behavecurrent      0.799227135 2.2238216 0.210351759  3.7994792 1.450005e-04
+AGE                    0.069449594 1.0719180 0.007140244  9.7265016 2.324500e-22
+SEX1                   0.783413700 2.1889319 0.165580823  4.7313070 2.230789e-06
+pack_year              0.002400223 1.0024031 0.002754518  0.8713766 3.835485e-01
+G1E_BMI               -0.110302393 0.8955633 0.022049914 -5.0023955 5.662226e-07
+income2                0.178259310 1.1951352 0.181719966  0.9809561 3.266144e-01
+income3               -0.273617135 0.7606232 0.199475964 -1.3716797 1.701632e-01
+income4               -0.061160548 0.9406722 0.167392380 -0.3653724 7.148335e-01
+income5               -0.180159193 0.8351373 0.152229241 -1.1834730 2.366218e-01
+cci_group>=5           0.879153765 2.4088604 0.223639847  3.9311141 8.455311e-05
+cci_group1-2           0.530245785 1.6993499 0.178888305  2.9641165 3.035533e-03
+cci_group3-4           0.859979798 2.3631130 0.209705378  4.1008953 4.115548e-05
+activityactive        -0.463708440 0.6289469 0.118822049 -3.9025454 9.518638e-05
+non_small_yn1          0.063872083 1.0659560 0.280077271  0.2280516 8.196061e-01
+SEER_GRP2              0.376966267 1.4578551 0.133022263  2.8338585 4.598970e-03
+SEER_GRP7              0.522745164 1.6866514 0.199055874  2.6261228 8.636366e-03
+SEER_GRP9              0.544838274 1.7243295 0.209747587  2.5975902 9.388046e-03
+surgery_ynyes         -0.549728812 0.5771063 0.142179330 -3.8664468 1.104325e-04
+radio_ynyes            0.021734685 1.0219726 0.161575954  0.1345168 8.929939e-01
+system_ynyes          -0.389382316 0.6774752 0.151949963 -2.5625693 1.039008e-02
+> exp(confint(coxfit9))
+                          2.5 %    97.5 %
+smk_behaveafter_stop  0.9000936 2.0879225
+smk_behavebefore_stop 0.7653710 1.4925710
+smk_behavecurrent     1.4724759 3.3585489
+AGE                   1.0570214 1.0870246
+SEX1                  1.5823028 3.0281327
+pack_year             0.9970060 1.0078295
+G1E_BMI               0.8576841 0.9351154
+income2               0.8370217 1.7064649
+income3               0.5144881 1.1245113
+income4               0.6775692 1.3059392
+income5               0.6196980 1.1254744
+cci_group>=5          1.5539930 3.7339991
+cci_group1-2          1.1967759 2.4129750
+cci_group3-4          1.5666895 3.5643966
+activityactive        0.4982789 0.7938812
+non_small_yn1         0.6156545 1.8456166
+SEER_GRP2             1.1232738 1.8920958
+SEER_GRP7             1.1417964 2.4915064
+SEER_GRP9             1.1430962 2.6011041
+surgery_ynyes         0.4367496 0.7625689
+radio_ynyes           0.7445700 1.4027264
+system_ynyes          0.5029831 0.9125012
+
+#table7 multivariable#
+> coxfit4 <- coxph(surv_all~AGE+SEX+pack_year+G1E_BMI+income+cci_group+activity+non_small_yn+SEER_GRP+
++                    surgery_yn+radio_yn+system_yn,data=data1)
+> summary(coxfit4)$coefficients
+                       coef exp(coef)     se(coef)           z     Pr(>|z|)
+AGE             0.048793829 1.0500038 0.0026231608  18.6011585 3.144389e-77
+SEX1            0.670155827 1.9545419 0.0557705511  12.0163028 2.917353e-33
+pack_year       0.002396354 1.0023992 0.0009705329   2.4691114 1.354491e-02
+G1E_BMI        -0.094196919 0.9101035 0.0085201841 -11.0557375 2.056396e-28
+income2        -0.031503688 0.9689874 0.0762689451  -0.4130605 6.795623e-01
+income3        -0.017628979 0.9825255 0.0726795025  -0.2425578 8.083480e-01
+income4        -0.065006611 0.9370613 0.0665254974  -0.9771684 3.284858e-01
+income5        -0.175964519 0.8386477 0.0606297577  -2.9022798 3.704575e-03
+cci_group>=5    0.449486979 1.5675078 0.0785775801   5.7202955 1.063389e-08
+cci_group1-2    0.158320984 1.1715422 0.0608110050   2.6034923 9.227934e-03
+cci_group3-4    0.358985041 1.4318754 0.0797891741   4.4991698 6.821936e-06
+activityactive -0.279947685 0.7558233 0.0453952245  -6.1668972 6.964298e-10
+non_small_yn1  -0.162635369 0.8499010 0.0820405389  -1.9823781 4.743694e-02
+SEER_GRP2       0.686524613 1.9867986 0.0639446808  10.7362271 6.879883e-27
+SEER_GRP7       1.349328395 3.8548357 0.0738969473  18.2595959 1.735710e-74
+SEER_GRP9       0.615996332 1.8515004 0.0957269505   6.4349311 1.235293e-10
+surgery_ynyes  -1.107955978 0.3302333 0.0576438737 -19.2207065 2.483652e-82
+radio_ynyes    -0.106133365 0.8993047 0.0567229064  -1.8710847 6.133334e-02
+system_ynyes    0.217536078 1.2430103 0.0541608478   4.0164821 5.907334e-05
+> exp(confint(coxfit4))
+                   2.5 %    97.5 %
+AGE            1.0446193 1.0554161
+SEX1           1.7521569 2.1803035
+pack_year      1.0004943 1.0043078
+G1E_BMI        0.8950317 0.9254292
+income2        0.8344453 1.1252224
+income3        0.8520772 1.1329448
+income4        0.8225104 1.0675657
+income5        0.7446830 0.9444690
+cci_group>=5   1.3437682 1.8285005
+cci_group1-2   1.0399094 1.3198372
+cci_group3-4   1.2245839 1.6742561
+activityactive 0.6914802 0.8261535
+non_small_yn1  0.7236613 0.9981628
+SEER_GRP2      1.7527664 2.2520792
+SEER_GRP7      3.3350679 4.4556090
+SEER_GRP9      1.5347614 2.2336069
+surgery_ynyes  0.2949540 0.3697323
+radio_ynyes    0.8046819 1.0050542
+system_ynyes   1.1178227 1.3822179
+
+> coxfit5 <- coxph(surv_lungcancer~AGE+SEX+pack_year+G1E_BMI+income+cci_group+activity+non_small_yn+SEER_GRP+
++                    surgery_yn+radio_yn+system_yn,data=data1)
+> summary(coxfit5)$coefficients
+                       coef exp(coef)    se(coef)           z     Pr(>|z|)
+AGE             0.045920634 1.0469913 0.002829770  16.2276925 3.213132e-59
+SEX1            0.634229494 1.8855687 0.060316617  10.5150044 7.367741e-26
+pack_year       0.001835265 1.0018369 0.001090993   1.6821967 9.253070e-02
+G1E_BMI        -0.090336553 0.9136237 0.009243139  -9.7733627 1.465070e-22
+income2        -0.076632741 0.9262300 0.084091083  -0.9113064 3.621340e-01
+income3         0.020250460 1.0204569 0.078182676   0.2590147 7.956239e-01
+income4        -0.065793793 0.9363239 0.072507793  -0.9074031 3.641937e-01
+income5        -0.173455158 0.8407549 0.066128146  -2.6230156 8.715528e-03
+cci_group>=5    0.382213744 1.4655253 0.084068607   4.5464503 5.455824e-06
+cci_group1-2    0.102415892 1.1078441 0.064844892   1.5793980 1.142448e-01
+cci_group3-4    0.271912069 1.3124716 0.087212144   3.1178235 1.821919e-03
+activityactive -0.244608366 0.7830111 0.049189900  -4.9727355 6.601469e-07
+non_small_yn1  -0.190929864 0.8261905 0.085942029  -2.2216122 2.630952e-02
+SEER_GRP2       0.800705932 2.2271126 0.073766981  10.8545303 1.897799e-27
+SEER_GRP7       1.497050774 4.4684910 0.083084666  18.0183762 1.397865e-72
+SEER_GRP9       0.682347484 1.9785168 0.108534307   6.2869290 3.238074e-10
+surgery_ynyes  -1.213092189 0.2972766 0.064082715 -18.9300999 6.444007e-80
+radio_ynyes    -0.122868761 0.8843797 0.060720800  -2.0235037 4.302125e-02
+system_ynyes    0.317290432 1.3734014 0.059099552   5.3687451 7.928638e-08
+> exp(confint(coxfit5))
+                   2.5 %    97.5 %
+AGE            1.0412005 1.0528143
+SEX1           1.6753316 2.1221886
+pack_year      0.9996970 1.0039815
+G1E_BMI        0.8972213 0.9303259
+income2        0.7854895 1.0921877
+income3        0.8754784 1.1894437
+income4        0.8122830 1.0793067
+income5        0.7385519 0.9571010
+cci_group>=5   1.2428937 1.7280354
+cci_group1-2   0.9756242 1.2579829
+cci_group3-4   1.1062539 1.5571305
+activityactive 0.7110455 0.8622604
+non_small_yn1  0.6981138 0.9777644
+SEER_GRP2      1.9273101 2.5735507
+SEER_GRP7      3.7969869 5.2587520
+SEER_GRP9      1.5993929 2.4475091
+surgery_ynyes  0.2621884 0.3370607
+radio_ynyes    0.7851509 0.9961493
+system_ynyes   1.2231842 1.5420665
+
+> coxfit6 <- coxph(surv_nolungcancer~AGE+SEX+pack_year+G1E_BMI+income+cci_group+activity+non_small_yn+SEER_GRP+
++                    surgery_yn+radio_yn+system_yn,data=data1)
+> summary(coxfit6)$coefficients
+                       coef exp(coef)    se(coef)          z     Pr(>|z|)
+AGE             0.065780679 1.0679925 0.006986799  9.4149949 4.731055e-21
+SEX1            0.896463158 2.4509192 0.146947987  6.1005474 1.057058e-09
+pack_year       0.004346962 1.0043564 0.002011604  2.1609427 3.069976e-02
+G1E_BMI        -0.114883883 0.8914697 0.022067018 -5.2061353 1.928141e-07
+income2         0.167926764 1.1828500 0.181737738  0.9240060 3.554832e-01
+income3        -0.268178953 0.7647709 0.199504041 -1.3442282 1.788746e-01
+income4        -0.075715449 0.9270800 0.167342490 -0.4524580 6.509391e-01
+income5        -0.202963582 0.8163080 0.151999671 -1.3352896 1.817816e-01
+cci_group>=5    0.873368360 2.3949644 0.223795042  3.9025367 9.518981e-05
+cci_group1-2    0.539152227 1.7145527 0.178963405  3.0126395 2.589864e-03
+cci_group3-4    0.875300446 2.3995961 0.209900472  4.1700737 3.045011e-05
+activityactive -0.487331065 0.6142636 0.118581279 -4.1096796 3.962084e-05
+non_small_yn1   0.038965564 1.0397347 0.279952435  0.1391864 8.893029e-01
+SEER_GRP2       0.379965626 1.4622343 0.132970477  2.8575187 4.269675e-03
+SEER_GRP7       0.519186329 1.6806596 0.199293911  2.6051289 9.183970e-03
+SEER_GRP9       0.532922655 1.7039050 0.209534156  2.5433689 1.097892e-02
+surgery_ynyes  -0.587929776 0.5554761 0.141686192 -4.1495206 3.331723e-05
+radio_ynyes     0.028979308 1.0294033 0.161536294  0.1793981 8.576251e-01
+system_ynyes   -0.416773964 0.6591699 0.151915758 -2.7434545 6.079648e-03
+> exp(confint(coxfit6))
+                   2.5 %    97.5 %
+AGE            1.0534672 1.0827180
+SEX1           1.8375817 3.2689732
+pack_year      1.0004044 1.0083241
+G1E_BMI        0.8537350 0.9308722
+income2        0.8283888 1.6889823
+income3        0.5172651 1.1307055
+income4        0.6678440 1.2869432
+income5        0.6059987 1.0996042
+cci_group>=5   1.5445585 3.7135882
+cci_group1-2   1.2073048 2.4349204
+cci_group3-4   1.5902688 3.6208102
+activityactive 0.4868759 0.7749816
+non_small_yn1  0.6006571 1.7997761
+SEER_GRP2      1.1267623 1.8975868
+SEER_GRP7      1.1372095 2.4838138
+SEER_GRP9      1.1300290 2.5692192
+surgery_ynyes  0.4207865 0.7332783
+radio_ynyes    0.7500420 1.4128156
+system_ynyes   0.4894253 0.8877860
+
+#table6 univariable#
+
+#all cause mortality#
+> coxfit7 <-coxph(surv_all~grouptype, data=data1)
+> summary(coxfit7)$coefficients
+                  coef exp(coef)   se(coef)          z     Pr(>|z|)
+grouptype11 -0.3825778 0.6821008 1.00049727 -0.3823877 7.021738e-01
+grouptype20  0.4155544 1.5152105 0.04985594  8.3351026 7.743104e-17
+grouptype21  0.7755126 2.1717050 0.70782101  1.0956338 2.732391e-01
+grouptype30  0.5122088 1.6689735 0.06564101  7.8031828 6.036503e-15
+grouptype31  0.7366445 2.0889143 0.44831692  1.6431333 1.003554e-01
+grouptype40  0.7833642 2.1888236 0.08793142  8.9088092 5.158361e-19
+grouptype41  0.1705015 1.1858994 0.57820563  0.2948803 7.680853e-01
+> exp(confint(coxfit7))
+                2.5 %   97.5 %
+grouptype11 0.0959895 4.847004
+grouptype20 1.3741544 1.670746
+grouptype21 0.5423785 8.695592
+grouptype30 1.4674919 1.898118
+grouptype31 0.8675861 5.029545
+grouptype40 1.8423129 2.600508
+grouptype41 0.3818373 3.683133
+
+#LUNG cancer mortality#
+> coxfit8 <-coxph(surv_lungcancer~grouptype, data=data1)
+> summary(coxfit8)$coefficients
+                  coef exp(coef)   se(coef)          z     Pr(>|z|)
+grouptype11 -0.2268245 0.7970607 1.00057424 -0.2266943 8.206615e-01
+grouptype20  0.3833090 1.4671313 0.05416750  7.0763640 1.479858e-12
+grouptype21  0.9154700 2.4979491 0.70793284  1.2931594 1.959559e-01
+grouptype30  0.4834648 1.6216835 0.07139853  6.7713554 1.275814e-11
+grouptype31  0.6608837 1.9365028 0.50114287  1.3187530 1.872517e-01
+grouptype40  0.6245957 1.8674908 0.10150651  6.1532573 7.590749e-10
+grouptype41  0.3189239 1.3756467 0.57833990  0.5514472 5.813271e-01
+> exp(confint(coxfit8))
+                2.5 %    97.5 %
+grouptype11 0.1121505  5.664763
+grouptype20 1.3193545  1.631460
+grouptype21 0.6237206 10.004079
+grouptype30 1.4099106  1.865265
+grouptype31 0.7251779  5.171204
+grouptype40 1.5305798  2.278563
+grouptype41 0.4428158  4.273569
+
+#table6 no lung cancer#
+
+> coxfit9 <-coxph(surv_nolungcancer~grouptype, data=data1)
+경고메시지(들):
+coxph.fit(X, Y, istrat, offset, init, control, weights = weights, 에서:
+  Loglik converged before variable  1,3,7 ; coefficient may be infinite. 
+> summary(coxfit9)$coefficients
+                   coef    exp(coef)     se(coef)            z     Pr(>|z|)
+grouptype11 -12.8588784 2.602915e-06 1353.4822315 -0.009500589 9.924197e-01
+grouptype20   0.5987229 1.819793e+00    0.1280865  4.674365749 2.948634e-06
+grouptype21 -12.8572445 2.607172e-06 1779.6831151 -0.007224457 9.942358e-01
+grouptype30   0.6772615 1.968480e+00    0.1672800  4.048668450 5.150985e-05
+grouptype31   1.1152512 3.050334e+00    1.0036131  1.111236201 2.664667e-01
+grouptype40   1.4392814 4.217664e+00    0.1810740  7.948579572 1.886621e-15
+grouptype41 -12.8571213 2.607493e-06 1049.2347180 -0.012253808 9.902231e-01
+> exp(confint(coxfit9))
+                2.5 %    97.5 %
+grouptype11 0.0000000       Inf
+grouptype20 1.4157764  2.339104
+grouptype21 0.0000000       Inf
+grouptype30 1.4182144  2.732247
+grouptype31 0.4266487 21.808434
+grouptype40 2.9576139  6.014541
+grouptype41 0.0000000       Inf
+
+
+#table6 multivariable (grouptype + 개인특성)#
+
+#all cause mortality#
+
+> coxfit10 <- coxph(surv_all~grouptype+AGE+SEX+pack_year+G1E_BMI+income+cci_group+activity+non_small_yn+SEER_GRP+
++                     surgery_yn+radio_yn+system_yn,data=data1)
+> summary(coxfit10)$coefficients
+                       coef exp(coef)    se(coef)           z     Pr(>|z|)
+grouptype11    -0.539862514 0.5828284 1.001384568  -0.5391161 5.898068e-01
+grouptype20    -0.085452952 0.9180963 0.067344923  -1.2688848 2.044821e-01
+grouptype21    -0.135920528 0.8729120 0.711478154  -0.1910396 8.484945e-01
+grouptype30     0.075605600 1.0785371 0.086820072   0.8708309 3.838465e-01
+grouptype31     0.896321796 2.4505728 0.451669043   1.9844659 4.720393e-02
+grouptype40     0.149569556 1.1613342 0.098216455   1.5228564 1.277946e-01
+grouptype41    -0.076485430 0.9263664 0.581788120  -0.1314661 8.954066e-01
+AGE             0.049781005 1.0510409 0.002665859  18.6735298 8.129776e-78
+SEX1            0.678662025 1.9712385 0.061384524  11.0559141 2.052354e-28
+pack_year       0.002367414 1.0023702 0.001229686   1.9252181 5.420208e-02
+G1E_BMI        -0.092612850 0.9115463 0.008526094 -10.8622835 1.743345e-27
+income2        -0.027379641 0.9729918 0.076313271  -0.3587795 7.197600e-01
+income3        -0.012264833 0.9878101 0.072776716  -0.1685269 8.661688e-01
+income4        -0.061490968 0.9403614 0.066549843  -0.9239837 3.554948e-01
+income5        -0.165688002 0.8473106 0.060723122  -2.7285817 6.360732e-03
+cci_group>=5    0.450156716 1.5685580 0.078607918   5.7266078 1.024587e-08
+cci_group1-2    0.153890642 1.1663633 0.060867791   2.5282771 1.146238e-02
+cci_group3-4    0.353087980 1.4234564 0.079880186   4.4202198 9.860056e-06
+activityactive -0.269886032 0.7634665 0.045518581  -5.9291398 3.045257e-09
+non_small_yn1  -0.151002183 0.8598458 0.082188132  -1.8372748 6.616934e-02
+SEER_GRP2       0.684691980 1.9831609 0.063943170  10.7078203 9.353817e-27
+SEER_GRP7       1.352538975 3.8672319 0.073914127  18.2987885 8.460941e-75
+SEER_GRP9       0.618900892 1.8568860 0.095753670   6.4634692 1.023294e-10
+surgery_ynyes  -1.100541595 0.3326909 0.057736346 -19.0615042 5.273664e-81
+radio_ynyes    -0.109206224 0.8965455 0.056743394  -1.9245628 5.428408e-02
+system_ynyes    0.223142518 1.2499987 0.054218614   4.1156072 3.861614e-05
+> exp(confint(coxfit10))
+                    2.5 %    97.5 %
+grouptype11    0.08187675 4.1487836
+grouptype20    0.80457059 1.0476407
+grouptype21    0.21645078 3.5203170
+grouptype30    0.90977441 1.2786052
+grouptype31    1.01112820 5.9392143
+grouptype40    0.95797734 1.4078592
+grouptype41    0.29618554 2.8973552
+AGE            1.04556354 1.0565469
+SEX1           1.74778727 2.2232575
+pack_year      0.99995727 1.0047890
+G1E_BMI        0.89644020 0.9269070
+income2        0.83782092 1.1299706
+income3        0.85649690 1.1392554
+income4        0.82536773 1.0713766
+income5        0.75223754 0.9543996
+cci_group>=5   1.34458851 1.8298343
+cci_group1-2   1.03519722 1.3141490
+cci_group3-4   1.21716659 1.6647089
+activityactive 0.69830395 0.8347097
+non_small_yn1  0.73191715 1.0101346
+SEER_GRP2      1.74956235 2.2479491
+SEER_GRP7      3.34567996 4.4700876
+SEER_GRP9      1.53914512 2.2402213
+surgery_ynyes  0.29709517 0.3725513
+radio_ynyes    0.80218082 1.0020108
+system_ynyes   1.12398003 1.3901464
+
+
+#lung cancer mortality#
+
+> coxfit11 <- coxph(surv_lungcancer~grouptype+AGE+SEX+pack_year+G1E_BMI+income+cci_group+activity+non_small_yn+SEER_GRP+
++                     surgery_yn+radio_yn+system_yn,data=data1)
+> summary(coxfit11)$coefficients
+                      coef exp(coef)    se(coef)            z     Pr(>|z|)
+grouptype11    -0.31486579 0.7298868 1.001638907  -0.31435060 7.532548e-01
+grouptype20    -0.11087765 0.8950483 0.073429904  -1.50997951 1.310487e-01
+grouptype21    -0.07155090 0.9309489 0.712331274  -0.10044611 9.199902e-01
+grouptype30     0.03969595 1.0404944 0.094958718   0.41803380 6.759224e-01
+grouptype31     0.80347344 2.2332846 0.504672466   1.59206910 1.113692e-01
+grouptype40    -0.00205757 0.9979445 0.112325653  -0.01831790 9.853853e-01
+grouptype41     0.04233508 1.0432440 0.582613683   0.07266406 9.420734e-01
+AGE             0.04655785 1.0476587 0.002873773  16.20094858 4.965517e-59
+SEX1            0.66137536 1.9374552 0.066101144  10.00550550 1.441536e-23
+pack_year       0.00223591 1.0022384 0.001375096   1.62600320 1.039490e-01
+G1E_BMI        -0.08941988 0.9144615 0.009253765  -9.66308066 4.326537e-22
+income2        -0.07270712 0.9298731 0.084145021  -0.86406918 3.875499e-01
+income3         0.02820895 1.0286106 0.078303220   0.36025269 7.186582e-01
+income4        -0.06325159 0.9387073 0.072532228  -0.87204813 3.831821e-01
+income5        -0.16612461 0.8469407 0.066223057  -2.50856151 1.212239e-02
+cci_group>=5    0.38432684 1.4686254 0.084109810   4.56934616 4.892481e-06
+cci_group1-2    0.10048861 1.1057110 0.064913247   1.54804467 1.216115e-01
+cci_group3-4    0.27047444 1.3105861 0.087333756   3.09702065 1.954763e-03
+activityactive -0.23731918 0.7887395 0.049326017  -4.81123742 1.499987e-06
+non_small_yn1  -0.18171550 0.8338385 0.086120961  -2.11000319 3.485808e-02
+SEER_GRP2       0.79931477 2.2240165 0.073762190  10.83637533 2.314609e-27
+SEER_GRP7       1.50024340 4.4827800 0.083123572  18.04835102 8.128140e-73
+SEER_GRP9       0.68318302 1.9801706 0.108565762   6.29280367 3.117826e-10
+surgery_ynyes  -1.20949184 0.2983488 0.064170659 -18.84805096 3.048695e-79
+radio_ynyes    -0.12619063 0.8814468 0.060763193  -2.07676105 3.782362e-02
+system_ynyes    0.31936887 1.3762589 0.059163494   5.39807325 6.736037e-08
+> exp(confint(coxfit11))
+                   2.5 %    97.5 %
+grouptype11    0.1024847 5.1981895
+grouptype20    0.7750733 1.0335943
+grouptype21    0.2304562 3.7606535
+grouptype30    0.8637951 1.2533395
+grouptype31    0.8305506 6.0051251
+grouptype40    0.8007457 1.2437073
+grouptype41    0.3330153 3.2681920
+AGE            1.0417743 1.0535763
+SEX1           1.7020263 2.2054492
+pack_year      0.9995409 1.0049432
+G1E_BMI        0.8980254 0.9311985
+income2        0.7884957 1.0965996
+income3        0.8822652 1.1992309
+income4        0.8143116 1.0821058
+income5        0.7438474 0.9643222
+cci_group>=5   1.2454223 1.7318307
+cci_group1-2   0.9736153 1.2557289
+cci_group3-4   1.1044014 1.5552642
+activityactive 0.7160564 0.8688003
+non_small_yn1  0.7043292 0.9871616
+SEER_GRP2      1.9246489 2.5699489
+SEER_GRP7      3.8088381 5.2759703
+SEER_GRP9      1.6006312 2.4497060
+surgery_ynyes  0.2630887 0.3383347
+radio_ynyes    0.7824820 0.9929282
+system_ynyes   1.2255755 1.5454686
+
+
+#no lung cancer mortality#
+
+> coxfit12 <- coxph(surv_nolungcancer~grouptype+AGE+SEX+pack_year+G1E_BMI+income+cci_group+activity+non_small_yn+SEER_GRP+
++                     surgery_yn+radio_yn+system_yn,data=data1)
+경고메시지(들):
+coxph.fit(X, Y, istrat, offset, init, control, weights = weights, 에서:
+  Loglik converged before variable  1,3,7 ; coefficient may be infinite. 
+> summary(coxfit12)$coefficients
+                        coef    exp(coef)     se(coef)            z     Pr(>|z|)
+grouptype11    -13.950598574 8.736390e-07 1.985427e+03 -0.007026497 9.943937e-01
+grouptype20      0.061396030 1.063320e+00 1.703257e-01  0.360462458 7.185013e-01
+grouptype21    -14.248954527 6.482726e-07 3.037129e+03 -0.004691588 9.962567e-01
+grouptype30      0.294581179 1.342564e+00 2.155998e-01  1.366333107 1.718344e-01
+grouptype31      1.368596258 3.929830e+00 1.014180e+00  1.349461184 1.771889e-01
+grouptype40      0.814347840 2.257703e+00 2.099893e-01  3.878045297 1.052991e-04
+grouptype41    -13.854347569 9.619075e-07 1.679520e+03 -0.008248991 9.934183e-01
+AGE              0.069577847 1.072056e+00 7.153338e-03  9.726626302 2.321654e-22
+SEX1             0.783759309 2.189689e+00 1.655598e-01  4.733995215 2.201429e-06
+pack_year        0.002535021 1.002538e+00 2.744095e-03  0.923809290 3.555856e-01
+G1E_BMI         -0.109472390 8.963069e-01 2.205856e-02 -4.962808661 6.948102e-07
+income2          0.177850393 1.194647e+00 1.817643e-01  0.978466982 3.278434e-01
+income3         -0.265389381 7.669073e-01 1.995166e-01 -1.330161725 1.834650e-01
+income4         -0.062625083 9.392956e-01 1.673973e-01 -0.374110451 7.083221e-01
+income5         -0.179632494 8.355772e-01 1.522185e-01 -1.180096297 2.379619e-01
+cci_group>=5     0.876341533 2.402096e+00 2.236344e-01  3.918634658 8.905197e-05
+cci_group1-2     0.525801809 1.691815e+00 1.788907e-01  2.939234614 3.290239e-03
+cci_group3-4     0.856534519 2.354985e+00 2.097644e-01  4.083317227 4.439735e-05
+activityactive  -0.462141167 6.299334e-01 1.188676e-01 -3.887865904 1.011295e-04
+non_small_yn1    0.065752385 1.067962e+00 2.800322e-01  0.234802983 8.143617e-01
+SEER_GRP2        0.373719711 1.453130e+00 1.330411e-01  2.809054676 4.968721e-03
+SEER_GRP7        0.520479371 1.682834e+00 1.990769e-01  2.614464095 8.936755e-03
+SEER_GRP9        0.544767681 1.724208e+00 2.097608e-01  2.597089814 9.401734e-03
+surgery_ynyes   -0.551869182 5.758724e-01 1.422736e-01 -3.878928822 1.049174e-04
+radio_ynyes      0.024950512 1.025264e+00 1.615894e-01  0.154406822 8.772890e-01
+system_ynyes    -0.387636622 6.786589e-01 1.519678e-01 -2.550781964 1.074815e-02
+> exp(confint(coxfit12))
+                   2.5 %     97.5 %
+grouptype11    0.0000000        Inf
+grouptype20    0.7615220  1.4847231
+grouptype21    0.0000000        Inf
+grouptype30    0.8798651  2.0485845
+grouptype31    0.5383967 28.6843627
+grouptype40    1.4959725  3.4072967
+grouptype41    0.0000000        Inf
+AGE            1.0571299  1.0871919
+SEX1           1.5829150  3.0290546
+pack_year      0.9971607  1.0079447
+G1E_BMI        0.8583817  0.9359077
+income2        0.8366068  1.7059155
+income3        0.5186973  1.1338921
+income4        0.6765711  1.3040406
+income5        0.6200375  1.1260436
+cci_group>=5   1.5496454  3.7234733
+cci_group1-2   1.1914636  2.4022870
+cci_group3-4   1.5611206  3.5525482
+activityactive 0.4990159  0.7951973
+non_small_yn1  0.6168678  1.8489267
+SEER_GRP2      1.1195916  1.8860326
+SEER_GRP7      1.1391653  2.4859699
+SEER_GRP9      1.1429859  2.6009879
+surgery_ynyes  0.4357353  0.7610791
+radio_ynyes    0.7469485  1.4072817
+system_ynyes   0.5038443  0.9141274

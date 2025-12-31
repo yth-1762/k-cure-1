@@ -1,0 +1,2515 @@
+﻿> # smk_behave 별로 log-rank test#
+#all cause mortality#
+> result1 <- pairwise_survdiff(Surv(day_diff,death_yn=="1") ~ smk_behave, data=data1)
+> result1
+
+	Pairwise comparisons using Log-Rank test 
+
+data:  data1 and smk_behave 
+
+            Never   before_stop after_stop
+before_stop < 2e-16 -           -         
+after_stop  3e-15   0.14886     -         
+current     < 2e-16 0.00015     0.01340   
+
+P value adjustment method: BH 
+> result1$p.value
+                   Never  before_stop after_stop
+before_stop 9.130664e-17           NA         NA
+after_stop  3.016681e-15 0.1488643988         NA
+current     1.098971e-18 0.0001493215 0.01340456
+
+#lung cancer mortality#
+> result2 <- pairwise_survdiff(Surv(day_diff,lung_cancer_yn=="1") ~ smk_behave, data=data1)
+> result2
+
+	Pairwise comparisons using Log-Rank test 
+
+data:  data1 and smk_behave 
+
+            Never   before_stop after_stop
+before_stop 4.4e-12 -           -         
+after_stop  1.5e-11 0.21        -         
+current     8.7e-10 0.04        0.24      
+
+P value adjustment method: BH 
+> result2$p.value
+                   Never before_stop after_stop
+before_stop 4.399248e-12          NA         NA
+after_stop  1.514016e-11  0.21221336         NA
+current     8.655126e-10  0.03951365  0.2439264
+
+
+
+#multivariable coxph#
+# all cause mortality#
+
+
+> coxph1 <- coxph(surv_all ~ smk_behave+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+> summary(coxph1)
+Call:
+coxph(formula = surv_all ~ smk_behave + AGE + SEX + non_small_yn + 
+    SEER_GRP, data = data1)
+
+  n= 30550, number of events= 2147 
+
+                           coef exp(coef)  se(coef)      z Pr(>|z|)    
+smk_behavebefore_stop -0.092583  0.911574  0.056908 -1.627 0.103763    
+smk_behaveafter_stop   0.184597  1.202733  0.071379  2.586 0.009706 ** 
+smk_behavecurrent      0.347240  1.415157  0.091509  3.795 0.000148 ***
+AGE                    0.060299  1.062154  0.002579 23.379  < 2e-16 ***
+SEX1                   0.712799  2.039693  0.060956 11.694  < 2e-16 ***
+non_small_yn1         -0.550918  0.576421  0.078066 -7.057  1.7e-12 ***
+SEER_GRP2              0.847625  2.334096  0.059933 14.143  < 2e-16 ***
+SEER_GRP7              2.103925  8.198288  0.059929 35.107  < 2e-16 ***
+SEER_GRP9              1.297193  3.659010  0.091190 14.225  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+                      exp(coef) exp(-coef) lower .95 upper .95
+smk_behavebefore_stop    0.9116     1.0970    0.8154    1.0191
+smk_behaveafter_stop     1.2027     0.8314    1.0457    1.3833
+smk_behavecurrent        1.4152     0.7066    1.1828    1.6932
+AGE                      1.0622     0.9415    1.0568    1.0675
+SEX1                     2.0397     0.4903    1.8100    2.2985
+non_small_yn1            0.5764     1.7348    0.4946    0.6717
+SEER_GRP2                2.3341     0.4284    2.0754    2.6250
+SEER_GRP7                8.1983     0.1220    7.2897    9.2201
+SEER_GRP9                3.6590     0.2733    3.0602    4.3751
+
+Concordance= 0.801  (se = 0.005 )
+Likelihood ratio test= 2339  on 9 df,   p=<2e-16
+Wald test            = 2262  on 9 df,   p=<2e-16
+Score (logrank) test = 2705  on 9 df,   p=<2e-16
+
+> summary(coxph1)$coefficients
+                             coef exp(coef)    se(coef)         z      Pr(>|z|)
+smk_behavebefore_stop -0.09258304 0.9115735 0.056908478 -1.626876  1.037634e-01
+smk_behaveafter_stop   0.18459650 1.2027330 0.071379068  2.586143  9.705655e-03
+smk_behavecurrent      0.34724048 1.4151570 0.091508983  3.794605  1.478784e-04
+AGE                    0.06029868 1.0621537 0.002579215 23.378696 7.040260e-121
+SEX1                   0.71279937 2.0396931 0.060955922 11.693685  1.372969e-31
+non_small_yn1         -0.55091781 0.5764205 0.078065838 -7.057092  1.700228e-12
+SEER_GRP2              0.84762467 2.3340960 0.059933216 14.142820  2.068284e-45
+SEER_GRP7              2.10392539 8.1982883 0.059929387 35.106740 5.319588e-270
+SEER_GRP9              1.29719273 3.6590104 0.091189673 14.225215  6.390734e-46
+> exp(confint(coxph1))
+                          2.5 %    97.5 %
+smk_behavebefore_stop 0.8153632 1.0191363
+smk_behaveafter_stop  1.0457100 1.3833345
+smk_behavecurrent     1.1828020 1.6931569
+AGE                   1.0567979 1.0675367
+SEX1                  1.8100020 2.2985323
+non_small_yn1         0.4946405 0.6717214
+SEER_GRP2             2.0754079 2.6250281
+SEER_GRP7             7.2897259 9.2200903
+SEER_GRP9             3.0601510 4.3750642
+
+> coxph2 <- coxph(surv_all ~ smk_behave+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+> summary(coxph2)
+Call:
+coxph(formula = surv_all ~ smk_behave + AGE + SEX + non_small_yn + 
+    SEER_GRP, data = data1)
+
+  n= 30550, number of events= 2147 
+
+                          coef exp(coef)  se(coef)      z Pr(>|z|)    
+smk_behaveNever       0.092583  1.097004  0.056908  1.627    0.104    
+smk_behaveafter_stop  0.277180  1.319403  0.069848  3.968 7.24e-05 ***
+smk_behavecurrent     0.439824  1.552433  0.090310  4.870 1.12e-06 ***
+AGE                   0.060299  1.062154  0.002579 23.379  < 2e-16 ***
+SEX1                  0.712799  2.039693  0.060956 11.694  < 2e-16 ***
+non_small_yn1        -0.550918  0.576421  0.078066 -7.057 1.70e-12 ***
+SEER_GRP2             0.847625  2.334096  0.059933 14.143  < 2e-16 ***
+SEER_GRP7             2.103925  8.198288  0.059929 35.107  < 2e-16 ***
+SEER_GRP9             1.297193  3.659010  0.091190 14.225  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+                     exp(coef) exp(-coef) lower .95 upper .95
+smk_behaveNever         1.0970     0.9116    0.9812    1.2264
+smk_behaveafter_stop    1.3194     0.7579    1.1506    1.5130
+smk_behavecurrent       1.5524     0.6442    1.3006    1.8530
+AGE                     1.0622     0.9415    1.0568    1.0675
+SEX1                    2.0397     0.4903    1.8100    2.2985
+non_small_yn1           0.5764     1.7348    0.4946    0.6717
+SEER_GRP2               2.3341     0.4284    2.0754    2.6250
+SEER_GRP7               8.1983     0.1220    7.2897    9.2201
+SEER_GRP9               3.6590     0.2733    3.0602    4.3751
+
+Concordance= 0.801  (se = 0.005 )
+Likelihood ratio test= 2339  on 9 df,   p=<2e-16
+Wald test            = 2262  on 9 df,   p=<2e-16
+Score (logrank) test = 2705  on 9 df,   p=<2e-16
+
+> summary(coxph2)$coefficients
+                            coef exp(coef)    se(coef)         z      Pr(>|z|)
+smk_behaveNever       0.09258304 1.0970042 0.056908478  1.626876  1.037634e-01
+smk_behaveafter_stop  0.27717955 1.3194032 0.069847847  3.968333  7.237702e-05
+smk_behavecurrent     0.43982353 1.5524332 0.090309983  4.870154  1.115113e-06
+AGE                   0.06029868 1.0621537 0.002579215 23.378696 7.040260e-121
+SEX1                  0.71279937 2.0396931 0.060955922 11.693685  1.372969e-31
+non_small_yn1        -0.55091781 0.5764205 0.078065838 -7.057092  1.700228e-12
+SEER_GRP2             0.84762467 2.3340960 0.059933216 14.142820  2.068284e-45
+SEER_GRP7             2.10392539 8.1982883 0.059929387 35.106740 5.319588e-270
+SEER_GRP9             1.29719273 3.6590104 0.091189673 14.225215  6.390734e-46
+> exp(confint(coxph2))
+                         2.5 %    97.5 %
+smk_behaveNever      0.9812230 1.2264473
+smk_behaveafter_stop 1.1505962 1.5129764
+smk_behavecurrent    1.3005916 1.8530406
+AGE                  1.0567979 1.0675367
+SEX1                 1.8100020 2.2985323
+non_small_yn1        0.4946405 0.6717214
+SEER_GRP2            2.0754079 2.6250281
+SEER_GRP7            7.2897259 9.2200903
+SEER_GRP9            3.0601510 4.3750642
+
+> coxph3 <- coxph(surv_all ~ smk_behave+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+> summary(coxph3)
+Call:
+coxph(formula = surv_all ~ smk_behave + AGE + SEX + non_small_yn + 
+    SEER_GRP, data = data1)
+
+  n= 30550, number of events= 2147 
+
+                           coef exp(coef)  se(coef)      z Pr(>|z|)    
+smk_behavebefore_stop -0.277180  0.757918  0.069848 -3.968 7.24e-05 ***
+smk_behaveNever       -0.184597  0.831440  0.071379 -2.586  0.00971 ** 
+smk_behavecurrent      0.162644  1.176618  0.099672  1.632  0.10272    
+AGE                    0.060299  1.062154  0.002579 23.379  < 2e-16 ***
+SEX1                   0.712799  2.039693  0.060956 11.694  < 2e-16 ***
+non_small_yn1         -0.550918  0.576421  0.078066 -7.057 1.70e-12 ***
+SEER_GRP2              0.847625  2.334096  0.059933 14.143  < 2e-16 ***
+SEER_GRP7              2.103925  8.198288  0.059929 35.107  < 2e-16 ***
+SEER_GRP9              1.297193  3.659010  0.091190 14.225  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+                      exp(coef) exp(-coef) lower .95 upper .95
+smk_behavebefore_stop    0.7579     1.3194    0.6609    0.8691
+smk_behaveNever          0.8314     1.2027    0.7229    0.9563
+smk_behavecurrent        1.1766     0.8499    0.9678    1.4305
+AGE                      1.0622     0.9415    1.0568    1.0675
+SEX1                     2.0397     0.4903    1.8100    2.2985
+non_small_yn1            0.5764     1.7348    0.4946    0.6717
+SEER_GRP2                2.3341     0.4284    2.0754    2.6250
+SEER_GRP7                8.1983     0.1220    7.2897    9.2201
+SEER_GRP9                3.6590     0.2733    3.0602    4.3751
+
+Concordance= 0.801  (se = 0.005 )
+Likelihood ratio test= 2339  on 9 df,   p=<2e-16
+Wald test            = 2262  on 9 df,   p=<2e-16
+Score (logrank) test = 2705  on 9 df,   p=<2e-16
+
+> summary(coxph3)$coefficients
+                             coef exp(coef)    se(coef)         z      Pr(>|z|)
+smk_behavebefore_stop -0.27717955 0.7579184 0.069847847 -3.968333  7.237702e-05
+smk_behaveNever       -0.18459650 0.8314397 0.071379068 -2.586143  9.705655e-03
+smk_behavecurrent      0.16264398 1.1766177 0.099671935  1.631793  1.027231e-01
+AGE                    0.06029868 1.0621537 0.002579215 23.378696 7.040260e-121
+SEX1                   0.71279937 2.0396931 0.060955922 11.693685  1.372969e-31
+non_small_yn1         -0.55091781 0.5764205 0.078065838 -7.057092  1.700228e-12
+SEER_GRP2              0.84762467 2.3340960 0.059933216 14.142820  2.068284e-45
+SEER_GRP7              2.10392539 8.1982883 0.059929387 35.106740 5.319588e-270
+SEER_GRP9              1.29719273 3.6590104 0.091189673 14.225215  6.390734e-46
+> exp(confint(coxph3))
+                          2.5 %    97.5 %
+smk_behavebefore_stop 0.6609489 0.8691146
+smk_behaveNever       0.7228909 0.9562881
+smk_behavecurrent     0.9678197 1.4304619
+AGE                   1.0567979 1.0675367
+SEX1                  1.8100020 2.2985323
+non_small_yn1         0.4946405 0.6717214
+SEER_GRP2             2.0754079 2.6250281
+SEER_GRP7             7.2897259 9.2200903
+SEER_GRP9             3.0601510 4.3750642
+
+> coxph4 <- coxph(surv_all ~ smk_behave+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+> summary(coxph4)
+Call:
+coxph(formula = surv_all ~ smk_behave + AGE + SEX + non_small_yn + 
+    SEER_GRP, data = data1)
+
+  n= 30550, number of events= 2147 
+
+                           coef exp(coef)  se(coef)      z Pr(>|z|)    
+smk_behaveafter_stop  -0.162644  0.849894  0.099672 -1.632 0.102723    
+smk_behavebefore_stop -0.439824  0.644150  0.090310 -4.870 1.12e-06 ***
+smk_behaveNever       -0.347240  0.706635  0.091509 -3.795 0.000148 ***
+AGE                    0.060299  1.062154  0.002579 23.379  < 2e-16 ***
+SEX1                   0.712799  2.039693  0.060956 11.694  < 2e-16 ***
+non_small_yn1         -0.550918  0.576421  0.078066 -7.057 1.70e-12 ***
+SEER_GRP2              0.847625  2.334096  0.059933 14.143  < 2e-16 ***
+SEER_GRP7              2.103925  8.198288  0.059929 35.107  < 2e-16 ***
+SEER_GRP9              1.297193  3.659010  0.091190 14.225  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+                      exp(coef) exp(-coef) lower .95 upper .95
+smk_behaveafter_stop     0.8499     1.1766    0.6991    1.0333
+smk_behavebefore_stop    0.6442     1.5524    0.5397    0.7689
+smk_behaveNever          0.7066     1.4152    0.5906    0.8455
+AGE                      1.0622     0.9415    1.0568    1.0675
+SEX1                     2.0397     0.4903    1.8100    2.2985
+non_small_yn1            0.5764     1.7348    0.4946    0.6717
+SEER_GRP2                2.3341     0.4284    2.0754    2.6250
+SEER_GRP7                8.1983     0.1220    7.2897    9.2201
+SEER_GRP9                3.6590     0.2733    3.0602    4.3751
+
+Concordance= 0.801  (se = 0.005 )
+Likelihood ratio test= 2339  on 9 df,   p=<2e-16
+Wald test            = 2262  on 9 df,   p=<2e-16
+Score (logrank) test = 2705  on 9 df,   p=<2e-16
+
+> summary(coxph4)$coefficients
+                             coef exp(coef)    se(coef)         z      Pr(>|z|)
+smk_behaveafter_stop  -0.16264398 0.8498937 0.099671935 -1.631793  1.027231e-01
+smk_behavebefore_stop -0.43982353 0.6441501 0.090309983 -4.870154  1.115113e-06
+smk_behaveNever       -0.34724048 0.7066354 0.091508983 -3.794605  1.478784e-04
+AGE                    0.06029868 1.0621537 0.002579215 23.378696 7.040260e-121
+SEX1                   0.71279937 2.0396931 0.060955922 11.693685  1.372969e-31
+non_small_yn1         -0.55091781 0.5764205 0.078065838 -7.057092  1.700228e-12
+SEER_GRP2              0.84762467 2.3340960 0.059933216 14.142820  2.068284e-45
+SEER_GRP7              2.10392539 8.1982883 0.059929387 35.106740 5.319588e-270
+SEER_GRP9              1.29719273 3.6590104 0.091189673 14.225215  6.390734e-46
+> exp(confint(coxph4))
+                          2.5 %    97.5 %
+smk_behaveafter_stop  0.6990749 1.0332503
+smk_behavebefore_stop 0.5396536 0.7688809
+smk_behaveNever       0.5906127 0.8454501
+AGE                   1.0567979 1.0675367
+SEX1                  1.8100020 2.2985323
+non_small_yn1         0.4946405 0.6717214
+SEER_GRP2             2.0754079 2.6250281
+SEER_GRP7             7.2897259 9.2200903
+SEER_GRP9             3.0601510 4.3750642
+
+
+
+
+
+
+#lung cancer mortality#
+
+> coxph5 <- coxph(surv_lungcancer ~ smk_behave+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+> summary(coxph5)
+Call:
+coxph(formula = surv_lungcancer ~ smk_behave + AGE + SEX + non_small_yn + 
+    SEER_GRP, data = data1)
+
+  n= 30550, number of events= 1811 
+
+                          coef exp(coef) se(coef)      z Pr(>|z|)    
+smk_behavecurrent      0.19317   1.21309  0.10472  1.845   0.0651 .  
+smk_behaveafter_stop   0.13951   1.14971  0.07759  1.798   0.0722 .  
+smk_behavebefore_stop -0.11951   0.88736  0.06174 -1.936   0.0529 .  
+AGE                    0.05550   1.05707  0.00278 19.969  < 2e-16 ***
+SEX1                   0.69751   2.00874  0.06565 10.624  < 2e-16 ***
+non_small_yn1         -0.61897   0.53850  0.08182 -7.565 3.86e-14 ***
+SEER_GRP2              1.01710   2.76517  0.06921 14.697  < 2e-16 ***
+SEER_GRP7              2.37416  10.74201  0.06797 34.928  < 2e-16 ***
+SEER_GRP9              1.43292   4.19092  0.10383 13.801  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+                      exp(coef) exp(-coef) lower .95 upper .95
+smk_behavecurrent        1.2131    0.82434    0.9880    1.4895
+smk_behaveafter_stop     1.1497    0.86978    0.9875    1.3385
+smk_behavebefore_stop    0.8874    1.12694    0.7862    1.0015
+AGE                      1.0571    0.94601    1.0513    1.0628
+SEX1                     2.0087    0.49783    1.7662    2.2846
+non_small_yn1            0.5385    1.85702    0.4587    0.6322
+SEER_GRP2                2.7652    0.36164    2.4144    3.1669
+SEER_GRP7               10.7420    0.09309    9.4022   12.2728
+SEER_GRP9                4.1909    0.23861    3.4193    5.1367
+
+Concordance= 0.813  (se = 0.005 )
+Likelihood ratio test= 2177  on 9 df,   p=<2e-16
+Wald test            = 2084  on 9 df,   p=<2e-16
+Score (logrank) test = 2649  on 9 df,   p=<2e-16
+
+> summary(coxph5)$coefficients
+                             coef  exp(coef)    se(coef)         z      Pr(>|z|)
+smk_behavecurrent      0.19317068  1.2130898 0.104721452  1.844614  6.509368e-02
+smk_behaveafter_stop   0.13951216  1.1497128 0.077586106  1.798159  7.215180e-02
+smk_behavebefore_stop -0.11950696  0.8873578 0.061743996 -1.935524  5.292608e-02
+AGE                    0.05550466  1.0570739 0.002779573 19.968772  1.029526e-88
+SEX1                   0.69750522  2.0087351 0.065651880 10.624299  2.297310e-26
+non_small_yn1         -0.61897403  0.5384966 0.081815515 -7.565485  3.864207e-14
+SEER_GRP2              1.01710130  2.7651678 0.069205087 14.696915  6.746361e-49
+SEER_GRP7              2.37416260 10.7420140 0.067972676 34.928191 2.776119e-267
+SEER_GRP9              1.43292001  4.1909189 0.103824889 13.801315  2.502451e-43
+> exp(confint(coxph5))
+                          2.5 %     97.5 %
+smk_behavecurrent     0.9879931  1.4894709
+smk_behaveafter_stop  0.9875247  1.3385382
+smk_behavebefore_stop 0.7862166  1.0015102
+AGE                   1.0513308  1.0628485
+SEX1                  1.7661992  2.2845762
+non_small_yn1         0.4587135  0.6321563
+SEER_GRP2             2.4144266  3.1668607
+SEER_GRP7             9.4021520 12.2728143
+SEER_GRP9             3.4192696  5.1367113
+
+> coxph6 <- coxph(surv_lungcancer ~ smk_behave+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+> summary(coxph6)
+Call:
+coxph(formula = surv_lungcancer ~ smk_behave + AGE + SEX + non_small_yn + 
+    SEER_GRP, data = data1)
+
+  n= 30550, number of events= 1811 
+
+                         coef exp(coef) se(coef)      z Pr(>|z|)    
+smk_behaveNever       0.11951   1.12694  0.06174  1.936 0.052926 .  
+smk_behavecurrent     0.31268   1.36708  0.10373  3.014 0.002575 ** 
+smk_behaveafter_stop  0.25902   1.29566  0.07627  3.396 0.000684 ***
+AGE                   0.05550   1.05707  0.00278 19.969  < 2e-16 ***
+SEX1                  0.69751   2.00874  0.06565 10.624  < 2e-16 ***
+non_small_yn1        -0.61897   0.53850  0.08182 -7.565 3.86e-14 ***
+SEER_GRP2             1.01710   2.76517  0.06921 14.697  < 2e-16 ***
+SEER_GRP7             2.37416  10.74201  0.06797 34.928  < 2e-16 ***
+SEER_GRP9             1.43292   4.19092  0.10383 13.801  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+                     exp(coef) exp(-coef) lower .95 upper .95
+smk_behaveNever         1.1269    0.88736    0.9985    1.2719
+smk_behavecurrent       1.3671    0.73149    1.1156    1.6753
+smk_behaveafter_stop    1.2957    0.77181    1.1157    1.5046
+AGE                     1.0571    0.94601    1.0513    1.0628
+SEX1                    2.0087    0.49783    1.7662    2.2846
+non_small_yn1           0.5385    1.85702    0.4587    0.6322
+SEER_GRP2               2.7652    0.36164    2.4144    3.1669
+SEER_GRP7              10.7420    0.09309    9.4022   12.2728
+SEER_GRP9               4.1909    0.23861    3.4193    5.1367
+
+Concordance= 0.813  (se = 0.005 )
+Likelihood ratio test= 2177  on 9 df,   p=<2e-16
+Wald test            = 2084  on 9 df,   p=<2e-16
+Score (logrank) test = 2649  on 9 df,   p=<2e-16
+
+> summary(coxph6)$coefficients
+                            coef  exp(coef)    se(coef)         z      Pr(>|z|)
+smk_behaveNever       0.11950696  1.1269411 0.061743996  1.935524  5.292608e-02
+smk_behavecurrent     0.31267764  1.3670808 0.103729565  3.014354  2.575271e-03
+smk_behaveafter_stop  0.25901912  1.2956586 0.076274885  3.395864  6.841240e-04
+AGE                   0.05550466  1.0570739 0.002779573 19.968772  1.029526e-88
+SEX1                  0.69750522  2.0087351 0.065651880 10.624299  2.297310e-26
+non_small_yn1        -0.61897403  0.5384966 0.081815515 -7.565485  3.864207e-14
+SEER_GRP2             1.01710130  2.7651678 0.069205087 14.696915  6.746361e-49
+SEER_GRP7             2.37416260 10.7420140 0.067972676 34.928191 2.776119e-267
+SEER_GRP9             1.43292001  4.1909189 0.103824889 13.801315  2.502451e-43
+> exp(confint(coxph6))
+                         2.5 %     97.5 %
+smk_behaveNever      0.9984921  1.2719141
+smk_behavecurrent    1.1155766  1.6752859
+smk_behaveafter_stop 1.1157458  1.5045820
+AGE                  1.0513308  1.0628485
+SEX1                 1.7661992  2.2845762
+non_small_yn1        0.4587135  0.6321563
+SEER_GRP2            2.4144266  3.1668607
+SEER_GRP7            9.4021520 12.2728143
+SEER_GRP9            3.4192696  5.1367113
+
+> coxph7 <- coxph(surv_lungcancer ~ smk_behave+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+> summary(coxph7)
+Call:
+coxph(formula = surv_lungcancer ~ smk_behave + AGE + SEX + non_small_yn + 
+    SEER_GRP, data = data1)
+
+  n= 30550, number of events= 1811 
+
+                          coef exp(coef) se(coef)      z Pr(>|z|)    
+smk_behavebefore_stop -0.25902   0.77181  0.07627 -3.396 0.000684 ***
+smk_behaveNever       -0.13951   0.86978  0.07759 -1.798 0.072152 .  
+smk_behavecurrent      0.05366   1.05512  0.11346  0.473 0.636279    
+AGE                    0.05550   1.05707  0.00278 19.969  < 2e-16 ***
+SEX1                   0.69751   2.00874  0.06565 10.624  < 2e-16 ***
+non_small_yn1         -0.61897   0.53850  0.08182 -7.565 3.86e-14 ***
+SEER_GRP2              1.01710   2.76517  0.06921 14.697  < 2e-16 ***
+SEER_GRP7              2.37416  10.74201  0.06797 34.928  < 2e-16 ***
+SEER_GRP9              1.43292   4.19092  0.10383 13.801  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+                      exp(coef) exp(-coef) lower .95 upper .95
+smk_behavebefore_stop    0.7718    1.29566    0.6646    0.8963
+smk_behaveNever          0.8698    1.14971    0.7471    1.0126
+smk_behavecurrent        1.0551    0.94776    0.8447    1.3179
+AGE                      1.0571    0.94601    1.0513    1.0628
+SEX1                     2.0087    0.49783    1.7662    2.2846
+non_small_yn1            0.5385    1.85702    0.4587    0.6322
+SEER_GRP2                2.7652    0.36164    2.4144    3.1669
+SEER_GRP7               10.7420    0.09309    9.4022   12.2728
+SEER_GRP9                4.1909    0.23861    3.4193    5.1367
+
+Concordance= 0.813  (se = 0.005 )
+Likelihood ratio test= 2177  on 9 df,   p=<2e-16
+Wald test            = 2084  on 9 df,   p=<2e-16
+Score (logrank) test = 2649  on 9 df,   p=<2e-16
+
+> summary(coxph7)$coefficients
+                             coef  exp(coef)    se(coef)          z      Pr(>|z|)
+smk_behavebefore_stop -0.25901912  0.7718083 0.076274885 -3.3958638  6.841240e-04
+smk_behaveNever       -0.13951216  0.8697824 0.077586106 -1.7981591  7.215180e-02
+smk_behavecurrent      0.05365852  1.0551242 0.113464973  0.4729082  6.362787e-01
+AGE                    0.05550466  1.0570739 0.002779573 19.9687725  1.029526e-88
+SEX1                   0.69750522  2.0087351 0.065651880 10.6242992  2.297310e-26
+non_small_yn1         -0.61897403  0.5384966 0.081815515 -7.5654848  3.864207e-14
+SEER_GRP2              1.01710130  2.7651678 0.069205087 14.6969153  6.746361e-49
+SEER_GRP7              2.37416260 10.7420140 0.067972676 34.9281910 2.776119e-267
+SEER_GRP9              1.43292001  4.1909189 0.103824889 13.8013152  2.502451e-43
+> exp(confint(coxph7))
+                          2.5 %     97.5 %
+smk_behavebefore_stop 0.6646364  0.8962615
+smk_behaveNever       0.7470836  1.0126329
+smk_behavecurrent     0.8447380  1.3179082
+AGE                   1.0513308  1.0628485
+SEX1                  1.7661992  2.2845762
+non_small_yn1         0.4587135  0.6321563
+SEER_GRP2             2.4144266  3.1668607
+SEER_GRP7             9.4021520 12.2728143
+SEER_GRP9             3.4192696  5.1367113
+
+> coxph8 <- coxph(surv_lungcancer ~ smk_behave+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+> summary(coxph8)
+Call:
+coxph(formula = surv_lungcancer ~ smk_behave + AGE + SEX + non_small_yn + 
+    SEER_GRP, data = data1)
+
+  n= 30550, number of events= 1811 
+
+                          coef exp(coef) se(coef)      z Pr(>|z|)    
+smk_behaveafter_stop  -0.05366   0.94776  0.11346 -0.473  0.63628    
+smk_behavebefore_stop -0.31268   0.73149  0.10373 -3.014  0.00258 ** 
+smk_behaveNever       -0.19317   0.82434  0.10472 -1.845  0.06509 .  
+AGE                    0.05550   1.05707  0.00278 19.969  < 2e-16 ***
+SEX1                   0.69751   2.00874  0.06565 10.624  < 2e-16 ***
+non_small_yn1         -0.61897   0.53850  0.08182 -7.565 3.86e-14 ***
+SEER_GRP2              1.01710   2.76517  0.06921 14.697  < 2e-16 ***
+SEER_GRP7              2.37416  10.74201  0.06797 34.928  < 2e-16 ***
+SEER_GRP9              1.43292   4.19092  0.10383 13.801  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+                      exp(coef) exp(-coef) lower .95 upper .95
+smk_behaveafter_stop     0.9478    1.05512    0.7588    1.1838
+smk_behavebefore_stop    0.7315    1.36708    0.5969    0.8964
+smk_behaveNever          0.8243    1.21309    0.6714    1.0122
+AGE                      1.0571    0.94601    1.0513    1.0628
+SEX1                     2.0087    0.49783    1.7662    2.2846
+non_small_yn1            0.5385    1.85702    0.4587    0.6322
+SEER_GRP2                2.7652    0.36164    2.4144    3.1669
+SEER_GRP7               10.7420    0.09309    9.4022   12.2728
+SEER_GRP9                4.1909    0.23861    3.4193    5.1367
+
+Concordance= 0.813  (se = 0.005 )
+Likelihood ratio test= 2177  on 9 df,   p=<2e-16
+Wald test            = 2084  on 9 df,   p=<2e-16
+Score (logrank) test = 2649  on 9 df,   p=<2e-16
+
+> summary(coxph8)$coefficients
+                             coef  exp(coef)    se(coef)          z      Pr(>|z|)
+smk_behaveafter_stop  -0.05365852  0.9477557 0.113464973 -0.4729082  6.362787e-01
+smk_behavebefore_stop -0.31267764  0.7314857 0.103729565 -3.0143541  2.575271e-03
+smk_behaveNever       -0.19317068  0.8243413 0.104721452 -1.8446142  6.509368e-02
+AGE                    0.05550466  1.0570739 0.002779573 19.9687725  1.029526e-88
+SEX1                   0.69750522  2.0087351 0.065651880 10.6242992  2.297310e-26
+non_small_yn1         -0.61897403  0.5384966 0.081815515 -7.5654848  3.864207e-14
+SEER_GRP2              1.01710130  2.7651678 0.069205087 14.6969153  6.746361e-49
+SEER_GRP7              2.37416260 10.7420140 0.067972676 34.9281910 2.776119e-267
+SEER_GRP9              1.43292001  4.1909189 0.103824889 13.8013152  2.502451e-43
+> exp(confint(coxph8))
+                          2.5 %     97.5 %
+smk_behaveafter_stop  0.7587782  1.1837990
+smk_behavebefore_stop 0.5969130  0.8963974
+smk_behaveNever       0.6713793  1.0121528
+AGE                   1.0513308  1.0628485
+SEX1                  1.7661992  2.2845762
+non_small_yn1         0.4587135  0.6321563
+SEER_GRP2             2.4144266  3.1668607
+SEER_GRP7             9.4021520 12.2728143
+SEER_GRP9             3.4192696  5.1367113
+
+
+
+
+
+> # grouptype 별로 log-rank test#
+
+> result3 <- pairwise_survdiff(Surv(day_diff,death_yn=="1") ~ grouptype, data=data1)
+> result3
+
+	Pairwise comparisons using Log-Rank test 
+
+data:  data1 and grouptype 
+
+   10      11      20      21      30      31      40     
+11 0.84622 -       -       -       -       -       -      
+20 5.8e-16 0.79501 -       -       -       -       -      
+21 0.79501 0.79501 0.84622 -       -       -       -      
+30 3.4e-14 0.79501 0.64463 0.84622 -       -       -      
+31 0.44042 0.79501 0.82530 0.97325 0.84622 -       -      
+40 < 2e-16 0.74826 0.00035 0.97325 0.03791 0.97325 -      
+41 0.85265 0.84622 0.84622 0.84622 0.84622 0.79501 0.79501
+
+P value adjustment method: BH 
+> result3$p.value
+             10        11           20        21         30        31        40
+11 8.462230e-01        NA           NA        NA         NA        NA        NA
+20 5.847637e-16 0.7950078           NA        NA         NA        NA        NA
+21 7.950078e-01 0.7950078 0.8462230498        NA         NA        NA        NA
+30 3.390018e-14 0.7950078 0.6446298615 0.8462230         NA        NA        NA
+31 4.404200e-01 0.7950078 0.8253033412 0.9732538 0.84622305        NA        NA
+40 1.766789e-18 0.7482588 0.0003494005 0.9732538 0.03791138 0.9732538        NA
+41 8.526538e-01 0.8462230 0.8462230498 0.8462230 0.84622305 0.7950078 0.7950078
+
+> result4 <- pairwise_survdiff(Surv(day_diff,lung_cancer_yn=="1") ~ grouptype, data=data1)
+> result4
+
+	Pairwise comparisons using Log-Rank test 
+
+data:  data1 and grouptype 
+
+   10      11   20   21   30   31   40  
+11 0.92    -    -    -    -    -    -   
+20 2.8e-11 0.87 -    -    -    -    -   
+21 0.73    0.87 0.87 -    -    -    -   
+30 1.3e-10 0.87 0.73 0.87 -    -    -   
+31 0.73    0.87 0.87 0.92 0.88 -    -   
+40 3.6e-09 0.87 0.15 0.87 0.74 0.95 -   
+41 0.87    0.87 0.93 0.87 0.92 0.87 0.87
+
+P value adjustment method: BH 
+> result4$p.value
+             10       11        20        21        30        31       40
+11 9.195763e-01       NA        NA        NA        NA        NA       NA
+20 2.804539e-11 0.873887        NA        NA        NA        NA       NA
+21 7.336117e-01 0.873887 0.8738870        NA        NA        NA       NA
+30 1.253473e-10 0.873887 0.7336117 0.8738870        NA        NA       NA
+31 7.336117e-01 0.873887 0.8738870 0.9195763 0.8763406        NA       NA
+40 3.591971e-09 0.873887 0.1498121 0.8738870 0.7426799 0.9514231       NA
+41 8.738870e-01 0.873887 0.9272842 0.8738870 0.9195763 0.8738870 0.873887
+
+
+#multivariable cox 회귀분석#
+# all cause mortality#
+
+> coxph9 <- coxph(surv_all ~ grouptype+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+> summary(coxph9)
+Call:
+coxph(formula = surv_all ~ grouptype + AGE + SEX + non_small_yn + 
+    SEER_GRP, data = data1)
+
+  n= 30550, number of events= 2147 
+
+                   coef exp(coef)  se(coef)      z Pr(>|z|)    
+grouptype11   -0.348826  0.705516  1.001169 -0.348 0.727526    
+grouptype20   -0.093518  0.910721  0.056954 -1.642 0.100590    
+grouptype21    0.066420  1.068676  0.708557  0.094 0.925315    
+grouptype30    0.175691  1.192070  0.071760  2.448 0.014352 *  
+grouptype31    0.912285  2.490006  0.449816  2.028 0.042547 *  
+grouptype40    0.352717  1.422929  0.092231  3.824 0.000131 ***
+grouptype41    0.091771  1.096113  0.579045  0.158 0.874074    
+AGE            0.060378  1.062238  0.002582 23.388  < 2e-16 ***
+SEX1           0.712866  2.039829  0.060951 11.696  < 2e-16 ***
+non_small_yn1 -0.552549  0.575481  0.078080 -7.077 1.48e-12 ***
+SEER_GRP2      0.847512  2.333832  0.059933 14.141  < 2e-16 ***
+SEER_GRP7      2.103925  8.198288  0.059937 35.102  < 2e-16 ***
+SEER_GRP9      1.298533  3.663916  0.091231 14.234  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+              exp(coef) exp(-coef) lower .95 upper .95
+grouptype11      0.7055     1.4174   0.09915    5.0200
+grouptype20      0.9107     1.0980   0.81453    1.0183
+grouptype21      1.0687     0.9357   0.26651    4.2852
+grouptype30      1.1921     0.8389   1.03567    1.3721
+grouptype31      2.4900     0.4016   1.03114    6.0129
+grouptype40      1.4229     0.7028   1.18762    1.7049
+grouptype41      1.0961     0.9123   0.35235    3.4099
+AGE              1.0622     0.9414   1.05688    1.0676
+SEX1             2.0398     0.4902   1.81014    2.2987
+non_small_yn1    0.5755     1.7377   0.49382    0.6706
+SEER_GRP2        2.3338     0.4285   2.07517    2.6247
+SEER_GRP7        8.1983     0.1220   7.28962    9.2202
+SEER_GRP9        3.6639     0.2729   3.06401    4.3813
+
+Concordance= 0.802  (se = 0.005 )
+Likelihood ratio test= 2341  on 13 df,   p=<2e-16
+Wald test            = 2265  on 13 df,   p=<2e-16
+Score (logrank) test = 2707  on 13 df,   p=<2e-16
+
+> summary(coxph9)$coefficients
+                     coef exp(coef)   se(coef)           z      Pr(>|z|)
+grouptype11   -0.34882590 0.7055160 1.00116942 -0.34841845  7.275259e-01
+grouptype20   -0.09351848 0.9107212 0.05695399 -1.64200048  1.005899e-01
+grouptype21    0.06642046 1.0686760 0.70855694  0.09374046  9.253153e-01
+grouptype30    0.17569098 1.1920696 0.07175979  2.44832056  1.435239e-02
+grouptype31    0.91228513 2.4900060 0.44981601  2.02812952  4.254703e-02
+grouptype40    0.35271709 1.4229285 0.09223090  3.82428345  1.311530e-04
+grouptype41    0.09177060 1.0961133 0.57904536  0.15848603  8.740738e-01
+AGE            0.06037814 1.0622381 0.00258154 23.38841901 5.606194e-121
+SEX1           0.71286605 2.0398291 0.06095083 11.69575628  1.339882e-31
+non_small_yn1 -0.55254863 0.5754813 0.07808047 -7.07665573  1.476748e-12
+SEER_GRP2      0.84751159 2.3338321 0.05993328 14.14091711  2.124969e-45
+SEER_GRP7      2.10392537 8.1982881 0.05993675 35.10242890 6.189450e-270
+SEER_GRP9      1.29853254 3.6639161 0.09123070 14.23350437  5.676440e-46
+> exp(confint(coxph9))
+                   2.5 %    97.5 %
+grouptype11   0.09915392 5.0200009
+grouptype20   0.81452819 1.0182743
+grouptype21   0.26651477 4.2851970
+grouptype30   1.03566566 1.3720934
+grouptype31   1.03113687 6.0129069
+grouptype40   1.18761590 1.7048657
+grouptype41   0.35234747 3.4098853
+AGE           1.05687708 1.0676264
+SEX1          1.81014078 2.2986626
+non_small_yn1 0.49382032 0.6706461
+SEER_GRP2     2.07517298 2.6247317
+SEER_GRP7     7.28962061 9.2202231
+SEER_GRP9     3.06400738 4.3812822
+
+> coxph10 <- coxph(surv_all ~ grouptype+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+> summary(coxph10)
+Call:
+coxph(formula = surv_all ~ grouptype + AGE + SEX + non_small_yn + 
+    SEER_GRP, data = data1)
+
+  n= 30550, number of events= 2147 
+
+                   coef exp(coef)  se(coef)      z Pr(>|z|)    
+grouptype10    0.348826  1.417402  1.001169  0.348    0.728    
+grouptype20    0.255307  1.290858  1.001785  0.255    0.799    
+grouptype21    0.415246  1.514744  1.225690  0.339    0.735    
+grouptype30    0.524517  1.689642  1.002740  0.523    0.601    
+grouptype31    1.261111  3.529341  1.096754  1.150    0.250    
+grouptype40    0.701543  2.016862  1.004404  0.698    0.485    
+grouptype41    0.440596  1.553634  1.155870  0.381    0.703    
+AGE            0.060378  1.062238  0.002582 23.388  < 2e-16 ***
+SEX1           0.712866  2.039829  0.060951 11.696  < 2e-16 ***
+non_small_yn1 -0.552549  0.575481  0.078080 -7.077 1.48e-12 ***
+SEER_GRP2      0.847512  2.333832  0.059933 14.141  < 2e-16 ***
+SEER_GRP7      2.103925  8.198288  0.059937 35.102  < 2e-16 ***
+SEER_GRP9      1.298533  3.663916  0.091231 14.234  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+              exp(coef) exp(-coef) lower .95 upper .95
+grouptype10      1.4174     0.7055    0.1992   10.0853
+grouptype20      1.2909     0.7747    0.1812    9.1960
+grouptype21      1.5147     0.6602    0.1371   16.7359
+grouptype30      1.6896     0.5918    0.2367   12.0595
+grouptype31      3.5293     0.2833    0.4113   30.2867
+grouptype40      2.0169     0.4958    0.2817   14.4420
+grouptype41      1.5536     0.6437    0.1612   14.9702
+AGE              1.0622     0.9414    1.0569    1.0676
+SEX1             2.0398     0.4902    1.8101    2.2987
+non_small_yn1    0.5755     1.7377    0.4938    0.6706
+SEER_GRP2        2.3338     0.4285    2.0752    2.6247
+SEER_GRP7        8.1983     0.1220    7.2896    9.2202
+SEER_GRP9        3.6639     0.2729    3.0640    4.3813
+
+Concordance= 0.802  (se = 0.005 )
+Likelihood ratio test= 2341  on 13 df,   p=<2e-16
+Wald test            = 2265  on 13 df,   p=<2e-16
+Score (logrank) test = 2707  on 13 df,   p=<2e-16
+
+> summary(coxph10)$coefficients
+                     coef exp(coef)   se(coef)          z      Pr(>|z|)
+grouptype10    0.34882590 1.4174024 1.00116942  0.3484184  7.275259e-01
+grouptype20    0.25530742 1.2908584 1.00178542  0.2548524  7.988371e-01
+grouptype21    0.41524635 1.5147439 1.22569004  0.3387858  7.347711e-01
+grouptype30    0.52451688 1.6896423 1.00274034  0.5230834  6.009162e-01
+grouptype31    1.26111103 3.5293405 1.09675380  1.1498579  2.502024e-01
+grouptype40    0.70154299 2.0168623 1.00440405  0.6984669  4.848852e-01
+grouptype41    0.44059650 1.5536337 1.15586957  0.3811818  7.030683e-01
+AGE            0.06037814 1.0622381 0.00258154 23.3884190 5.606194e-121
+SEX1           0.71286605 2.0398291 0.06095083 11.6957563  1.339882e-31
+non_small_yn1 -0.55254863 0.5754813 0.07808047 -7.0766557  1.476748e-12
+SEER_GRP2      0.84751159 2.3338321 0.05993328 14.1409171  2.124969e-45
+SEER_GRP7      2.10392537 8.1982881 0.05993675 35.1024289 6.189450e-270
+SEER_GRP9      1.29853254 3.6639161 0.09123070 14.2335044  5.676440e-46
+> exp(confint(coxph10))
+                  2.5 %     97.5 %
+grouptype10   0.1992032 10.0853302
+grouptype20   0.1811996  9.1960198
+grouptype21   0.1370976 16.7358762
+grouptype30   0.2367340 12.0594892
+grouptype31   0.4112776 30.2867092
+grouptype40   0.2816605 14.4419729
+grouptype41   0.1612392 14.9701652
+AGE           1.0568771  1.0676264
+SEX1          1.8101408  2.2986626
+non_small_yn1 0.4938203  0.6706461
+SEER_GRP2     2.0751730  2.6247317
+SEER_GRP7     7.2896206  9.2202231
+SEER_GRP9     3.0640074  4.3812822
+
+> data1$grouptype <- relevel(data1$grouptype, ref="20")
+> coxph11 <- coxph(surv_all ~ grouptype+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+> summary(coxph11)
+Call:
+coxph(formula = surv_all ~ grouptype + AGE + SEX + non_small_yn + 
+    SEER_GRP, data = data1)
+
+  n= 30550, number of events= 2147 
+
+                   coef exp(coef)  se(coef)      z Pr(>|z|)    
+grouptype11   -0.255307  0.774678  1.001785 -0.255 0.798837    
+grouptype10    0.093518  1.098031  0.056954  1.642 0.100590    
+grouptype21    0.159939  1.173439  0.708399  0.226 0.821376    
+grouptype30    0.269209  1.308929  0.070258  3.832 0.000127 ***
+grouptype31    1.005804  2.734104  0.449613  2.237 0.025283 *  
+grouptype40    0.446236  1.562419  0.091071  4.900 9.59e-07 ***
+grouptype41    0.185289  1.203566  0.578798  0.320 0.748872    
+AGE            0.060378  1.062238  0.002582 23.388  < 2e-16 ***
+SEX1           0.712866  2.039829  0.060951 11.696  < 2e-16 ***
+non_small_yn1 -0.552549  0.575481  0.078080 -7.077 1.48e-12 ***
+SEER_GRP2      0.847512  2.333832  0.059933 14.141  < 2e-16 ***
+SEER_GRP7      2.103925  8.198288  0.059937 35.102  < 2e-16 ***
+SEER_GRP9      1.298533  3.663916  0.091231 14.234  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+              exp(coef) exp(-coef) lower .95 upper .95
+grouptype11      0.7747     1.2909    0.1087    5.5188
+grouptype10      1.0980     0.9107    0.9821    1.2277
+grouptype21      1.1734     0.8522    0.2927    4.7038
+grouptype30      1.3089     0.7640    1.1405    1.5022
+grouptype31      2.7341     0.3658    1.1327    6.5997
+grouptype40      1.5624     0.6400    1.3070    1.8677
+grouptype41      1.2036     0.8309    0.3871    3.7423
+AGE              1.0622     0.9414    1.0569    1.0676
+SEX1             2.0398     0.4902    1.8101    2.2987
+non_small_yn1    0.5755     1.7377    0.4938    0.6706
+SEER_GRP2        2.3338     0.4285    2.0752    2.6247
+SEER_GRP7        8.1983     0.1220    7.2896    9.2202
+SEER_GRP9        3.6639     0.2729    3.0640    4.3813
+
+Concordance= 0.802  (se = 0.005 )
+Likelihood ratio test= 2341  on 13 df,   p=<2e-16
+Wald test            = 2265  on 13 df,   p=<2e-16
+Score (logrank) test = 2707  on 13 df,   p=<2e-16
+
+> summary(coxph11)$coefficients
+                     coef exp(coef)   se(coef)          z      Pr(>|z|)
+grouptype11   -0.25530742 0.7746783 1.00178542 -0.2548524  7.988371e-01
+grouptype10    0.09351848 1.0980309 0.05695399  1.6420005  1.005899e-01
+grouptype21    0.15993893 1.1734392 0.70839900  0.2257752  8.213763e-01
+grouptype30    0.26920945 1.3089293 0.07025795  3.8317296  1.272456e-04
+grouptype31    1.00580361 2.7341035 0.44961253  2.2370453  2.528338e-02
+grouptype40    0.44623556 1.5624195 0.09107121  4.8998533  9.590826e-07
+grouptype41    0.18528908 1.2035663 0.57879817  0.3201273  7.488719e-01
+AGE            0.06037814 1.0622381 0.00258154 23.3884190 5.606194e-121
+SEX1           0.71286605 2.0398291 0.06095083 11.6957563  1.339882e-31
+non_small_yn1 -0.55254863 0.5754813 0.07808047 -7.0766557  1.476748e-12
+SEER_GRP2      0.84751159 2.3338321 0.05993328 14.1409171  2.124969e-45
+SEER_GRP7      2.10392537 8.1982881 0.05993675 35.1024289 6.189450e-270
+SEER_GRP9      1.29853254 3.6639161 0.09123070 14.2335044  5.676440e-46
+> exp(confint(coxph11))
+                  2.5 %    97.5 %
+grouptype11   0.1087427 5.5187750
+grouptype10   0.9820537 1.2277046
+grouptype21   0.2927321 4.7038224
+grouptype30   1.1405452 1.5021727
+grouptype31   1.1326718 6.5997250
+grouptype40   1.3070063 1.8677451
+grouptype41   0.3870759 3.7423458
+AGE           1.0568771 1.0676264
+SEX1          1.8101408 2.2986626
+non_small_yn1 0.4938203 0.6706461
+SEER_GRP2     2.0751730 2.6247317
+SEER_GRP7     7.2896206 9.2202231
+SEER_GRP9     3.0640074 4.3812822
+
+> data1$grouptype <- relevel(data1$grouptype, ref="21")
+> coxph12 <- coxph(surv_all ~ grouptype+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+> summary(coxph12)
+Call:
+coxph(formula = surv_all ~ grouptype + AGE + SEX + non_small_yn + 
+    SEER_GRP, data = data1)
+
+  n= 30550, number of events= 2147 
+
+                   coef exp(coef)  se(coef)      z Pr(>|z|)    
+grouptype20   -0.159939  0.852196  0.708399 -0.226    0.821    
+grouptype11   -0.415246  0.660178  1.225690 -0.339    0.735    
+grouptype10   -0.066420  0.935737  0.708557 -0.094    0.925    
+grouptype30    0.109271  1.115464  0.709894  0.154    0.878    
+grouptype31    0.845865  2.329992  0.837473  1.010    0.312    
+grouptype40    0.286297  1.331487  0.712175  0.402    0.688    
+grouptype41    0.025350  1.025674  0.913234  0.028    0.978    
+AGE            0.060378  1.062238  0.002582 23.388  < 2e-16 ***
+SEX1           0.712866  2.039829  0.060951 11.696  < 2e-16 ***
+non_small_yn1 -0.552549  0.575481  0.078080 -7.077 1.48e-12 ***
+SEER_GRP2      0.847512  2.333832  0.059933 14.141  < 2e-16 ***
+SEER_GRP7      2.103925  8.198288  0.059937 35.102  < 2e-16 ***
+SEER_GRP9      1.298533  3.663916  0.091231 14.234  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+              exp(coef) exp(-coef) lower .95 upper .95
+grouptype20      0.8522     1.1734   0.21259    3.4161
+grouptype11      0.6602     1.5147   0.05975    7.2941
+grouptype10      0.9357     1.0687   0.23336    3.7521
+grouptype30      1.1155     0.8965   0.27746    4.4845
+grouptype31      2.3300     0.4292   0.45133   12.0285
+grouptype40      1.3315     0.7510   0.32971    5.3770
+grouptype41      1.0257     0.9750   0.17126    6.1426
+AGE              1.0622     0.9414   1.05688    1.0676
+SEX1             2.0398     0.4902   1.81014    2.2987
+non_small_yn1    0.5755     1.7377   0.49382    0.6706
+SEER_GRP2        2.3338     0.4285   2.07517    2.6247
+SEER_GRP7        8.1983     0.1220   7.28962    9.2202
+SEER_GRP9        3.6639     0.2729   3.06401    4.3813
+
+Concordance= 0.802  (se = 0.005 )
+Likelihood ratio test= 2341  on 13 df,   p=<2e-16
+Wald test            = 2265  on 13 df,   p=<2e-16
+Score (logrank) test = 2707  on 13 df,   p=<2e-16
+
+> summary(coxph12)$coefficients
+                     coef exp(coef)   se(coef)           z      Pr(>|z|)
+grouptype20   -0.15993893 0.8521958 0.70839900 -0.22577521  8.213763e-01
+grouptype11   -0.41524635 0.6601776 1.22569004 -0.33878578  7.347711e-01
+grouptype10   -0.06642046 0.9357373 0.70855694 -0.09374046  9.253153e-01
+grouptype30    0.10927052 1.1154641 0.70989415  0.15392509  8.776688e-01
+grouptype31    0.84586468 2.3299916 0.83747275  1.01002054  3.124855e-01
+grouptype40    0.28629663 1.3314874 0.71217459  0.40200343  6.876815e-01
+grouptype41    0.02535015 1.0256742 0.91323390  0.02775866  9.778546e-01
+AGE            0.06037814 1.0622381 0.00258154 23.38841901 5.606194e-121
+SEX1           0.71286605 2.0398291 0.06095083 11.69575628  1.339882e-31
+non_small_yn1 -0.55254863 0.5754813 0.07808047 -7.07665573  1.476748e-12
+SEER_GRP2      0.84751159 2.3338321 0.05993328 14.14091711  2.124969e-45
+SEER_GRP7      2.10392537 8.1982881 0.05993675 35.10242890 6.189450e-270
+SEER_GRP9      1.29853254 3.6639161 0.09123070 14.23350437  5.676440e-46
+> exp(confint(coxph12))
+                   2.5 %     97.5 %
+grouptype20   0.21259306  3.4160933
+grouptype11   0.05975188  7.2940721
+grouptype10   0.23336150  3.7521373
+grouptype30   0.27745502  4.4845470
+grouptype31   0.45133214 12.0285273
+grouptype40   0.32971062  5.3770139
+grouptype41   0.17126291  6.1426466
+AGE           1.05687708  1.0676264
+SEX1          1.81014078  2.2986626
+non_small_yn1 0.49382032  0.6706461
+SEER_GRP2     2.07517298  2.6247317
+SEER_GRP7     7.28962061  9.2202231
+SEER_GRP9     3.06400738  4.3812822
+
+> data1$grouptype <- relevel(data1$grouptype, ref="30")
+> coxph13 <- coxph(surv_all ~ grouptype+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+> summary(coxph13)
+Call:
+coxph(formula = surv_all ~ grouptype + AGE + SEX + non_small_yn + 
+    SEER_GRP, data = data1)
+
+  n= 30550, number of events= 2147 
+
+                   coef exp(coef)  se(coef)      z Pr(>|z|)    
+grouptype21   -0.109271  0.896488  0.709894 -0.154 0.877669    
+grouptype20   -0.269209  0.763983  0.070258 -3.832 0.000127 ***
+grouptype11   -0.524517  0.591841  1.002740 -0.523 0.600916    
+grouptype10   -0.175691  0.838877  0.071760 -2.448 0.014352 *  
+grouptype31    0.736594  2.088809  0.451346  1.632 0.102681    
+grouptype40    0.177026  1.193662  0.100617  1.759 0.078509 .  
+grouptype41   -0.083920  0.919504  0.580318 -0.145 0.885018    
+AGE            0.060378  1.062238  0.002582 23.388  < 2e-16 ***
+SEX1           0.712866  2.039829  0.060951 11.696  < 2e-16 ***
+non_small_yn1 -0.552549  0.575481  0.078080 -7.077 1.48e-12 ***
+SEER_GRP2      0.847512  2.333832  0.059933 14.141  < 2e-16 ***
+SEER_GRP7      2.103925  8.198288  0.059937 35.102  < 2e-16 ***
+SEER_GRP9      1.298533  3.663916  0.091231 14.234  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+              exp(coef) exp(-coef) lower .95 upper .95
+grouptype21      0.8965     1.1155   0.22299    3.6042
+grouptype20      0.7640     1.3089   0.66570    0.8768
+grouptype11      0.5918     1.6896   0.08292    4.2242
+grouptype10      0.8389     1.1921   0.72881    0.9656
+grouptype31      2.0888     0.4787   0.86241    5.0592
+grouptype40      1.1937     0.8378   0.98002    1.4539
+grouptype41      0.9195     1.0875   0.29484    2.8676
+AGE              1.0622     0.9414   1.05688    1.0676
+SEX1             2.0398     0.4902   1.81014    2.2987
+non_small_yn1    0.5755     1.7377   0.49382    0.6706
+SEER_GRP2        2.3338     0.4285   2.07517    2.6247
+SEER_GRP7        8.1983     0.1220   7.28962    9.2202
+SEER_GRP9        3.6639     0.2729   3.06401    4.3813
+
+Concordance= 0.802  (se = 0.005 )
+Likelihood ratio test= 2341  on 13 df,   p=<2e-16
+Wald test            = 2265  on 13 df,   p=<2e-16
+Score (logrank) test = 2707  on 13 df,   p=<2e-16
+
+> summary(coxph13)$coefficients
+                     coef exp(coef)   se(coef)          z      Pr(>|z|)
+grouptype21   -0.10927052 0.8964879 0.70989415 -0.1539251  8.776688e-01
+grouptype20   -0.26920945 0.7639832 0.07025795 -3.8317296  1.272456e-04
+grouptype11   -0.52451688 0.5918412 1.00274034 -0.5230834  6.009162e-01
+grouptype10   -0.17569098 0.8388772 0.07175979 -2.4483206  1.435239e-02
+grouptype31    0.73659415 2.0888092 0.45134640  1.6319930  1.026810e-01
+grouptype40    0.17702611 1.1936623 0.10061697  1.7594061  7.850856e-02
+grouptype41   -0.08392038 0.9195045 0.58031845 -0.1446109  8.850181e-01
+AGE            0.06037814 1.0622381 0.00258154 23.3884190 5.606194e-121
+SEX1           0.71286605 2.0398291 0.06095083 11.6957563  1.339882e-31
+non_small_yn1 -0.55254863 0.5754813 0.07808047 -7.0766557  1.476748e-12
+SEER_GRP2      0.84751159 2.3338321 0.05993328 14.1409171  2.124969e-45
+SEER_GRP7      2.10392537 8.1982881 0.05993675 35.1024289 6.189450e-270
+SEER_GRP9      1.29853254 3.6639161 0.09123070 14.2335044  5.676440e-46
+> exp(confint(coxph13))
+                   2.5 %    97.5 %
+grouptype21   0.22298796 3.6041878
+grouptype20   0.66570244 0.8767737
+grouptype11   0.08292225 4.2241501
+grouptype10   0.72881337 0.9655626
+grouptype31   0.86240651 5.0592428
+grouptype40   0.98002271 1.4538741
+grouptype41   0.29483965 2.8676213
+AGE           1.05687708 1.0676264
+SEX1          1.81014078 2.2986626
+non_small_yn1 0.49382032 0.6706461
+SEER_GRP2     2.07517298 2.6247317
+SEER_GRP7     7.28962061 9.2202231
+SEER_GRP9     3.06400738 4.3812822
+
+> data1$grouptype <- relevel(data1$grouptype, ref="31")
+> coxph14 <- coxph(surv_all ~ grouptype+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+> summary(coxph14)
+Call:
+coxph(formula = surv_all ~ grouptype + AGE + SEX + non_small_yn + 
+    SEER_GRP, data = data1)
+
+  n= 30550, number of events= 2147 
+
+                   coef exp(coef)  se(coef)      z Pr(>|z|)    
+grouptype30   -0.736594  0.478742  0.451346 -1.632   0.1027    
+grouptype21   -0.845865  0.429186  0.837473 -1.010   0.3125    
+grouptype20   -1.005804  0.365751  0.449613 -2.237   0.0253 *  
+grouptype11   -1.261111  0.283339  1.096754 -1.150   0.2502    
+grouptype10   -0.912285  0.401605  0.449816 -2.028   0.0425 *  
+grouptype40   -0.559568  0.571456  0.455282 -1.229   0.2190    
+grouptype41   -0.820515  0.440205  0.730505 -1.123   0.2613    
+AGE            0.060378  1.062238  0.002582 23.388  < 2e-16 ***
+SEX1           0.712866  2.039829  0.060951 11.696  < 2e-16 ***
+non_small_yn1 -0.552549  0.575481  0.078080 -7.077 1.48e-12 ***
+SEER_GRP2      0.847512  2.333832  0.059933 14.141  < 2e-16 ***
+SEER_GRP7      2.103925  8.198288  0.059937 35.102  < 2e-16 ***
+SEER_GRP9      1.298533  3.663916  0.091231 14.234  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+              exp(coef) exp(-coef) lower .95 upper .95
+grouptype30      0.4787     2.0888   0.19766    1.1595
+grouptype21      0.4292     2.3300   0.08314    2.2157
+grouptype20      0.3658     2.7341   0.15152    0.8829
+grouptype11      0.2833     3.5293   0.03302    2.4314
+grouptype10      0.4016     2.4900   0.16631    0.9698
+grouptype40      0.5715     1.7499   0.23412    1.3948
+grouptype41      0.4402     2.2717   0.10516    1.8427
+AGE              1.0622     0.9414   1.05688    1.0676
+SEX1             2.0398     0.4902   1.81014    2.2987
+non_small_yn1    0.5755     1.7377   0.49382    0.6706
+SEER_GRP2        2.3338     0.4285   2.07517    2.6247
+SEER_GRP7        8.1983     0.1220   7.28962    9.2202
+SEER_GRP9        3.6639     0.2729   3.06401    4.3813
+
+Concordance= 0.802  (se = 0.005 )
+Likelihood ratio test= 2341  on 13 df,   p=<2e-16
+Wald test            = 2265  on 13 df,   p=<2e-16
+Score (logrank) test = 2707  on 13 df,   p=<2e-16
+
+> summary(coxph14)$coefficients
+                     coef exp(coef)   se(coef)         z      Pr(>|z|)
+grouptype30   -0.73659415 0.4787417 0.45134640 -1.631993  1.026810e-01
+grouptype21   -0.84586468 0.4291861 0.83747275 -1.010021  3.124855e-01
+grouptype20   -1.00580361 0.3657506 0.44961253 -2.237045  2.528338e-02
+grouptype11   -1.26111103 0.2833391 1.09675380 -1.149858  2.502024e-01
+grouptype10   -0.91228513 0.4016055 0.44981601 -2.028130  4.254703e-02
+grouptype40   -0.55956804 0.5714559 0.45528173 -1.229059  2.190497e-01
+grouptype41   -0.82051453 0.4402051 0.73050478 -1.123216  2.613458e-01
+AGE            0.06037814 1.0622381 0.00258154 23.388419 5.606194e-121
+SEX1           0.71286605 2.0398291 0.06095083 11.695756  1.339882e-31
+non_small_yn1 -0.55254863 0.5754813 0.07808047 -7.076656  1.476748e-12
+SEER_GRP2      0.84751159 2.3338321 0.05993328 14.140917  2.124969e-45
+SEER_GRP7      2.10392537 8.1982881 0.05993675 35.102429 6.189450e-270
+SEER_GRP9      1.29853254 3.6639161 0.09123070 14.233504  5.676440e-46
+> exp(confint(coxph14))
+                   2.5 %    97.5 %
+grouptype30   0.19765804 1.1595460
+grouptype21   0.08313570 2.2156632
+grouptype20   0.15152146 0.8828683
+grouptype11   0.03301778 2.4314479
+grouptype10   0.16630891 0.9698034
+grouptype40   0.23412413 1.3948233
+grouptype41   0.10515944 1.8427307
+AGE           1.05687708 1.0676264
+SEX1          1.81014078 2.2986626
+non_small_yn1 0.49382032 0.6706461
+SEER_GRP2     2.07517298 2.6247317
+SEER_GRP7     7.28962061 9.2202231
+SEER_GRP9     3.06400738 4.3812822
+
+
+> coxph15 <- coxph(surv_all ~ grouptype+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+> summary(coxph15)
+Call:
+coxph(formula = surv_all ~ grouptype + AGE + SEX + non_small_yn + 
+    SEER_GRP, data = data1)
+
+  n= 30550, number of events= 2147 
+
+                   coef exp(coef)  se(coef)      z Pr(>|z|)    
+grouptype31    0.559568  1.749916  0.455282  1.229 0.219050    
+grouptype30   -0.177026  0.837758  0.100617 -1.759 0.078509 .  
+grouptype21   -0.286297  0.751040  0.712175 -0.402 0.687681    
+grouptype20   -0.446236  0.640033  0.091071 -4.900 9.59e-07 ***
+grouptype11   -0.701543  0.495820  1.004404 -0.698 0.484885    
+grouptype10   -0.352717  0.702776  0.092231 -3.824 0.000131 ***
+grouptype41   -0.260946  0.770322  0.583275 -0.447 0.654599    
+AGE            0.060378  1.062238  0.002582 23.388  < 2e-16 ***
+SEX1           0.712866  2.039829  0.060951 11.696  < 2e-16 ***
+non_small_yn1 -0.552549  0.575481  0.078080 -7.077 1.48e-12 ***
+SEER_GRP2      0.847512  2.333832  0.059933 14.141  < 2e-16 ***
+SEER_GRP7      2.103925  8.198288  0.059937 35.102  < 2e-16 ***
+SEER_GRP9      1.298533  3.663916  0.091231 14.234  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+              exp(coef) exp(-coef) lower .95 upper .95
+grouptype31      1.7499     0.5715   0.71694    4.2712
+grouptype30      0.8378     1.1937   0.68782    1.0204
+grouptype21      0.7510     1.3315   0.18598    3.0330
+grouptype20      0.6400     1.5624   0.53540    0.7651
+grouptype11      0.4958     2.0169   0.06924    3.5504
+grouptype10      0.7028     1.4229   0.58656    0.8420
+grouptype41      0.7703     1.2982   0.24558    2.4163
+AGE              1.0622     0.9414   1.05688    1.0676
+SEX1             2.0398     0.4902   1.81014    2.2987
+non_small_yn1    0.5755     1.7377   0.49382    0.6706
+SEER_GRP2        2.3338     0.4285   2.07517    2.6247
+SEER_GRP7        8.1983     0.1220   7.28962    9.2202
+SEER_GRP9        3.6639     0.2729   3.06401    4.3813
+
+Concordance= 0.802  (se = 0.005 )
+Likelihood ratio test= 2341  on 13 df,   p=<2e-16
+Wald test            = 2265  on 13 df,   p=<2e-16
+Score (logrank) test = 2707  on 13 df,   p=<2e-16
+
+> summary(coxph15)$coefficients
+                     coef exp(coef)   se(coef)          z      Pr(>|z|)
+grouptype31    0.55956804 1.7499164 0.45528173  1.2290589  2.190497e-01
+grouptype30   -0.17702611 0.8377579 0.10061697 -1.7594061  7.850856e-02
+grouptype21   -0.28629663 0.7510398 0.71217459 -0.4020034  6.876815e-01
+grouptype20   -0.44623556 0.6400330 0.09107121 -4.8998533  9.590826e-07
+grouptype11   -0.70154299 0.4958197 1.00440405 -0.6984669  4.848852e-01
+grouptype10   -0.35271709 0.7027760 0.09223090 -3.8242834  1.311530e-04
+grouptype41   -0.26094649 0.7703221 0.58327473 -0.4473818  6.545994e-01
+AGE            0.06037814 1.0622381 0.00258154 23.3884190 5.606194e-121
+SEX1           0.71286605 2.0398291 0.06095083 11.6957563  1.339882e-31
+non_small_yn1 -0.55254863 0.5754813 0.07808047 -7.0766557  1.476748e-12
+SEER_GRP2      0.84751159 2.3338321 0.05993328 14.1409171  2.124969e-45
+SEER_GRP7      2.10392537 8.1982881 0.05993675 35.1024289 6.189450e-270
+SEER_GRP9      1.29853254 3.6639161 0.09123070 14.2335044  5.676440e-46
+> exp(confint(coxph15))
+                   2.5 %    97.5 %
+grouptype31   0.71693669 4.2712385
+grouptype30   0.68781749 1.0203845
+grouptype21   0.18597683 3.0329627
+grouptype20   0.53540497 0.7651072
+grouptype11   0.06924262 3.5503734
+grouptype10   0.58655648 0.8420231
+grouptype41   0.24557719 2.4163327
+AGE           1.05687708 1.0676264
+SEX1          1.81014078 2.2986626
+non_small_yn1 0.49382032 0.6706461
+SEER_GRP2     2.07517298 2.6247317
+SEER_GRP7     7.28962061 9.2202231
+SEER_GRP9     3.06400738 4.3812822
+
+> data1$grouptype <- relevel(data1$grouptype, ref="41")
+> coxph16 <- coxph(surv_all ~ grouptype+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+> summary(coxph16)
+Call:
+coxph(formula = surv_all ~ grouptype + AGE + SEX + non_small_yn + 
+    SEER_GRP, data = data1)
+
+  n= 30550, number of events= 2147 
+
+                   coef exp(coef)  se(coef)      z Pr(>|z|)    
+grouptype40    0.260946  1.298158  0.583275  0.447    0.655    
+grouptype31    0.820515  2.271668  0.730505  1.123    0.261    
+grouptype30    0.083920  1.087542  0.580318  0.145    0.885    
+grouptype21   -0.025350  0.974968  0.913234 -0.028    0.978    
+grouptype20   -0.185289  0.830864  0.578798 -0.320    0.749    
+grouptype11   -0.440596  0.643652  1.155870 -0.381    0.703    
+grouptype10   -0.091771  0.912314  0.579045 -0.158    0.874    
+AGE            0.060378  1.062238  0.002582 23.388  < 2e-16 ***
+SEX1           0.712866  2.039829  0.060951 11.696  < 2e-16 ***
+non_small_yn1 -0.552549  0.575481  0.078080 -7.077 1.48e-12 ***
+SEER_GRP2      0.847512  2.333832  0.059933 14.141  < 2e-16 ***
+SEER_GRP7      2.103925  8.198288  0.059937 35.102  < 2e-16 ***
+SEER_GRP9      1.298533  3.663916  0.091231 14.234  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+              exp(coef) exp(-coef) lower .95 upper .95
+grouptype40      1.2982     0.7703    0.4139    4.0720
+grouptype31      2.2717     0.4402    0.5427    9.5094
+grouptype30      1.0875     0.9195    0.3487    3.3917
+grouptype21      0.9750     1.0257    0.1628    5.8390
+grouptype20      0.8309     1.2036    0.2672    2.5835
+grouptype11      0.6437     1.5536    0.0668    6.2020
+grouptype10      0.9123     1.0961    0.2933    2.8381
+AGE              1.0622     0.9414    1.0569    1.0676
+SEX1             2.0398     0.4902    1.8101    2.2987
+non_small_yn1    0.5755     1.7377    0.4938    0.6706
+SEER_GRP2        2.3338     0.4285    2.0752    2.6247
+SEER_GRP7        8.1983     0.1220    7.2896    9.2202
+SEER_GRP9        3.6639     0.2729    3.0640    4.3813
+
+Concordance= 0.802  (se = 0.005 )
+Likelihood ratio test= 2341  on 13 df,   p=<2e-16
+Wald test            = 2265  on 13 df,   p=<2e-16
+Score (logrank) test = 2707  on 13 df,   p=<2e-16
+
+> summary(coxph16)$coefficients
+                     coef exp(coef)   se(coef)           z      Pr(>|z|)
+grouptype40    0.26094649 1.2981582 0.58327473  0.44738178  6.545994e-01
+grouptype31    0.82051453 2.2716684 0.73050478  1.12321583  2.613458e-01
+grouptype30    0.08392038 1.0875423 0.58031845  0.14461091  8.850181e-01
+grouptype21   -0.02535015 0.9749685 0.91323390 -0.02775866  9.778546e-01
+grouptype20   -0.18528908 0.8308641 0.57879817 -0.32012727  7.488719e-01
+grouptype11   -0.44059650 0.6436524 1.15586957 -0.38118185  7.030683e-01
+grouptype10   -0.09177060 0.9123144 0.57904536 -0.15848603  8.740738e-01
+AGE            0.06037814 1.0622381 0.00258154 23.38841901 5.606194e-121
+SEX1           0.71286605 2.0398291 0.06095083 11.69575628  1.339882e-31
+non_small_yn1 -0.55254863 0.5754813 0.07808047 -7.07665573  1.476748e-12
+SEER_GRP2      0.84751159 2.3338321 0.05993328 14.14091711  2.124969e-45
+SEER_GRP7      2.10392537 8.1982881 0.05993675 35.10242890 6.189450e-270
+SEER_GRP9      1.29853254 3.6639161 0.09123070 14.23350437  5.676440e-46
+> exp(confint(coxph16))
+                   2.5 %    97.5 %
+grouptype40   0.41385029 4.0720394
+grouptype31   0.54267290 9.5093696
+grouptype30   0.34872108 3.3916741
+grouptype21   0.16279628 5.8389758
+grouptype20   0.26721208 2.5834727
+grouptype11   0.06679953 6.2019654
+grouptype10   0.29326499 2.8381075
+AGE           1.05687708 1.0676264
+SEX1          1.81014078 2.2986626
+non_small_yn1 0.49382032 0.6706461
+SEER_GRP2     2.07517298 2.6247317
+SEER_GRP7     7.28962061 9.2202231
+SEER_GRP9     3.06400738 4.3812822
+
+
+
+#lung cancer mortality#
+
+> data1$grouptype <- relevel(data1$grouptype, ref="10")
+> coxph17 <- coxph(surv_lungcancer ~ grouptype+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+> summary(coxph17)
+Call:
+coxph(formula = surv_lungcancer ~ grouptype + AGE + SEX + non_small_yn + 
+    SEER_GRP, data = data1)
+
+  n= 30550, number of events= 1811 
+
+                   coef exp(coef)  se(coef)      z Pr(>|z|)    
+grouptype41    0.229072  1.257433  0.579324  0.395   0.6925    
+grouptype40    0.192049  1.211730  0.105881  1.814   0.0697 .  
+grouptype31    0.806764  2.240645  0.502682  1.605   0.1085    
+grouptype30    0.131758  1.140832  0.077987  1.689   0.0911 .  
+grouptype21    0.198623  1.219722  0.708791  0.280   0.7793    
+grouptype20   -0.120673  0.886323  0.061806 -1.952   0.0509 .  
+grouptype11   -0.107808  0.897800  1.001360 -0.108   0.9143    
+AGE            0.055581  1.057155  0.002781 19.984  < 2e-16 ***
+SEX1           0.697446  2.008616  0.065648 10.624  < 2e-16 ***
+non_small_yn1 -0.620893  0.537464  0.081832 -7.587 3.26e-14 ***
+SEER_GRP2      1.017245  2.765564  0.069206 14.699  < 2e-16 ***
+SEER_GRP7      2.374228 10.742718  0.067981 34.925  < 2e-16 ***
+SEER_GRP9      1.433910  4.195071  0.103878 13.804  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+              exp(coef) exp(-coef) lower .95 upper .95
+grouptype41      1.2574    0.79527    0.4040     3.914
+grouptype40      1.2117    0.82527    0.9846     1.491
+grouptype31      2.2406    0.44630    0.8365     6.001
+grouptype30      1.1408    0.87655    0.9791     1.329
+grouptype21      1.2197    0.81986    0.3040     4.893
+grouptype20      0.8863    1.12826    0.7852     1.000
+grouptype11      0.8978    1.11383    0.1261     6.391
+AGE              1.0572    0.94594    1.0514     1.063
+SEX1             2.0086    0.49786    1.7661     2.284
+non_small_yn1    0.5375    1.86059    0.4578     0.631
+SEER_GRP2        2.7656    0.36159    2.4148     3.167
+SEER_GRP7       10.7427    0.09309    9.4026    12.274
+SEER_GRP9        4.1951    0.23837    3.4223     5.142
+
+Concordance= 0.813  (se = 0.005 )
+Likelihood ratio test= 2178  on 13 df,   p=<2e-16
+Wald test            = 2086  on 13 df,   p=<2e-16
+Score (logrank) test = 2651  on 13 df,   p=<2e-16
+
+> summary(coxph17)$coefficients
+                     coef  exp(coef)    se(coef)          z      Pr(>|z|)
+grouptype41    0.22907207  1.2574327 0.579324086  0.3954126  6.925384e-01
+grouptype40    0.19204908  1.2117300 0.105881331  1.8138144  6.970631e-02
+grouptype31    0.80676358  2.2406446 0.502681504  1.6049200  1.085114e-01
+grouptype30    0.13175791  1.1408321 0.077986591  1.6894944  9.112473e-02
+grouptype21    0.19862265  1.2197216 0.708791345  0.2802272  7.793032e-01
+grouptype20   -0.12067348  0.8863233 0.061805948 -1.9524573  5.088393e-02
+grouptype11   -0.10780782  0.8978001 1.001360273 -0.1076614  9.142643e-01
+AGE            0.05558093  1.0571546 0.002781295 19.9838322  7.614805e-89
+SEX1           0.69744606  2.0086163 0.065648160 10.6240002  2.304685e-26
+non_small_yn1 -0.62089336  0.5374641 0.081832444 -7.5873740  3.264538e-14
+SEER_GRP2      1.01724473  2.7655644 0.069205658 14.6988665  6.554776e-49
+SEER_GRP7      2.37422815 10.7427182 0.067981463 34.9246405 3.142946e-267
+SEER_GRP9      1.43391028  4.1950710 0.103877908 13.8038039  2.417518e-43
+> exp(confint(coxph17))
+                  2.5 %     97.5 %
+grouptype41   0.4039831  3.9138690
+grouptype40   0.9846446  1.4911873
+grouptype31   0.8365458  6.0014507
+grouptype30   0.9791279  1.3292419
+grouptype21   0.3040440  4.8931103
+grouptype20   0.7852046  1.0004641
+grouptype11   0.1261305  6.3905622
+AGE           1.0514074  1.0629331
+SEX1          1.7661076  2.2844244
+non_small_yn1 0.4578187  0.6309651
+SEER_GRP2     2.4147702  3.1673185
+SEER_GRP7     9.4026064 12.2738301
+SEER_GRP9     3.4223016  5.1423349
+
+> coxph18 <- coxph(surv_lungcancer ~ grouptype+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+> summary(coxph18)
+Call:
+coxph(formula = surv_lungcancer ~ grouptype + AGE + SEX + non_small_yn + 
+    SEER_GRP, data = data1)
+
+  n= 30550, number of events= 1811 
+
+                   coef exp(coef)  se(coef)      z Pr(>|z|)    
+grouptype10    0.107808  1.113834  1.001360  0.108    0.914    
+grouptype20   -0.012866  0.987217  1.002037 -0.013    0.990    
+grouptype21    0.306430  1.358567  1.225815  0.250    0.803    
+grouptype30    0.239566  1.270697  1.003159  0.239    0.811    
+grouptype31    0.914571  2.495705  1.119423  0.817    0.414    
+grouptype40    0.299857  1.349666  1.005708  0.298    0.766    
+grouptype41    0.336880  1.400571  1.155985  0.291    0.771    
+AGE            0.055581  1.057155  0.002781 19.984  < 2e-16 ***
+SEX1           0.697446  2.008616  0.065648 10.624  < 2e-16 ***
+non_small_yn1 -0.620893  0.537464  0.081832 -7.587 3.26e-14 ***
+SEER_GRP2      1.017245  2.765564  0.069206 14.699  < 2e-16 ***
+SEER_GRP7      2.374228 10.742718  0.067981 34.925  < 2e-16 ***
+SEER_GRP9      1.433910  4.195071  0.103878 13.804  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+              exp(coef) exp(-coef) lower .95 upper .95
+grouptype10      1.1138    0.89780    0.1565     7.928
+grouptype20      0.9872    1.01295    0.1385     7.036
+grouptype21      1.3586    0.73607    0.1229    15.014
+grouptype30      1.2707    0.78697    0.1779     9.077
+grouptype31      2.4957    0.40069    0.2782    22.390
+grouptype40      1.3497    0.74092    0.1880     9.689
+grouptype41      1.4006    0.71399    0.1453    13.498
+AGE              1.0572    0.94594    1.0514     1.063
+SEX1             2.0086    0.49786    1.7661     2.284
+non_small_yn1    0.5375    1.86059    0.4578     0.631
+SEER_GRP2        2.7656    0.36159    2.4148     3.167
+SEER_GRP7       10.7427    0.09309    9.4026    12.274
+SEER_GRP9        4.1951    0.23837    3.4223     5.142
+
+Concordance= 0.813  (se = 0.005 )
+Likelihood ratio test= 2178  on 13 df,   p=<2e-16
+Wald test            = 2086  on 13 df,   p=<2e-16
+Score (logrank) test = 2651  on 13 df,   p=<2e-16
+
+> summary(coxph18)$coefficients
+                     coef  exp(coef)    se(coef)           z      Pr(>|z|)
+grouptype10    0.10780782  1.1138337 1.001360273  0.10766137  9.142643e-01
+grouptype20   -0.01286566  0.9872168 1.002036801 -0.01283951  9.897558e-01
+grouptype21    0.30643047  1.3585670 1.225814947  0.24998102  8.026020e-01
+grouptype30    0.23956573  1.2706972 1.003158504  0.23881144  8.112518e-01
+grouptype31    0.91457140  2.4957054 1.119423228  0.81700234  4.139271e-01
+grouptype40    0.29985690  1.3496657 1.005708238  0.29815496  7.655849e-01
+grouptype41    0.33687989  1.4005708 1.155985426  0.29142226  7.707284e-01
+AGE            0.05558093  1.0571546 0.002781295 19.98383223  7.614805e-89
+SEX1           0.69744606  2.0086163 0.065648160 10.62400018  2.304685e-26
+non_small_yn1 -0.62089336  0.5374641 0.081832444 -7.58737398  3.264538e-14
+SEER_GRP2      1.01724473  2.7655644 0.069205658 14.69886648  6.554776e-49
+SEER_GRP7      2.37422815 10.7427182 0.067981463 34.92464051 3.142946e-267
+SEER_GRP9      1.43391028  4.1950710 0.103877908 13.80380389  2.417518e-43
+> exp(confint(coxph18))
+                  2.5 %     97.5 %
+grouptype10   0.1564808  7.9282941
+grouptype20   0.1385088  7.0363557
+grouptype21   0.1229322 15.0140078
+grouptype30   0.1778902  9.0767869
+grouptype31   0.2781881 22.3896906
+grouptype40   0.1880034  9.6891706
+grouptype41   0.1453210 13.4983801
+AGE           1.0514074  1.0629331
+SEX1          1.7661076  2.2844244
+non_small_yn1 0.4578187  0.6309651
+SEER_GRP2     2.4147702  3.1673185
+SEER_GRP7     9.4026064 12.2738301
+SEER_GRP9     3.4223016  5.1423349
+
+
+> coxph19 <- coxph(surv_lungcancer ~ grouptype+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+> summary(coxph19)
+Call:
+coxph(formula = surv_lungcancer ~ grouptype + AGE + SEX + non_small_yn + 
+    SEER_GRP, data = data1)
+
+  n= 30550, number of events= 1811 
+
+                   coef exp(coef)  se(coef)      z Pr(>|z|)    
+grouptype11    0.012866  1.012949  1.002037  0.013 0.989756    
+grouptype10    0.120673  1.128256  0.061806  1.952 0.050884 .  
+grouptype21    0.319296  1.376159  0.708637  0.451 0.652294    
+grouptype30    0.252431  1.287151  0.076709  3.291 0.000999 ***
+grouptype31    0.927437  2.528022  0.502536  1.846 0.064963 .  
+grouptype40    0.312723  1.367142  0.104934  2.980 0.002881 ** 
+grouptype41    0.349746  1.418707  0.579080  0.604 0.545865    
+AGE            0.055581  1.057155  0.002781 19.984  < 2e-16 ***
+SEX1           0.697446  2.008616  0.065648 10.624  < 2e-16 ***
+non_small_yn1 -0.620893  0.537464  0.081832 -7.587 3.26e-14 ***
+SEER_GRP2      1.017245  2.765564  0.069206 14.699  < 2e-16 ***
+SEER_GRP7      2.374228 10.742718  0.067981 34.925  < 2e-16 ***
+SEER_GRP9      1.433910  4.195071  0.103878 13.804  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+              exp(coef) exp(-coef) lower .95 upper .95
+grouptype11      1.0129    0.98722    0.1421     7.220
+grouptype10      1.1283    0.88632    0.9995     1.274
+grouptype21      1.3762    0.72666    0.3431     5.519
+grouptype30      1.2872    0.77691    1.1075     1.496
+grouptype31      2.5280    0.39557    0.9441     6.769
+grouptype40      1.3671    0.73145    1.1130     1.679
+grouptype41      1.4187    0.70487    0.4560     4.414
+AGE              1.0572    0.94594    1.0514     1.063
+SEX1             2.0086    0.49786    1.7661     2.284
+non_small_yn1    0.5375    1.86059    0.4578     0.631
+SEER_GRP2        2.7656    0.36159    2.4148     3.167
+SEER_GRP7       10.7427    0.09309    9.4026    12.274
+SEER_GRP9        4.1951    0.23837    3.4223     5.142
+
+Concordance= 0.813  (se = 0.005 )
+Likelihood ratio test= 2178  on 13 df,   p=<2e-16
+Wald test            = 2086  on 13 df,   p=<2e-16
+Score (logrank) test = 2651  on 13 df,   p=<2e-16
+
+> summary(coxph19)$coefficients
+                     coef  exp(coef)    se(coef)           z      Pr(>|z|)
+grouptype11    0.01286566  1.0129488 1.002036801  0.01283951  9.897558e-01
+grouptype10    0.12067348  1.1282565 0.061805948  1.95245734  5.088393e-02
+grouptype21    0.31929613  1.3761588 0.708637265  0.45057767  6.522940e-01
+grouptype30    0.25243139  1.2871512 0.076709086  3.29076252  9.991622e-04
+grouptype31    0.92743706  2.5280217 0.502535727  1.84551467  6.496271e-02
+grouptype40    0.31272256  1.3671422 0.104933876  2.98018685  2.880726e-03
+grouptype41    0.34974554  1.4187065 0.579080364  0.60396720  5.458655e-01
+AGE            0.05558093  1.0571546 0.002781295 19.98383223  7.614805e-89
+SEX1           0.69744606  2.0086163 0.065648160 10.62400018  2.304685e-26
+non_small_yn1 -0.62089336  0.5374641 0.081832444 -7.58737398  3.264538e-14
+SEER_GRP2      1.01724473  2.7655644 0.069205658 14.69886648  6.554776e-49
+SEER_GRP7      2.37422815 10.7427182 0.067981463 34.92464051 3.142946e-267
+SEER_GRP9      1.43391028  4.1950710 0.103877908 13.80380389  2.417518e-43
+> exp(confint(coxph19))
+                  2.5 %     97.5 %
+grouptype11   0.1421190  7.2197599
+grouptype10   0.9995362  1.2735534
+grouptype21   0.3431432  5.5190163
+grouptype30   1.1074769  1.4959754
+grouptype31   0.9441079  6.7692411
+grouptype40   1.1129965  1.6793204
+grouptype41   0.4560143  4.4137391
+AGE           1.0514074  1.0629331
+SEX1          1.7661076  2.2844244
+non_small_yn1 0.4578187  0.6309651
+SEER_GRP2     2.4147702  3.1673185
+SEER_GRP7     9.4026064 12.2738301
+SEER_GRP9     3.4223016  5.1423349
+
+> coxph20 <- coxph(surv_lungcancer ~ grouptype+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+> summary(coxph20)
+Call:
+coxph(formula = surv_lungcancer ~ grouptype + AGE + SEX + non_small_yn + 
+    SEER_GRP, data = data1)
+
+  n= 30550, number of events= 1811 
+
+                   coef exp(coef)  se(coef)      z Pr(>|z|)    
+grouptype20   -0.319296  0.726660  0.708637 -0.451    0.652    
+grouptype11   -0.306430  0.736070  1.225815 -0.250    0.803    
+grouptype10   -0.198623  0.819859  0.708791 -0.280    0.779    
+grouptype30   -0.066865  0.935322  0.710414 -0.094    0.925    
+grouptype31    0.608141  1.837013  0.866904  0.702    0.483    
+grouptype40   -0.006574  0.993448  0.713920 -0.009    0.993    
+grouptype41    0.030449  1.030918  0.913290  0.033    0.973    
+AGE            0.055581  1.057155  0.002781 19.984  < 2e-16 ***
+SEX1           0.697446  2.008616  0.065648 10.624  < 2e-16 ***
+non_small_yn1 -0.620893  0.537464  0.081832 -7.587 3.26e-14 ***
+SEER_GRP2      1.017245  2.765564  0.069206 14.699  < 2e-16 ***
+SEER_GRP7      2.374228 10.742718  0.067981 34.925  < 2e-16 ***
+SEER_GRP9      1.433910  4.195071  0.103878 13.804  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+              exp(coef) exp(-coef) lower .95 upper .95
+grouptype20      0.7267    1.37616    0.1812     2.914
+grouptype11      0.7361    1.35857    0.0666     8.135
+grouptype10      0.8199    1.21972    0.2044     3.289
+grouptype30      0.9353    1.06915    0.2324     3.764
+grouptype31      1.8370    0.54436    0.3359    10.047
+grouptype40      0.9934    1.00660    0.2452     4.026
+grouptype41      1.0309    0.97001    0.1721     6.175
+AGE              1.0572    0.94594    1.0514     1.063
+SEX1             2.0086    0.49786    1.7661     2.284
+non_small_yn1    0.5375    1.86059    0.4578     0.631
+SEER_GRP2        2.7656    0.36159    2.4148     3.167
+SEER_GRP7       10.7427    0.09309    9.4026    12.274
+SEER_GRP9        4.1951    0.23837    3.4223     5.142
+
+Concordance= 0.813  (se = 0.005 )
+Likelihood ratio test= 2178  on 13 df,   p=<2e-16
+Wald test            = 2086  on 13 df,   p=<2e-16
+Score (logrank) test = 2651  on 13 df,   p=<2e-16
+
+> summary(coxph20)$coefficients
+                      coef  exp(coef)    se(coef)            z      Pr(>|z|)
+grouptype20   -0.319296125  0.7266603 0.708637265 -0.450577666  6.522940e-01
+grouptype11   -0.306430468  0.7360697 1.225814947 -0.249981018  8.026020e-01
+grouptype10   -0.198622647  0.8198592 0.708791345 -0.280227247  7.793032e-01
+grouptype30   -0.066864740  0.9353217 0.710413556 -0.094120867  9.250131e-01
+grouptype31    0.608140932  1.8370131 0.866904030  0.701508946  4.829855e-01
+grouptype40   -0.006573568  0.9934480 0.713919816 -0.009207712  9.926534e-01
+grouptype41    0.030449419  1.0309177 0.913290235  0.033340353  9.734032e-01
+AGE            0.055580928  1.0571546 0.002781295 19.983832235  7.614805e-89
+SEX1           0.697446059  2.0086163 0.065648160 10.624000177  2.304685e-26
+non_small_yn1 -0.620893359  0.5374641 0.081832444 -7.587373983  3.264538e-14
+SEER_GRP2      1.017244729  2.7655644 0.069205658 14.698866481  6.554776e-49
+SEER_GRP7      2.374228146 10.7427182 0.067981463 34.924640507 3.142946e-267
+SEER_GRP9      1.433910275  4.1950710 0.103877908 13.803803888  2.417518e-43
+> exp(confint(coxph20))
+                   2.5 %     97.5 %
+grouptype20   0.18119171  2.9142351
+grouptype11   0.06660447  8.1345684
+grouptype10   0.20436899  3.2889977
+grouptype30   0.23241058  3.7641431
+grouptype31   0.33589397 10.0466737
+grouptype40   0.24516332  4.0256386
+grouptype41   0.17211945  6.1747314
+AGE           1.05140744  1.0629331
+SEX1          1.76610760  2.2844244
+non_small_yn1 0.45781871  0.6309651
+SEER_GRP2     2.41477021  3.1673185
+SEER_GRP7     9.40260640 12.2738301
+SEER_GRP9     3.42230163  5.1423349
+
+> coxph21 <- coxph(surv_lungcancer ~ grouptype+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+> summary(coxph21)
+Call:
+coxph(formula = surv_lungcancer ~ grouptype + AGE + SEX + non_small_yn + 
+    SEER_GRP, data = data1)
+
+  n= 30550, number of events= 1811 
+
+                   coef exp(coef)  se(coef)      z Pr(>|z|)    
+grouptype21    0.066865  1.069151  0.710414  0.094 0.925013    
+grouptype20   -0.252431  0.776910  0.076709 -3.291 0.000999 ***
+grouptype11   -0.239566  0.786970  1.003159 -0.239 0.811252    
+grouptype10   -0.131758  0.876553  0.077987 -1.689 0.091125 .  
+grouptype31    0.675006  1.964044  0.504386  1.338 0.180808    
+grouptype40    0.060291  1.062146  0.114816  0.525 0.599507    
+grouptype41    0.097314  1.102207  0.580872  0.168 0.866952    
+AGE            0.055581  1.057155  0.002781 19.984  < 2e-16 ***
+SEX1           0.697446  2.008616  0.065648 10.624  < 2e-16 ***
+non_small_yn1 -0.620893  0.537464  0.081832 -7.587 3.26e-14 ***
+SEER_GRP2      1.017245  2.765564  0.069206 14.699  < 2e-16 ***
+SEER_GRP7      2.374228 10.742718  0.067981 34.925  < 2e-16 ***
+SEER_GRP9      1.433910  4.195071  0.103878 13.804  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+              exp(coef) exp(-coef) lower .95 upper .95
+grouptype21      1.0692    0.93532    0.2657     4.303
+grouptype20      0.7769    1.28715    0.6685     0.903
+grouptype11      0.7870    1.27070    0.1102     5.621
+grouptype10      0.8766    1.14083    0.7523     1.021
+grouptype31      1.9640    0.50915    0.7308     5.278
+grouptype40      1.0621    0.94149    0.8481     1.330
+grouptype41      1.1022    0.90727    0.3530     3.441
+AGE              1.0572    0.94594    1.0514     1.063
+SEX1             2.0086    0.49786    1.7661     2.284
+non_small_yn1    0.5375    1.86059    0.4578     0.631
+SEER_GRP2        2.7656    0.36159    2.4148     3.167
+SEER_GRP7       10.7427    0.09309    9.4026    12.274
+SEER_GRP9        4.1951    0.23837    3.4223     5.142
+
+Concordance= 0.813  (se = 0.005 )
+Likelihood ratio test= 2178  on 13 df,   p=<2e-16
+Wald test            = 2086  on 13 df,   p=<2e-16
+Score (logrank) test = 2651  on 13 df,   p=<2e-16
+
+> summary(coxph21)$coefficients
+                     coef  exp(coef)    se(coef)           z      Pr(>|z|)
+grouptype21    0.06686474  1.0691509 0.710413556  0.09412087  9.250131e-01
+grouptype20   -0.25243139  0.7769095 0.076709086 -3.29076252  9.991622e-04
+grouptype11   -0.23956573  0.7869695 1.003158504 -0.23881144  8.112518e-01
+grouptype10   -0.13175791  0.8765532 0.077986591 -1.68949438  9.112473e-02
+grouptype31    0.67500567  1.9640441 0.504386218  1.33827144  1.808080e-01
+grouptype40    0.06029117  1.0621458 0.114816284  0.52510994  5.995068e-01
+grouptype41    0.09731416  1.1022066 0.580872193  0.16753110  8.669522e-01
+AGE            0.05558093  1.0571546 0.002781295 19.98383223  7.614805e-89
+SEX1           0.69744606  2.0086163 0.065648160 10.62400018  2.304685e-26
+non_small_yn1 -0.62089336  0.5374641 0.081832444 -7.58737398  3.264538e-14
+SEER_GRP2      1.01724473  2.7655644 0.069205658 14.69886648  6.554776e-49
+SEER_GRP7      2.37422815 10.7427182 0.067981463 34.92464051 3.142946e-267
+SEER_GRP9      1.43391028  4.1950710 0.103877908 13.80380389  2.417518e-43
+> exp(confint(coxph21))
+                  2.5 %     97.5 %
+grouptype21   0.2656647  4.3027301
+grouptype20   0.6684602  0.9029534
+grouptype11   0.1101711  5.6214454
+grouptype10   0.7523085  1.0213170
+grouptype31   0.7308309  5.2781966
+grouptype40   0.8481103  1.3301969
+grouptype41   0.3530398  3.4411397
+AGE           1.0514074  1.0629331
+SEX1          1.7661076  2.2844244
+non_small_yn1 0.4578187  0.6309651
+SEER_GRP2     2.4147702  3.1673185
+SEER_GRP7     9.4026064 12.2738301
+SEER_GRP9     3.4223016  5.1423349
+
+> data1$grouptype <- relevel(data1$grouptype, ref="31")
+> coxph22 <- coxph(surv_lungcancer ~ grouptype+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+> summary(coxph22)
+Call:
+coxph(formula = surv_lungcancer ~ grouptype + AGE + SEX + non_small_yn + 
+    SEER_GRP, data = data1)
+
+  n= 30550, number of events= 1811 
+
+                   coef exp(coef)  se(coef)      z Pr(>|z|)    
+grouptype30   -0.675006  0.509154  0.504386 -1.338    0.181    
+grouptype21   -0.608141  0.544362  0.866904 -0.702    0.483    
+grouptype20   -0.927437  0.395566  0.502536 -1.846    0.065 .  
+grouptype11   -0.914571  0.400688  1.119423 -0.817    0.414    
+grouptype10   -0.806764  0.446300  0.502682 -1.605    0.109    
+grouptype40   -0.614714  0.540795  0.509688 -1.206    0.228    
+grouptype41   -0.577692  0.561192  0.763984 -0.756    0.450    
+AGE            0.055581  1.057155  0.002781 19.984  < 2e-16 ***
+SEX1           0.697446  2.008616  0.065648 10.624  < 2e-16 ***
+non_small_yn1 -0.620893  0.537464  0.081832 -7.587 3.26e-14 ***
+SEER_GRP2      1.017245  2.765564  0.069206 14.699  < 2e-16 ***
+SEER_GRP7      2.374228 10.742718  0.067981 34.925  < 2e-16 ***
+SEER_GRP9      1.433910  4.195071  0.103878 13.804  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+              exp(coef) exp(-coef) lower .95 upper .95
+grouptype30      0.5092    1.96404   0.18946     1.368
+grouptype21      0.5444    1.83701   0.09954     2.977
+grouptype20      0.3956    2.52802   0.14773     1.059
+grouptype11      0.4007    2.49571   0.04466     3.595
+grouptype10      0.4463    2.24064   0.16663     1.195
+grouptype40      0.5408    1.84913   0.19915     1.469
+grouptype41      0.5612    1.78192   0.12555     2.509
+AGE              1.0572    0.94594   1.05141     1.063
+SEX1             2.0086    0.49786   1.76611     2.284
+non_small_yn1    0.5375    1.86059   0.45782     0.631
+SEER_GRP2        2.7656    0.36159   2.41477     3.167
+SEER_GRP7       10.7427    0.09309   9.40261    12.274
+SEER_GRP9        4.1951    0.23837   3.42230     5.142
+
+Concordance= 0.813  (se = 0.005 )
+Likelihood ratio test= 2178  on 13 df,   p=<2e-16
+Wald test            = 2086  on 13 df,   p=<2e-16
+Score (logrank) test = 2651  on 13 df,   p=<2e-16
+
+> summary(coxph22)$coefficients
+                     coef  exp(coef)    se(coef)          z      Pr(>|z|)
+grouptype30   -0.67500567  0.5091535 0.504386218 -1.3382714  1.808080e-01
+grouptype21   -0.60814093  0.5443619 0.866904030 -0.7015089  4.829855e-01
+grouptype20   -0.92743706  0.3955662 0.502535727 -1.8455147  6.496271e-02
+grouptype11   -0.91457140  0.4006883 1.119423228 -0.8170023  4.139271e-01
+grouptype10   -0.80676358  0.4463001 0.502681504 -1.6049200  1.085114e-01
+grouptype40   -0.61471450  0.5407953 0.509688017 -1.2060603  2.277942e-01
+grouptype41   -0.57769151  0.5611924 0.763983740 -0.7561568  4.495552e-01
+AGE            0.05558093  1.0571546 0.002781295 19.9838322  7.614805e-89
+SEX1           0.69744606  2.0086163 0.065648160 10.6240002  2.304685e-26
+non_small_yn1 -0.62089336  0.5374641 0.081832444 -7.5873740  3.264538e-14
+SEER_GRP2      1.01724473  2.7655644 0.069205658 14.6988665  6.554776e-49
+SEER_GRP7      2.37422815 10.7427182 0.067981463 34.9246405 3.142946e-267
+SEER_GRP9      1.43391028  4.1950710 0.103877908 13.8038039  2.417518e-43
+> exp(confint(coxph22))
+                   2.5 %     97.5 %
+grouptype30   0.18945865  1.3683056
+grouptype21   0.09953543  2.9771300
+grouptype20   0.14772705  1.0592010
+grouptype11   0.04466341  3.5946902
+grouptype10   0.16662638  1.1953919
+grouptype40   0.19915245  1.4685208
+grouptype41   0.12554737  2.5085104
+AGE           1.05140744  1.0629331
+SEX1          1.76610760  2.2844244
+non_small_yn1 0.45781871  0.6309651
+SEER_GRP2     2.41477021  3.1673185
+SEER_GRP7     9.40260640 12.2738301
+SEER_GRP9     3.42230163  5.1423349
+
+> data1$grouptype <- relevel(data1$grouptype, ref="40")
+> coxph23 <- coxph(surv_lungcancer ~ grouptype+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+> summary(coxph23)
+Call:
+coxph(formula = surv_lungcancer ~ grouptype + AGE + SEX + non_small_yn + 
+    SEER_GRP, data = data1)
+
+  n= 30550, number of events= 1811 
+
+                   coef exp(coef)  se(coef)      z Pr(>|z|)    
+grouptype31    0.614714  1.849129  0.509688  1.206  0.22779    
+grouptype30   -0.060291  0.941490  0.114816 -0.525  0.59951    
+grouptype21    0.006574  1.006595  0.713920  0.009  0.99265    
+grouptype20   -0.312723  0.731453  0.104934 -2.980  0.00288 ** 
+grouptype11   -0.299857  0.740924  1.005708 -0.298  0.76558    
+grouptype10   -0.192049  0.825266  0.105881 -1.814  0.06971 .  
+grouptype41    0.037023  1.037717  0.585362  0.063  0.94957    
+AGE            0.055581  1.057155  0.002781 19.984  < 2e-16 ***
+SEX1           0.697446  2.008616  0.065648 10.624  < 2e-16 ***
+non_small_yn1 -0.620893  0.537464  0.081832 -7.587 3.26e-14 ***
+SEER_GRP2      1.017245  2.765564  0.069206 14.699  < 2e-16 ***
+SEER_GRP7      2.374228 10.742718  0.067981 34.925  < 2e-16 ***
+SEER_GRP9      1.433910  4.195071  0.103878 13.804  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+              exp(coef) exp(-coef) lower .95 upper .95
+grouptype31      1.8491    0.54080    0.6810    5.0213
+grouptype30      0.9415    1.06215    0.7518    1.1791
+grouptype21      1.0066    0.99345    0.2484    4.0789
+grouptype20      0.7315    1.36714    0.5955    0.8985
+grouptype11      0.7409    1.34967    0.1032    5.3191
+grouptype10      0.8253    1.21173    0.6706    1.0156
+grouptype41      1.0377    0.96365    0.3295    3.2684
+AGE              1.0572    0.94594    1.0514    1.0629
+SEX1             2.0086    0.49786    1.7661    2.2844
+non_small_yn1    0.5375    1.86059    0.4578    0.6310
+SEER_GRP2        2.7656    0.36159    2.4148    3.1673
+SEER_GRP7       10.7427    0.09309    9.4026   12.2738
+SEER_GRP9        4.1951    0.23837    3.4223    5.1423
+
+Concordance= 0.813  (se = 0.005 )
+Likelihood ratio test= 2178  on 13 df,   p=<2e-16
+Wald test            = 2086  on 13 df,   p=<2e-16
+Score (logrank) test = 2651  on 13 df,   p=<2e-16
+
+> summary(coxph23)$coefficients
+                      coef  exp(coef)    se(coef)            z      Pr(>|z|)
+grouptype31    0.614714500  1.8491286 0.509688017  1.206060333  2.277942e-01
+grouptype30   -0.060291172  0.9414904 0.114816284 -0.525109942  5.995068e-01
+grouptype21    0.006573568  1.0065952 0.713919816  0.009207712  9.926534e-01
+grouptype20   -0.312722557  0.7314528 0.104933876 -2.980186847  2.880726e-03
+grouptype11   -0.299856900  0.7409242 1.005708238 -0.298154961  7.655849e-01
+grouptype10   -0.192049080  0.8252664 0.105881331 -1.813814361  6.970631e-02
+grouptype41    0.037022986  1.0377169 0.585361981  0.063248020  9.495690e-01
+AGE            0.055580928  1.0571546 0.002781295 19.983832235  7.614805e-89
+SEX1           0.697446059  2.0086163 0.065648160 10.624000177  2.304685e-26
+non_small_yn1 -0.620893359  0.5374641 0.081832444 -7.587373983  3.264538e-14
+SEER_GRP2      1.017244729  2.7655644 0.069205658 14.698866481  6.554776e-49
+SEER_GRP7      2.374228146 10.7427182 0.067981463 34.924640507 3.142946e-267
+SEER_GRP9      1.433910275  4.1950710 0.103877908 13.803803888  2.417518e-43
+> exp(confint(coxph23))
+                  2.5 %     97.5 %
+grouptype31   0.6809573  5.0212789
+grouptype30   0.7517684  1.1790920
+grouptype21   0.2484078  4.0789137
+grouptype20   0.5954790  0.8984754
+grouptype11   0.1032080  5.3190516
+grouptype10   0.6706066  1.0155949
+grouptype41   0.3294715  3.2684354
+AGE           1.0514074  1.0629331
+SEX1          1.7661076  2.2844244
+non_small_yn1 0.4578187  0.6309651
+SEER_GRP2     2.4147702  3.1673185
+SEER_GRP7     9.4026064 12.2738301
+SEER_GRP9     3.4223016  5.1423349
+
+> data1$grouptype <- relevel(data1$grouptype, ref="41")
+> coxph24 <- coxph(surv_lungcancer ~ grouptype+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+> summary(coxph24)
+Call:
+coxph(formula = surv_lungcancer ~ grouptype + AGE + SEX + non_small_yn + 
+    SEER_GRP, data = data1)
+
+  n= 30550, number of events= 1811 
+
+                   coef exp(coef)  se(coef)      z Pr(>|z|)    
+grouptype40   -0.037023  0.963654  0.585362 -0.063    0.950    
+grouptype31    0.577692  1.781920  0.763984  0.756    0.450    
+grouptype30   -0.097314  0.907271  0.580872 -0.168    0.867    
+grouptype21   -0.030449  0.970009  0.913290 -0.033    0.973    
+grouptype20   -0.349746  0.704867  0.579080 -0.604    0.546    
+grouptype11   -0.336880  0.713995  1.155985 -0.291    0.771    
+grouptype10   -0.229072  0.795271  0.579324 -0.395    0.693    
+AGE            0.055581  1.057155  0.002781 19.984  < 2e-16 ***
+SEX1           0.697446  2.008616  0.065648 10.624  < 2e-16 ***
+non_small_yn1 -0.620893  0.537464  0.081832 -7.587 3.26e-14 ***
+SEER_GRP2      1.017245  2.765564  0.069206 14.699  < 2e-16 ***
+SEER_GRP7      2.374228 10.742718  0.067981 34.925  < 2e-16 ***
+SEER_GRP9      1.433910  4.195071  0.103878 13.804  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+              exp(coef) exp(-coef) lower .95 upper .95
+grouptype40      0.9637    1.03772   0.30596     3.035
+grouptype31      1.7819    0.56119   0.39864     7.965
+grouptype30      0.9073    1.10221   0.29060     2.833
+grouptype21      0.9700    1.03092   0.16195     5.810
+grouptype20      0.7049    1.41871   0.22657     2.193
+grouptype11      0.7140    1.40057   0.07408     6.881
+grouptype10      0.7953    1.25743   0.25550     2.475
+AGE              1.0572    0.94594   1.05141     1.063
+SEX1             2.0086    0.49786   1.76611     2.284
+non_small_yn1    0.5375    1.86059   0.45782     0.631
+SEER_GRP2        2.7656    0.36159   2.41477     3.167
+SEER_GRP7       10.7427    0.09309   9.40261    12.274
+SEER_GRP9        4.1951    0.23837   3.42230     5.142
+
+Concordance= 0.813  (se = 0.005 )
+Likelihood ratio test= 2178  on 13 df,   p=<2e-16
+Wald test            = 2086  on 13 df,   p=<2e-16
+Score (logrank) test = 2651  on 13 df,   p=<2e-16
+
+> summary(coxph24)$coefficients
+                     coef  exp(coef)    se(coef)           z      Pr(>|z|)
+grouptype40   -0.03702299  0.9636540 0.585361981 -0.06324802  9.495690e-01
+grouptype31    0.57769151  1.7819201 0.763983740  0.75615682  4.495552e-01
+grouptype30   -0.09731416  0.9072709 0.580872193 -0.16753110  8.669522e-01
+grouptype21   -0.03044942  0.9700095 0.913290235 -0.03334035  9.734032e-01
+grouptype20   -0.34974554  0.7048674 0.579080364 -0.60396720  5.458655e-01
+grouptype11   -0.33687989  0.7139946 1.155985426 -0.29142226  7.707284e-01
+grouptype10   -0.22907207  0.7952712 0.579324086 -0.39541264  6.925384e-01
+AGE            0.05558093  1.0571546 0.002781295 19.98383223  7.614805e-89
+SEX1           0.69744606  2.0086163 0.065648160 10.62400018  2.304685e-26
+non_small_yn1 -0.62089336  0.5374641 0.081832444 -7.58737398  3.264538e-14
+SEER_GRP2      1.01724473  2.7655644 0.069205658 14.69886648  6.554776e-49
+SEER_GRP7      2.37422815 10.7427182 0.067981463 34.92464051 3.142946e-267
+SEER_GRP9      1.43391028  4.1950710 0.103877908 13.80380389  2.417518e-43
+> exp(confint(coxph24))
+                   2.5 %     97.5 %
+grouptype40   0.30595679  3.0351639
+grouptype31   0.39864296  7.9651209
+grouptype30   0.29060139  2.8325417
+grouptype21   0.16195036  5.8099185
+grouptype20   0.22656527  2.1929137
+grouptype11   0.07408296  6.8813160
+grouptype10   0.25550165  2.4753512
+AGE           1.05140744  1.0629331
+SEX1          1.76610760  2.2844244
+non_small_yn1 0.45781871  0.6309651
+SEER_GRP2     2.41477021  3.1673185
+SEER_GRP7     9.40260640 12.2738301
+SEER_GRP9     3.42230163  5.1423349
+
+
+
+
+# 추가 분석#
+#univariable cox 회귀분석#
+
+#smk_status#
+
+> cox1<- coxph(surv_all2 ~ smk_status, data=data2)
+> summary(cox1)$coefficients
+                                              coef exp(coef)   se(coef)         z     Pr(>|z|)
+smk_statusSmoking quitters after NTP use 0.3054386  1.357220 0.37937582 0.8051084 0.4207571543
+smk_statusContinuous smokers             0.3214766  1.379163 0.08754417 3.6721647 0.0002405046
+> exp(confint(cox1))
+                                             2.5 %   97.5 %
+smk_statusSmoking quitters after NTP use 0.6452456 2.854799
+smk_statusContinuous smokers             1.1617102 1.637319
+
+> data2$smk_status <- relevel(data2$smk_status,ref="Smoking quitters after NTP use")
+> cox2<- coxph(surv_all2 ~ smk_status, data=data2)
+> summary(cox2)$coefficients
+                                                  coef exp(coef)  se(coef)           z  Pr(>|z|)
+smk_statusSmoking quitters without NTP use -0.30543864 0.7368001 0.3793758 -0.80510836 0.4207572
+smk_statusContinuous smokers                0.01603798 1.0161673 0.3866531  0.04147898 0.9669141
+> exp(confint(cox2))
+                                               2.5 %   97.5 %
+smk_statusSmoking quitters without NTP use 0.3502873 1.549798
+smk_statusContinuous smokers               0.4762615 2.168128
+
+> data2$smk_status <- relevel(data2$smk_status,ref="Continuous smokers")
+> cox3<- coxph(surv_all2 ~ smk_status, data=data2)
+> summary(cox3)$coefficients
+                                                  coef exp(coef)   se(coef)           z     Pr(>|z|)
+smk_statusSmoking quitters after NTP use   -0.01603798 0.9840899 0.38665314 -0.04147898 0.9669140530
+smk_statusSmoking quitters without NTP use -0.32147662 0.7250776 0.08754417 -3.67216474 0.0002405046
+> exp(confint(cox3))
+                                               2.5 %    97.5 %
+smk_statusSmoking quitters after NTP use   0.4612273 2.0996869
+smk_statusSmoking quitters without NTP use 0.6107546 0.8607999
+
+
+> #age#
+> cox4<- coxph(surv_all2 ~ AGE, data=data2)
+> summary(cox4)$coefficients
+          coef exp(coef)    se(coef)        z     Pr(>|z|)
+AGE 0.04908216  1.050307 0.003548221 13.83289 1.613939e-43
+> exp(confint(cox4))
+       2.5 %   97.5 %
+AGE 1.043028 1.057636
+
+
+> #SEX#
+> cox5<- coxph(surv_all2 ~ SEX, data=data2)
+> summary(cox5)$coefficients
+          coef exp(coef)  se(coef)        z   Pr(>|z|)
+SEX1 0.3425481  1.408532 0.1793834 1.909586 0.05618649
+> exp(confint(cox5)) 
+         2.5 %   97.5 %
+SEX1 0.9910038 2.001973
+
+> #non small cell carcinoma#
+> cox6 <- coxph(surv_all2 ~ non_small_yn, data=data2)
+> summary(cox6)$coefficients
+                    coef exp(coef)   se(coef)         z     Pr(>|z|)
+non_small_yn1 -0.9304946 0.3943586 0.09524687 -9.769294 1.525117e-22
+> exp(confint(cox6)) 
+                  2.5 %    97.5 %
+non_small_yn1 0.3272028 0.4752976
+
+> cox7 <- coxph(surv_all2 ~ SEER_GRP, data=data2)
+> summary(cox7)$coefficients
+              coef exp(coef)   se(coef)        z      Pr(>|z|)
+SEER_GRP2 0.864026  2.372694 0.08094933 10.67366  1.351879e-26
+SEER_GRP7 1.919952  6.820630 0.08455803 22.70573 3.932613e-114
+SEER_GRP9 1.449451  4.260774 0.12572896 11.52838  9.491577e-31
+> exp(confint(cox7)) 
+             2.5 %   97.5 %
+SEER_GRP2 2.024592 2.780647
+SEER_GRP7 5.778945 8.050084
+SEER_GRP9 3.330181 5.451415
+
+
+
+#lung cancer mortality#
+> cox8<- coxph(surv_lungcancer2 ~ smk_status, data=data2)
+> summary(cox8)
+Call:
+coxph(formula = surv_lungcancer2 ~ smk_status, data = data2)
+
+  n= 12457, number of events= 924 
+
+                                           coef exp(coef) se(coef)     z Pr(>|z|)  
+smk_statusSmoking quitters after NTP use 0.3253    1.3845   0.4098 0.794   0.4273  
+smk_statusContinuous smokers             0.2010    1.2227   0.1009 1.993   0.0462 *
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+                                         exp(coef) exp(-coef) lower .95 upper .95
+smk_statusSmoking quitters after NTP use     1.384     0.7223    0.6201     3.091
+smk_statusContinuous smokers                 1.223     0.8179    1.0034     1.490
+
+Concordance= 0.515  (se = 0.006 )
+Likelihood ratio test= 4.27  on 2 df,   p=0.1
+Wald test            = 4.51  on 2 df,   p=0.1
+Score (logrank) test = 4.53  on 2 df,   p=0.1
+
+> summary(cox8)$coefficients
+                                              coef exp(coef)  se(coef)         z   Pr(>|z|)
+smk_statusSmoking quitters after NTP use 0.3253075  1.384456 0.4098072 0.7938062 0.42730826
+smk_statusContinuous smokers             0.2010308  1.222662 0.1008533 1.9932995 0.04622866
+> exp(confint(cox8))
+                                             2.5 %   97.5 %
+smk_statusSmoking quitters after NTP use 0.6200843 3.091062
+smk_statusContinuous smokers             1.0033677 1.489886
+
+> data2$smk_status <- relevel(data2$smk_status,ref="Smoking quitters after NTP use")
+> cox9<- coxph(surv_lungcancer2 ~ smk_status, data=data2)
+> summary(cox9)
+Call:
+coxph(formula = surv_lungcancer2 ~ smk_status, data = data2)
+
+  n= 12457, number of events= 924 
+
+                                              coef exp(coef) se(coef)      z Pr(>|z|)
+smk_statusSmoking quitters without NTP use -0.3253    0.7223   0.4098 -0.794    0.427
+smk_statusContinuous smokers               -0.1243    0.8831   0.4191 -0.297    0.767
+
+                                           exp(coef) exp(-coef) lower .95 upper .95
+smk_statusSmoking quitters without NTP use    0.7223      1.384    0.3235     1.613
+smk_statusContinuous smokers                  0.8831      1.132    0.3884     2.008
+
+Concordance= 0.515  (se = 0.006 )
+Likelihood ratio test= 4.27  on 2 df,   p=0.1
+Wald test            = 4.51  on 2 df,   p=0.1
+Score (logrank) test = 4.53  on 2 df,   p=0.1
+
+> summary(cox9)$coefficients
+                                                 coef exp(coef)  se(coef)          z  Pr(>|z|)
+smk_statusSmoking quitters without NTP use -0.3253075 0.7223052 0.4098072 -0.7938062 0.4273083
+smk_statusContinuous smokers               -0.1242767 0.8831355 0.4190710 -0.2965528 0.7668080
+> exp(confint(cox9))
+                                               2.5 %   97.5 %
+smk_statusSmoking quitters without NTP use 0.3235134 1.612684
+smk_statusContinuous smokers               0.3884306 2.007896
+
+> data2$smk_status <- relevel(data2$smk_status,ref="Continuous smokers")
+> cox10<- coxph(surv_lungcancer2 ~ smk_status, data=data2)
+> summary(cox10)
+Call:
+coxph(formula = surv_lungcancer2 ~ smk_status, data = data2)
+
+  n= 12457, number of events= 924 
+
+                                              coef exp(coef) se(coef)      z Pr(>|z|)  
+smk_statusSmoking quitters after NTP use    0.1243    1.1323   0.4191  0.297   0.7668  
+smk_statusSmoking quitters without NTP use -0.2010    0.8179   0.1009 -1.993   0.0462 *
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+                                           exp(coef) exp(-coef) lower .95 upper .95
+smk_statusSmoking quitters after NTP use      1.1323     0.8831    0.4980    2.5745
+smk_statusSmoking quitters without NTP use    0.8179     1.2227    0.6712    0.9966
+
+Concordance= 0.515  (se = 0.006 )
+Likelihood ratio test= 4.27  on 2 df,   p=0.1
+Wald test            = 4.51  on 2 df,   p=0.1
+Score (logrank) test = 4.53  on 2 df,   p=0.1
+
+> summary(cox10)$coefficients
+                                                 coef exp(coef)  se(coef)          z   Pr(>|z|)
+smk_statusSmoking quitters after NTP use    0.1242767 1.1323291 0.4190710  0.2965528 0.76680798
+smk_statusSmoking quitters without NTP use -0.2010308 0.8178872 0.1008533 -1.9932995 0.04622866
+> exp(confint(cox10))
+                                               2.5 %    97.5 %
+smk_statusSmoking quitters after NTP use   0.4980338 2.5744623
+smk_statusSmoking quitters without NTP use 0.6711923 0.9966436
+
+> #age#
+> cox11<- coxph(surv_lungcancer2 ~ AGE, data=data2)
+> summary(cox11)
+Call:
+coxph(formula = surv_lungcancer2 ~ AGE, data = data2)
+
+  n= 12457, number of events= 924 
+
+        coef exp(coef) se(coef)     z Pr(>|z|)    
+AGE 0.043448  1.044405 0.003859 11.26   <2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+    exp(coef) exp(-coef) lower .95 upper .95
+AGE     1.044     0.9575     1.037     1.052
+
+Concordance= 0.614  (se = 0.01 )
+Likelihood ratio test= 136  on 1 df,   p=<2e-16
+Wald test            = 126.7  on 1 df,   p=<2e-16
+Score (logrank) test = 126.4  on 1 df,   p=<2e-16
+
+> summary(cox11)$coefficients
+          coef exp(coef)    se(coef)        z     Pr(>|z|)
+AGE 0.04344755  1.044405 0.003859453 11.25744 2.128563e-29
+> exp(confint(cox11))
+       2.5 %   97.5 %
+AGE 1.036535 1.052335
+
+> #SEX#
+> cox12<- coxph(surv_lungcancer2 ~ SEX, data=data2)
+> summary(cox12)
+Call:
+coxph(formula = surv_lungcancer2 ~ SEX, data = data2)
+
+  n= 12457, number of events= 924 
+
+       coef exp(coef) se(coef)     z Pr(>|z|)
+SEX1 0.2176    1.2431   0.1856 1.172    0.241
+
+     exp(coef) exp(-coef) lower .95 upper .95
+SEX1     1.243     0.8044     0.864     1.789
+
+Concordance= 0.502  (se = 0.004 )
+Likelihood ratio test= 1.47  on 1 df,   p=0.2
+Wald test            = 1.37  on 1 df,   p=0.2
+Score (logrank) test = 1.38  on 1 df,   p=0.2
+
+> summary(cox12)$coefficients
+          coef exp(coef)  se(coef)        z Pr(>|z|)
+SEX1 0.2176161   1.24311 0.1856385 1.172257 0.241094
+> exp(confint(cox12)) 
+       2.5 %  97.5 %
+SEX1 0.86396 1.78865
+
+> #non small cell carcinoma#
+> cox13 <- coxph(surv_lungcancer2 ~ non_small_yn, data=data2)
+> summary(cox13)
+Call:
+coxph(formula = surv_lungcancer2 ~ non_small_yn, data = data2)
+
+  n= 12457, number of events= 924 
+
+                 coef exp(coef) se(coef)      z Pr(>|z|)    
+non_small_yn1 -1.0196    0.3607   0.1012 -10.07   <2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+              exp(coef) exp(-coef) lower .95 upper .95
+non_small_yn1    0.3607      2.772    0.2958    0.4399
+
+Concordance= 0.547  (se = 0.007 )
+Likelihood ratio test= 78.67  on 1 df,   p=<2e-16
+Wald test            = 101.5  on 1 df,   p=<2e-16
+Score (logrank) test = 110.6  on 1 df,   p=<2e-16
+
+> summary(cox13)$coefficients
+                   coef exp(coef)  se(coef)         z     Pr(>|z|)
+non_small_yn1 -1.019603 0.3607383 0.1012081 -10.07432 7.175683e-24
+> exp(confint(cox13)) 
+                  2.5 %    97.5 %
+non_small_yn1 0.2958311 0.4398866
+
+> #stage#
+> cox14 <- coxph(surv_lungcancer2 ~ SEER_GRP, data=data2)
+> summary(cox14)
+Call:
+coxph(formula = surv_lungcancer2 ~ SEER_GRP, data = data2)
+
+  n= 12457, number of events= 924 
+
+             coef exp(coef) se(coef)     z Pr(>|z|)    
+SEER_GRP2 1.03109   2.80412  0.09457 10.90   <2e-16 ***
+SEER_GRP7 2.20100   9.03402  0.09627 22.86   <2e-16 ***
+SEER_GRP9 1.55249   4.72322  0.14540 10.68   <2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+          exp(coef) exp(-coef) lower .95 upper .95
+SEER_GRP2     2.804     0.3566     2.330     3.375
+SEER_GRP7     9.034     0.1107     7.481    10.910
+SEER_GRP9     4.723     0.2117     3.552     6.281
+
+Concordance= 0.721  (se = 0.009 )
+Likelihood ratio test= 578.6  on 3 df,   p=<2e-16
+Wald test            = 568.5  on 3 df,   p=<2e-16
+Score (logrank) test = 733.1  on 3 df,   p=<2e-16
+
+> summary(cox14)$coefficients
+              coef exp(coef)   se(coef)        z      Pr(>|z|)
+SEER_GRP2 1.031088  2.804115 0.09457118 10.90277  1.117965e-27
+SEER_GRP7 2.200997  9.034018 0.09626670 22.86354 1.071881e-115
+SEER_GRP9 1.552492  4.723224 0.14539698 10.67760  1.295715e-26
+> exp(confint(cox14)) 
+             2.5 %    97.5 %
+SEER_GRP2 2.329683  3.375165
+SEER_GRP7 7.480637 10.909964
+SEER_GRP9 3.552028  6.280593
+
+
+
+
+
+#multivarialbe cox 회귀분석#
+# smk_status (ref="Smoing quitters without NTP use")
+
+> cox15 <- coxph(surv_all2 ~ smk_status+AGE+SEX+non_small_yn+SEER_GRP,data=data2)
+> summary(cox15)
+Call:
+coxph(formula = surv_all2 ~ smk_status + AGE + SEX + non_small_yn + 
+    SEER_GRP, data = data2)
+
+  n= 12457, number of events= 1120 
+
+                                              coef exp(coef)  se(coef)      z Pr(>|z|)    
+smk_statusSmoking quitters after NTP use  0.594182  1.811549  0.379734  1.565    0.118    
+smk_statusContinuous smokers              0.355621  1.427066  0.087648  4.057 4.96e-05 ***
+AGE                                       0.051286  1.052624  0.003608 14.215  < 2e-16 ***
+SEX1                                      0.142935  1.153655  0.180043  0.794    0.427    
+non_small_yn1                            -0.630318  0.532423  0.096056 -6.562 5.31e-11 ***
+SEER_GRP2                                 0.846803  2.332179  0.081293 10.417  < 2e-16 ***
+SEER_GRP7                                 1.915939  6.793315  0.085202 22.487  < 2e-16 ***
+SEER_GRP9                                 1.291970  3.639950  0.126375 10.223  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+                                         exp(coef) exp(-coef) lower .95 upper .95
+smk_statusSmoking quitters after NTP use    1.8115     0.5520    0.8606    3.8131
+smk_statusContinuous smokers                1.4271     0.7007    1.2018    1.6945
+AGE                                         1.0526     0.9500    1.0452    1.0601
+SEX1                                        1.1537     0.8668    0.8106    1.6418
+non_small_yn1                               0.5324     1.8782    0.4411    0.6427
+SEER_GRP2                                   2.3322     0.4288    1.9887    2.7350
+SEER_GRP7                                   6.7933     0.1472    5.7485    8.0280
+SEER_GRP9                                   3.6399     0.2747    2.8413    4.6630
+
+Concordance= 0.761  (se = 0.007 )
+Likelihood ratio test= 817.8  on 8 df,   p=<2e-16
+Wald test            = 820.3  on 8 df,   p=<2e-16
+Score (logrank) test = 945.7  on 8 df,   p=<2e-16
+
+> summary(cox15)$coefficients
+                                                coef exp(coef)    se(coef)          z      Pr(>|z|)
+smk_statusSmoking quitters after NTP use  0.59418236 1.8115491 0.379733947  1.5647333  1.176455e-01
+smk_statusContinuous smokers              0.35562088 1.4270664 0.087647893  4.0573809  4.962612e-05
+AGE                                       0.05128636 1.0526243 0.003607915 14.2149578  7.399602e-46
+SEX1                                      0.14293524 1.1536551 0.180043354  0.7938934  4.272575e-01
+non_small_yn1                            -0.63031792 0.5324225 0.096055701 -6.5620042  5.308930e-11
+SEER_GRP2                                 0.84680309 2.3321792 0.081293145 10.4166605  2.081334e-25
+SEER_GRP7                                 1.91593904 6.7933150 0.085201554 22.4871371 5.546462e-112
+SEER_GRP9                                 1.29196991 3.6399499 0.126375429 10.2232683  1.559910e-24
+> exp(confint(cox15))
+                                             2.5 %    97.5 %
+smk_statusSmoking quitters after NTP use 0.8606370 3.8131180
+smk_statusContinuous smokers             1.2018165 1.6945337
+AGE                                      1.0452070 1.0600942
+SEX1                                     0.8106302 1.6418337
+non_small_yn1                            0.4410559 0.6427161
+SEER_GRP2                                1.9886807 2.7350090
+SEER_GRP7                                5.7485466 8.0279645
+SEER_GRP9                                2.8413481 4.6630102
+
+> data2$smk_status <- relevel(data2$smk_status,ref="Smoking quitters after NTP use")
+> cox16 <- coxph(surv_all2 ~ smk_status+AGE+SEX+non_small_yn+SEER_GRP,data=data2)
+> summary(cox16)
+Call:
+coxph(formula = surv_all2 ~ smk_status + AGE + SEX + non_small_yn + 
+    SEER_GRP, data = data2)
+
+  n= 12457, number of events= 1120 
+
+                                                coef exp(coef)  se(coef)      z Pr(>|z|)    
+smk_statusSmoking quitters without NTP use -0.594182  0.552014  0.379734 -1.565    0.118    
+smk_statusContinuous smokers               -0.238561  0.787760  0.386995 -0.616    0.538    
+AGE                                         0.051286  1.052624  0.003608 14.215  < 2e-16 ***
+SEX1                                        0.142935  1.153655  0.180043  0.794    0.427    
+non_small_yn1                              -0.630318  0.532423  0.096056 -6.562 5.31e-11 ***
+SEER_GRP2                                   0.846803  2.332179  0.081293 10.417  < 2e-16 ***
+SEER_GRP7                                   1.915939  6.793315  0.085202 22.487  < 2e-16 ***
+SEER_GRP9                                   1.291970  3.639950  0.126375 10.223  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+                                           exp(coef) exp(-coef) lower .95 upper .95
+smk_statusSmoking quitters without NTP use    0.5520     1.8115    0.2623    1.1619
+smk_statusContinuous smokers                  0.7878     1.2694    0.3690    1.6819
+AGE                                           1.0526     0.9500    1.0452    1.0601
+SEX1                                          1.1537     0.8668    0.8106    1.6418
+non_small_yn1                                 0.5324     1.8782    0.4411    0.6427
+SEER_GRP2                                     2.3322     0.4288    1.9887    2.7350
+SEER_GRP7                                     6.7933     0.1472    5.7485    8.0280
+SEER_GRP9                                     3.6399     0.2747    2.8413    4.6630
+
+Concordance= 0.761  (se = 0.007 )
+Likelihood ratio test= 817.8  on 8 df,   p=<2e-16
+Wald test            = 820.3  on 8 df,   p=<2e-16
+Score (logrank) test = 945.7  on 8 df,   p=<2e-16
+
+> summary(cox16)$coefficients
+                                                  coef exp(coef)    se(coef)          z      Pr(>|z|)
+smk_statusSmoking quitters without NTP use -0.59418236 0.5520137 0.379733947 -1.5647333  1.176455e-01
+smk_statusContinuous smokers               -0.23856148 0.7877603 0.386994974 -0.6164459  5.376002e-01
+AGE                                         0.05128636 1.0526243 0.003607915 14.2149578  7.399602e-46
+SEX1                                        0.14293524 1.1536551 0.180043354  0.7938934  4.272575e-01
+non_small_yn1                              -0.63031792 0.5324225 0.096055701 -6.5620042  5.308930e-11
+SEER_GRP2                                   0.84680309 2.3321792 0.081293145 10.4166605  2.081334e-25
+SEER_GRP7                                   1.91593904 6.7933150 0.085201554 22.4871371 5.546462e-112
+SEER_GRP9                                   1.29196991 3.6399499 0.126375429 10.2232683  1.559910e-24
+> exp(confint(cox16))
+                                               2.5 %    97.5 %
+smk_statusSmoking quitters without NTP use 0.2622526 1.1619301
+smk_statusContinuous smokers               0.3689635 1.6819179
+AGE                                        1.0452070 1.0600942
+SEX1                                       0.8106302 1.6418337
+non_small_yn1                              0.4410559 0.6427161
+SEER_GRP2                                  1.9886807 2.7350090
+SEER_GRP7                                  5.7485466 8.0279645
+SEER_GRP9                                  2.8413481 4.6630102
+
+> data2$smk_status <- relevel(data2$smk_status,ref="Continuous smokers")
+> cox17 <- coxph(surv_all2 ~ smk_status+AGE+SEX+non_small_yn+SEER_GRP,data=data2)
+> summary(cox17)
+Call:
+coxph(formula = surv_all2 ~ smk_status + AGE + SEX + non_small_yn + 
+    SEER_GRP, data = data2)
+
+  n= 12457, number of events= 1120 
+
+                                                coef exp(coef)  se(coef)      z Pr(>|z|)    
+smk_statusSmoking quitters after NTP use    0.238561  1.269422  0.386995  0.616    0.538    
+smk_statusSmoking quitters without NTP use -0.355621  0.700738  0.087648 -4.057 4.96e-05 ***
+AGE                                         0.051286  1.052624  0.003608 14.215  < 2e-16 ***
+SEX1                                        0.142935  1.153655  0.180043  0.794    0.427    
+non_small_yn1                              -0.630318  0.532423  0.096056 -6.562 5.31e-11 ***
+SEER_GRP2                                   0.846803  2.332179  0.081293 10.417  < 2e-16 ***
+SEER_GRP7                                   1.915939  6.793315  0.085202 22.487  < 2e-16 ***
+SEER_GRP9                                   1.291970  3.639950  0.126375 10.223  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+                                           exp(coef) exp(-coef) lower .95 upper .95
+smk_statusSmoking quitters after NTP use      1.2694     0.7878    0.5946    2.7103
+smk_statusSmoking quitters without NTP use    0.7007     1.4271    0.5901    0.8321
+AGE                                           1.0526     0.9500    1.0452    1.0601
+SEX1                                          1.1537     0.8668    0.8106    1.6418
+non_small_yn1                                 0.5324     1.8782    0.4411    0.6427
+SEER_GRP2                                     2.3322     0.4288    1.9887    2.7350
+SEER_GRP7                                     6.7933     0.1472    5.7485    8.0280
+SEER_GRP9                                     3.6399     0.2747    2.8413    4.6630
+
+Concordance= 0.761  (se = 0.007 )
+Likelihood ratio test= 817.8  on 8 df,   p=<2e-16
+Wald test            = 820.3  on 8 df,   p=<2e-16
+Score (logrank) test = 945.7  on 8 df,   p=<2e-16
+
+> summary(cox17)$coefficients
+                                                  coef exp(coef)    se(coef)          z      Pr(>|z|)
+smk_statusSmoking quitters after NTP use    0.23856148 1.2694217 0.386994974  0.6164459  5.376002e-01
+smk_statusSmoking quitters without NTP use -0.35562088 0.7007382 0.087647893 -4.0573809  4.962612e-05
+AGE                                         0.05128636 1.0526243 0.003607915 14.2149578  7.399602e-46
+SEX1                                        0.14293524 1.1536551 0.180043354  0.7938934  4.272575e-01
+non_small_yn1                              -0.63031792 0.5324225 0.096055701 -6.5620042  5.308930e-11
+SEER_GRP2                                   0.84680309 2.3321792 0.081293145 10.4166605  2.081334e-25
+SEER_GRP7                                   1.91593904 6.7933150 0.085201554 22.4871371 5.546462e-112
+SEER_GRP9                                   1.29196991 3.6399499 0.126375429 10.2232683  1.559910e-24
+> exp(confint(cox17))
+                                               2.5 %    97.5 %
+smk_statusSmoking quitters after NTP use   0.5945594 2.7102956
+smk_statusSmoking quitters without NTP use 0.5901329 0.8320738
+AGE                                        1.0452070 1.0600942
+SEX1                                       0.8106302 1.6418337
+non_small_yn1                              0.4410559 0.6427161
+SEER_GRP2                                  1.9886807 2.7350090
+SEER_GRP7                                  5.7485466 8.0279645
+SEER_GRP9                                  2.8413481 4.6630102
+
+
+#lung cancer mortality#
+> cox18 <- coxph(surv_lungcancer2 ~ smk_status+AGE+SEX+non_small_yn+SEER_GRP,data=data2)
+> summary(cox18)
+Call:
+coxph(formula = surv_lungcancer2 ~ smk_status + AGE + SEX + non_small_yn + 
+    SEER_GRP, data = data2)
+
+  n= 12457, number of events= 924 
+
+                                              coef exp(coef)  se(coef)      z Pr(>|z|)    
+smk_statusSmoking quitters after NTP use  0.584345  1.793816  0.410230  1.424   0.1543    
+smk_statusContinuous smokers              0.232704  1.262008  0.100959  2.305   0.0212 *  
+AGE                                       0.046249  1.047335  0.003929 11.771  < 2e-16 ***
+SEX1                                      0.028606  1.029019  0.186392  0.153   0.8780    
+non_small_yn1                            -0.687034  0.503066  0.102025 -6.734 1.65e-11 ***
+SEER_GRP2                                 1.006595  2.736269  0.094942 10.602  < 2e-16 ***
+SEER_GRP7                                 2.186343  8.902599  0.096965 22.548  < 2e-16 ***
+SEER_GRP9                                 1.396642  4.041606  0.146081  9.561  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+                                         exp(coef) exp(-coef) lower .95 upper .95
+smk_statusSmoking quitters after NTP use    1.7938     0.5575    0.8028    4.0084
+smk_statusContinuous smokers                1.2620     0.7924    1.0354    1.5382
+AGE                                         1.0473     0.9548    1.0393    1.0554
+SEX1                                        1.0290     0.9718    0.7141    1.4828
+non_small_yn1                               0.5031     1.9878    0.4119    0.6144
+SEER_GRP2                                   2.7363     0.3655    2.2717    3.2959
+SEER_GRP7                                   8.9026     0.1123    7.3617   10.7660
+SEER_GRP9                                   4.0416     0.2474    3.0354    5.3814
+
+Concordance= 0.773  (se = 0.008 )
+Likelihood ratio test= 772.4  on 8 df,   p=<2e-16
+Wald test            = 766  on 8 df,   p=<2e-16
+Score (logrank) test = 938.9  on 8 df,   p=<2e-16
+
+> summary(cox18)$coefficients
+                                                coef exp(coef)    se(coef)          z      Pr(>|z|)
+smk_statusSmoking quitters after NTP use  0.58434536 1.7938163 0.410229858  1.4244340  1.543209e-01
+smk_statusContinuous smokers              0.23270433 1.2620083 0.100959173  2.3049350  2.117021e-02
+AGE                                       0.04624864 1.0473348 0.003929083 11.7708490  5.516649e-32
+SEX1                                      0.02860604 1.0290191 0.186392316  0.1534722  8.780259e-01
+non_small_yn1                            -0.68703422 0.5030658 0.102024654 -6.7340019  1.650590e-11
+SEER_GRP2                                 1.00659544 2.7362694 0.094941567 10.6022628  2.908561e-26
+SEER_GRP7                                 2.18634324 8.9025989 0.096965252 22.5476982 1.414537e-112
+SEER_GRP9                                 1.39664203 4.0416055 0.146081197  9.5607241  1.169356e-21
+> exp(confint(cox18))
+                                             2.5 %     97.5 %
+smk_statusSmoking quitters after NTP use 0.8027673  4.0083557
+smk_statusContinuous smokers             1.0354416  1.5381504
+AGE                                      1.0393004  1.0554313
+SEX1                                     0.7141115  1.4827942
+non_small_yn1                            0.4118900  0.6144243
+SEER_GRP2                                2.2716658  3.2958941
+SEER_GRP7                                7.3617291 10.7659852
+SEER_GRP9                                3.0353543  5.3814395
+
+> cox19 <- coxph(surv_lungcancer2 ~ smk_status+AGE+SEX+non_small_yn+SEER_GRP,data=data2)
+> summary(cox19)
+Call:
+coxph(formula = surv_lungcancer2 ~ smk_status + AGE + SEX + non_small_yn + 
+    SEER_GRP, data = data2)
+
+  n= 12457, number of events= 924 
+
+                                                coef exp(coef)  se(coef)      z Pr(>|z|)    
+smk_statusSmoking quitters without NTP use -0.584345  0.557471  0.410230 -1.424    0.154    
+smk_statusContinuous smokers               -0.351641  0.703533  0.419483 -0.838    0.402    
+AGE                                         0.046249  1.047335  0.003929 11.771  < 2e-16 ***
+SEX1                                        0.028606  1.029019  0.186392  0.153    0.878    
+non_small_yn1                              -0.687034  0.503066  0.102025 -6.734 1.65e-11 ***
+SEER_GRP2                                   1.006595  2.736269  0.094942 10.602  < 2e-16 ***
+SEER_GRP7                                   2.186343  8.902599  0.096965 22.548  < 2e-16 ***
+SEER_GRP9                                   1.396642  4.041606  0.146081  9.561  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+                                           exp(coef) exp(-coef) lower .95 upper .95
+smk_statusSmoking quitters without NTP use    0.5575     1.7938    0.2495    1.2457
+smk_statusContinuous smokers                  0.7035     1.4214    0.3092    1.6008
+AGE                                           1.0473     0.9548    1.0393    1.0554
+SEX1                                          1.0290     0.9718    0.7141    1.4828
+non_small_yn1                                 0.5031     1.9878    0.4119    0.6144
+SEER_GRP2                                     2.7363     0.3655    2.2717    3.2959
+SEER_GRP7                                     8.9026     0.1123    7.3617   10.7660
+SEER_GRP9                                     4.0416     0.2474    3.0354    5.3814
+
+Concordance= 0.773  (se = 0.008 )
+Likelihood ratio test= 772.4  on 8 df,   p=<2e-16
+Wald test            = 766  on 8 df,   p=<2e-16
+Score (logrank) test = 938.9  on 8 df,   p=<2e-16
+
+> summary(cox19)$coefficients
+                                                  coef exp(coef)    se(coef)          z      Pr(>|z|)
+smk_statusSmoking quitters without NTP use -0.58434536 0.5574707 0.410229858 -1.4244340  1.543209e-01
+smk_statusContinuous smokers               -0.35164103 0.7035326 0.419483030 -0.8382724  4.018778e-01
+AGE                                         0.04624864 1.0473348 0.003929083 11.7708490  5.516649e-32
+SEX1                                        0.02860604 1.0290191 0.186392316  0.1534722  8.780259e-01
+non_small_yn1                              -0.68703422 0.5030658 0.102024654 -6.7340019  1.650590e-11
+SEER_GRP2                                   1.00659544 2.7362694 0.094941567 10.6022628  2.908561e-26
+SEER_GRP7                                   2.18634324 8.9025989 0.096965252 22.5476982 1.414537e-112
+SEER_GRP9                                   1.39664203 4.0416055 0.146081197  9.5607241  1.169356e-21
+> exp(confint(cox19))
+                                               2.5 %     97.5 %
+smk_statusSmoking quitters without NTP use 0.2494789  1.2456910
+smk_statusContinuous smokers               0.3091859  1.6008434
+AGE                                        1.0393004  1.0554313
+SEX1                                       0.7141115  1.4827942
+non_small_yn1                              0.4118900  0.6144243
+SEER_GRP2                                  2.2716658  3.2958941
+SEER_GRP7                                  7.3617291 10.7659852
+SEER_GRP9                                  3.0353543  5.3814395
+
+> data2$smk_status <- relevel(data2$smk_status,ref="Continuous smokers")
+> cox20 <- coxph(surv_lungcancer2 ~ smk_status+AGE+SEX+non_small_yn+SEER_GRP,data=data2)
+> summary(cox20)
+Call:
+coxph(formula = surv_lungcancer2 ~ smk_status + AGE + SEX + non_small_yn + 
+    SEER_GRP, data = data2)
+
+  n= 12457, number of events= 924 
+
+                                                coef exp(coef)  se(coef)      z Pr(>|z|)    
+smk_statusSmoking quitters after NTP use    0.351641  1.421398  0.419483  0.838   0.4019    
+smk_statusSmoking quitters without NTP use -0.232704  0.792388  0.100959 -2.305   0.0212 *  
+AGE                                         0.046249  1.047335  0.003929 11.771  < 2e-16 ***
+SEX1                                        0.028606  1.029019  0.186392  0.153   0.8780    
+non_small_yn1                              -0.687034  0.503066  0.102025 -6.734 1.65e-11 ***
+SEER_GRP2                                   1.006595  2.736269  0.094942 10.602  < 2e-16 ***
+SEER_GRP7                                   2.186343  8.902599  0.096965 22.548  < 2e-16 ***
+SEER_GRP9                                   1.396642  4.041606  0.146081  9.561  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+                                           exp(coef) exp(-coef) lower .95 upper .95
+smk_statusSmoking quitters after NTP use      1.4214     0.7035    0.6247    3.2343
+smk_statusSmoking quitters without NTP use    0.7924     1.2620    0.6501    0.9658
+AGE                                           1.0473     0.9548    1.0393    1.0554
+SEX1                                          1.0290     0.9718    0.7141    1.4828
+non_small_yn1                                 0.5031     1.9878    0.4119    0.6144
+SEER_GRP2                                     2.7363     0.3655    2.2717    3.2959
+SEER_GRP7                                     8.9026     0.1123    7.3617   10.7660
+SEER_GRP9                                     4.0416     0.2474    3.0354    5.3814
+
+Concordance= 0.773  (se = 0.008 )
+Likelihood ratio test= 772.4  on 8 df,   p=<2e-16
+Wald test            = 766  on 8 df,   p=<2e-16
+Score (logrank) test = 938.9  on 8 df,   p=<2e-16
+
+> summary(cox20)$coefficients
+                                                  coef exp(coef)    se(coef)          z      Pr(>|z|)
+smk_statusSmoking quitters after NTP use    0.35164103 1.4213982 0.419483030  0.8382724  4.018778e-01
+smk_statusSmoking quitters without NTP use -0.23270433 0.7923878 0.100959173 -2.3049350  2.117021e-02
+AGE                                         0.04624864 1.0473348 0.003929083 11.7708490  5.516649e-32
+SEX1                                        0.02860604 1.0290191 0.186392316  0.1534722  8.780259e-01
+non_small_yn1                              -0.68703422 0.5030658 0.102024654 -6.7340019  1.650590e-11
+SEER_GRP2                                   1.00659544 2.7362694 0.094941567 10.6022628  2.908561e-26
+SEER_GRP7                                   2.18634324 8.9025989 0.096965252 22.5476982 1.414537e-112
+SEER_GRP9                                   1.39664203 4.0416055 0.146081197  9.5607241  1.169356e-21
+> exp(confint(cox20))
+                                               2.5 %     97.5 %
+smk_statusSmoking quitters after NTP use   0.6246707  3.2343005
+smk_statusSmoking quitters without NTP use 0.6501315  0.9657715
+AGE                                        1.0393004  1.0554313
+SEX1                                       0.7141115  1.4827942
+non_small_yn1                              0.4118900  0.6144243
+SEER_GRP2                                  2.2716658  3.2958941
+SEER_GRP7                                  7.3617291 10.7659852
+SEER_GRP9                                  3.0353543  5.3814395
+
+
+
+
+> #log rank test#
+> result5 <- pairwise_survdiff(Surv(day_diff,death_yn=="1") ~ smk_status, data=data2)
+> result5
+
+	Pairwise comparisons using Log-Rank test 
+
+data:  data2 and smk_status 
+
+                               Smoking quitters without NTP use Smoking quitters after NTP use
+Smoking quitters after NTP use 0.63091                          -                             
+Continuous smokers             0.00068                          0.97406                       
+
+P value adjustment method: BH 
+> result5$p.value
+                               Smoking quitters without NTP use Smoking quitters after NTP use
+Smoking quitters after NTP use                     0.6309075839                             NA
+Continuous smokers                                 0.0006805903                      0.9740602
+
+> result6 <- pairwise_survdiff(Surv(day_diff,lung_cancer_yn=="1") ~ smk_status, data=data2)
+> result6
+
+	Pairwise comparisons using Log-Rank test 
+
+data:  data2 and smk_status 
+
+                               Smoking quitters without NTP use Smoking quitters after NTP use
+Smoking quitters after NTP use 0.64                             -                             
+Continuous smokers             0.14                             0.77                          
+
+P value adjustment method: BH 
+> result6$p.value
+                               Smoking quitters without NTP use Smoking quitters after NTP use
+Smoking quitters after NTP use                        0.6380747                             NA
+Continuous smokers                                    0.1380873                      0.7747895
+
+
+
+
+
+
