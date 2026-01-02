@@ -1,0 +1,2066 @@
+library(moonBook)
+library(dplyr)
+library(haven)
+library(lubridate)
+library(survminer)
+library(survival)
+library(sjmisc)
+
+##FUNCTION
+
+na_0 <-function(dataset, col){
+  dataset[, col] <- ifelse(is.na(dataset[, col]), 0, dataset[, col])
+  return(dataset)
+}
+
+
+# 표본 정의#
+
+data1 <- read_sas("D:/a/rgst_new14.sas7bdat")
+group1 <- read_sas("D:/a/group1.sas7bdat")
+group10 <- read_sas("D:/a/group10.sas7bdat")
+group11 <- read_sas("D:/a/group11.sas7bdat")
+group111 <- read_sas("D:/a/group111.sas7bdat")
+group112 <- read_sas("D:/a/group112.sas7bdat")
+group113 <- read_sas("D:/a/group113.sas7bdat")
+
+
+group2 <- read_sas("D:/a/group2.sas7bdat")
+group20 <- read_sas("D:/a/group20.sas7bdat")
+group21 <- read_sas("D:/a/group21.sas7bdat")
+group211 <- read_sas("D:/a/group211.sas7bdat")
+group212 <- read_sas("D:/a/group212.sas7bdat")
+
+
+group3 <- read_sas("D:/a/group3.sas7bdat")
+group30 <- read_sas("D:/a/group30.sas7bdat")
+group31 <- read_sas("D:/a/group31.sas7bdat")
+group311 <- read_sas("D:/a/group311.sas7bdat")
+group312 <- read_sas("D:/a/group312.sas7bdat")
+group313 <- read_sas("D:/a/group313.sas7bdat")
+
+
+group4 <- read_sas("D:/a/group4.sas7bdat")
+group40 <- read_sas("D:/a/group40.sas7bdat")
+group41 <- read_sas("D:/a/group41.sas7bdat")
+group411 <- read_sas("D:/a/group411.sas7bdat")
+group412 <- read_sas("D:/a/group412.sas7bdat")
+group413 <- read_sas("D:/a/group413.sas7bdat")
+
+
+
+
+data1$AGE <- as.numeric(data1$AGE)
+data1$AGE_GROUP <- ifelse(data1$AGE <50, "<50",
+                          ifelse(data1$AGE >=50 &data1$AGE <60, "50대",
+                                 ifelse(data1$AGE >=60 & data1$AGE < 70, "60대",
+                                        ifelse(data1$AGE >=70 & data1$AGE < 80,"70대","80대 이상"))))
+
+#나이#
+
+table(data1$AGE_GROUP)
+mytable(~AGE,data=data1)
+mytable(grouptype~AGE,data=data1)
+mytable(~AGE_GROUP,data=data1)
+mytable(grouptype~AGE_GROUP, data=data1)
+
+#성별#
+
+
+table(data1$SEX)
+mytable(~SEX, data=data1)
+mytable(grouptype~SEX,data=data1)
+
+#pack_year(흡연갑년)# 
+
+sum(is.na(data1$pack_year))
+data1$pack_year <- ifelse(is.na(data1$pack_year),0,data1$pack_year)
+sum(is.na(data1$pack_year))
+
+data1$pack_year_group <- ifelse(data1$pack_year <20, "<20",
+                                ">=20") #결측값 없음#
+table(data1$pack_year_group)
+
+
+mytable(~pack_year, data=data1)
+mytable(grouptype~pack_year,data=data1)
+mytable(~pack_year_group,data=data1)
+mytable(grouptype~pack_year_group, data=data1)
+
+#BMI#
+sum(is.na(data1$G1E_BMI))#결측값은 없는 것을 확인했다.#
+sum(is.na(data1$G1E_WGHT))
+unique(data1$G1E_BMI) 
+table(data1$G1E_BMI)
+data1$G1E_BMI <- as.numeric(data1$G1E_BMI)
+mytable(~G1E_BMI, data=data1)
+mytable(grouptype~G1E_BMI, data=data1)
+
+
+#income#
+table(data1$CALC_CTRB_VTILE_FD)
+data1[is.na(data1$CALC_CTRB_VTILE_FD) | data1$CALC_CTRB_VTILE_FD =="" , "income"] ="1"
+data1$CALC_CTRB_VTILE_FD <- as.numeric(data1$CALC_CTRB_VTILE_FD)
+data1[is.na(data1$CALC_CTRB_VTILE_FD) == FALSE & data1$CALC_CTRB_VTILE_FD <=2,"income"] = "1"
+data1[is.na(data1$CALC_CTRB_VTILE_FD) == FALSE & data1$CALC_CTRB_VTILE_FD >=3 & data1$CALC_CTRB_VTILE_FD <= 4 ,"income"] = "2"
+data1[is.na(data1$CALC_CTRB_VTILE_FD) == FALSE & data1$CALC_CTRB_VTILE_FD >=5 & data1$CALC_CTRB_VTILE_FD <= 6 ,"income"] = "3"
+data1[is.na(data1$CALC_CTRB_VTILE_FD) == FALSE & data1$CALC_CTRB_VTILE_FD >=7 & data1$CALC_CTRB_VTILE_FD <= 8 ,"income"] = "4"
+data1[is.na(data1$CALC_CTRB_VTILE_FD) == FALSE & data1$CALC_CTRB_VTILE_FD >= 9,"income"]= "5"
+
+
+sum(is.na(data1$CALC_CTRB_VTILE_FD))
+table(data1$income)
+class(data1$CALC_CTRB_VTILE_FD)
+unique(data1$CALC_CTRB_VTILE_FD)
+nrow(data1)
+mytable(~income, data=data1)
+mytable(grouptype~income, data=data1)
+
+
+#type of NTP#
+data1$ntp_use <-ifelse(data1$SN_KEY %in% c(group111$SN_KEY, group211$SN_KEY, group311$SN_KEY, group411$SN_KEY), "E-cigarettes",
+                       ifelse(data1$SN_KEY %in% c(group112$SN_KEY, group212$SN_KEY, group312$SN_KEY, group412$SN_KEY),"htp",
+                              ifelse(data1$SN_KEY %in% c(group113$SN_KEY, group313$SN_KEY, group413$SN_KEY),"both",NA)))
+
+table(data1$ntp_use)
+mytable(grouptype~ntp_use, data=data1)
+
+
+
+#cci#
+cci_list <- read_sas("D:/a/cci_list03.sas7bdat")
+cci_list[,"cci_score"] = rowSums(cci_list[,c(2:14, 16:18)])
+data1 <- left_join(data1, cci_list, by="SN_KEY")
+table(data1$cci_score)
+sum(is.na(data1$cci_score)) #62개의 cci_score 결측값 발견#
+data1$cci_score <- ifelse(is.na(data1$cci_score),0,data1$cci_score)
+table(data1$cci_score)
+nrow(cci_list)
+
+
+mytable(grouptype~cci_score,data=data1)#cci 점수 그룹별 확인 #
+mytable(~cci_score,data=data1)# cci 점수 total 확인 #
+
+data1$cci_group <- ifelse(data1$cci_score==0, "0",
+                          ifelse(data1$cci_score <3, "1-2",
+                                 ifelse(data1$cci_score <5, "3-4",
+                                        ">=5")))
+table(data1$cci_group)
+mytable(~cci_group,data=data1)# cci 그룹 그룹별 확인 #
+mytable(grouptype~cci_group, data=data1)# cci 그룹 total 확인 #
+
+
+
+
+# 운동력 #
+table(data1$Q_PA_VD_FRQ)
+table(data1$Q_PA_MD_FRQ)
+
+data1$Q_PA_VD_FRQ <- ifelse(data1$Q_PA_VD_FRQ=="",0,data1$Q_PA_VD_FRQ)
+data1$Q_PA_MD_FRQ <- ifelse(data1$Q_PA_MD_FRQ=="",0,data1$Q_PA_MD_FRQ)
+
+table(data1$Q_PA_VD_FRQ)
+table(data1$Q_PA_MD_FRQ)
+
+data1$Q_PA_VD_FRQ <- as.numeric(data1$Q_PA_VD_FRQ)
+data1$Q_PA_MD_FRQ <- as.numeric(data1$Q_PA_MD_FRQ)
+
+data1$PA_timeperweek <- data1$Q_PA_VD_FRQ + data1$Q_PA_MD_FRQ
+
+
+data1$PA_class <- ifelse(data1$PA_timeperweek < 1, "<1_times/week",
+                         ifelse(data1$PA_timeperweek <=2, "1-2_times/week",
+                                ifelse(data1$PA_timeperweek <=4, "3-4_times/week",
+                                       ifelse(data1$PA_timeperweek <=6, "5-6_times/week",">=7_times/week"))))
+table(data1$PA_class)
+mytable(grouptype~PA_class, data=data1)
+
+
+data1$activity <- ifelse(data1$Q_PA_VD_FRQ >=3 | data1$PA_timeperweek >=5, "active", "inactive")
+table(data1$activity)
+mytable(~activity,data=data1)
+mytable(grouptype~activity,data=data1)
+
+#암종류#
+sum(is.na(data1$mcode_grp2))
+table(data1$mcode_grp2)
+mytable(~mcode_grp2, data=data1)
+mytable(grouptype~mcode_grp2, data=data1)
+
+
+#요약병기#
+sum(is.na(data1$SEER_GRP))
+table(data1$SEER_GRP)
+mytable(~SEER_GRP, data=data1)
+mytable(grouptype~SEER_GRP, data=data1)
+
+
+
+#치료력#
+sum(is.na(data1$TX))
+table(data1$TX)
+data1$TX <- ifelse(data1$TX=="","00000",data1$TX)
+table(data1$TX)
+unique(data1$TX) #tx가 공백인 데이터 3개 존재#
+mytable(~TX, data=data1)
+mytable(grouptype~TX, data=data1)
+
+data1$surgery_yn <- ifelse(substr(data1$TX,1,1)=="1","yes","no")
+data1$surgery_yn <- factor(data1$surgery_yn,levels=c("yes","no"))
+
+mytable(grouptype~surgery_yn, data=data1)
+
+
+data1$radio_yn <- ifelse(substr(data1$TX,3,3)=="1","yes","no")
+data1$radio_yn <-factor(data1$radio_yn,levels=c("yes","no"))
+
+table(data1$radio_yn)
+mytable(grouptype~radio_yn, data=data1)
+
+data1$system_yn <- ifelse(substr(data1$TX,2,2)=="1"|substr(data1$TX,4,4)=="1"|substr(data1$TX,5,5)=="1",
+                          "yes","no")
+
+data1$system_yn <- factor(data1$system_yn,levels=c("yes","no"))
+mytable(grouptype~system_yn, data=data1)
+
+#로지스틱 회귀분석 table3#
+
+group34 <- rbind(group3,group4)
+nrow(group34)
+group34$stop_yn <- ifelse(group34$SN_KEY %in% group3$SN_KEY, "1", "0")
+group34$stop_yn <- factor(group34$stop_yn,levels=c("0","1"))
+
+#age#
+fit1<-glm(stop_yn~AGE,data=group34,family=binomial)
+exp(fit1$coefficients)
+round(exp(fit1$coefficients),2)
+exp(confint(fit1))
+summary(fit1)$coefficients
+
+
+#sex#
+group34$SEX <- factor(group34$SEX,levels=c("2","1"))
+group34$SEX <- relevel(group34$SEX,ref="2")
+fit2<-glm(stop_yn~SEX,data=group34,family=binomial)
+exp(fit2$coefficients)
+round(exp(fit2$coefficients),2)
+exp(confint(fit2))
+round(exp(confint(fit2)),2)
+round(summary(fit2)$coefficients,3)
+summary(fit2)$coefficients
+
+
+#py#
+group34$pack_year <- as.numeric(group34$pack_year)
+sum(is.na(group34$pack_year))
+fit3<-glm(stop_yn~pack_year,data=group34,family=binomial)
+exp(fit3$coefficients)
+round(exp(fit3$coefficients),2)
+exp(confint(fit3))
+round(exp(confint(fit3)),2)
+summary(fit3)$coefficients
+
+#bmi#
+group34$G1E_BMI <- as.numeric(group34$G1E_BMI)
+fit4<- glm(stop_yn~G1E_BMI,data=group34,family=binomial)
+exp(fit4$coefficients)
+round(exp(fit4$coefficients),2)
+exp(confint(fit4))
+round(exp(confint(fit4)),2)
+summary(fit4)$coefficients
+round(summary(fit4)$coefficients,3)
+
+
+#income#
+table(group34$CALC_CTRB_VTILE_FD)
+group34[is.na(group34$CALC_CTRB_VTILE_FD) | group34$CALC_CTRB_VTILE_FD =="" , "income"] ="1"
+group34$CALC_CTRB_VTILE_FD <- as.numeric(group34$CALC_CTRB_VTILE_FD)
+group34[is.na(group34$CALC_CTRB_VTILE_FD) == FALSE & group34$CALC_CTRB_VTILE_FD <=2,"income"] = "1"
+group34[is.na(group34$CALC_CTRB_VTILE_FD) == FALSE & group34$CALC_CTRB_VTILE_FD >=3 & group34$CALC_CTRB_VTILE_FD <= 4 ,"income"] = "2"
+group34[is.na(group34$CALC_CTRB_VTILE_FD) == FALSE & group34$CALC_CTRB_VTILE_FD >=5 & group34$CALC_CTRB_VTILE_FD <= 6 ,"income"] = "3"
+group34[is.na(group34$CALC_CTRB_VTILE_FD) == FALSE & group34$CALC_CTRB_VTILE_FD >=7 & group34$CALC_CTRB_VTILE_FD <= 8 ,"income"] = "4"
+group34[is.na(group34$CALC_CTRB_VTILE_FD) == FALSE & group34$CALC_CTRB_VTILE_FD >= 9,"income"]= "5"
+
+group34$income <- as.numeric(group34$income)
+fit5<- glm(stop_yn~income,data=group34,family=binomial)
+exp(fit5$coefficients)
+round(exp(fit5$coefficients),2)
+exp(confint(fit5))
+round(exp(confint(fit5)),2)
+summary(fit5)$coefficients
+round(summary(fit5)$coefficients,3)
+
+#cci#
+cci_list <- read_sas("D:/a/cci_list03.sas7bdat")
+cci_list[,"cci_score"] = rowSums(cci_list[,c(2:14, 16:18)])
+group34 <- left_join(group34, cci_list, by="SN_KEY")
+table(group34$cci_score)
+sum(is.na(data1$cci_score)) #개의 cci_score 결측값 발견#
+group34$cci_score <- ifelse(is.na(group34$cci_score),0,group34$cci_score)
+table(group34$cci_score)
+group34$cci_score <-as.numeric(group34$cci_score)
+
+fit6<- glm(stop_yn~cci_score,data=group34,family=binomial)
+exp(fit6$coefficients)
+round(exp(fit6$coefficients),2)
+exp(confint(fit6))
+round(exp(confint(fit6)),2)
+summary(fit6)$coefficients
+round(summary(fit6)$coefficients,3)
+
+
+#mcode_grp#
+group34$non_small_yn <- ifelse(group34$mcode_grp2=="Small cell cracinoma","0","1")
+table(group34$non_small_yn)
+group34$non_small_yn <- factor(group34$non_small_yn,levels=c("0","1"))
+group34$non_small_yn <- relevel(group34$non_small_yn,ref="0")
+
+fit7<- glm(stop_yn~non_small_yn,data=group34,family=binomial)
+exp(fit7$coefficients)
+round(exp(fit7$coefficients),2)
+exp(confint(fit7))
+round(exp(confint(fit7)),2)
+summary(fit7)$coefficients
+round(summary(fit7)$coefficients,3)
+
+#seer_grp#
+group34$SEER_GRP <- factor(group34$SEER_GRP)
+group34$SEER_GRP <- relevel(group34$SEER_GRP, ref="1")
+fit8<- glm(stop_yn~SEER_GRP,data=group34,family=binomial)
+exp(fit8$coefficients)
+round(exp(fit8$coefficients),2)
+exp(confint(fit8))
+round(exp(confint(fit8)),2)
+summary(fit8)$coefficients
+round(summary(fit8)$coefficients,3)
+
+
+#TX#
+sum(is.na(group34$TX))
+table(group34$TX)
+group34$TX <- ifelse(group34$TX=="","00000",group34$TX)
+table(group34$TX)
+
+group34$surgery_yn <- ifelse(substr(group34$TX,1,1)=="1","1","0")
+group34$surgery_yn <- factor(group34$surgery_yn,levels=c("0","1"))
+group34$surgery_yn <- relevel(group34$surgery_yn,ref="0")
+fit9<- glm(stop_yn~surgery_yn,data=group34,family=binomial)
+exp(fit9$coefficients)
+round(exp(fit9$coefficients),2)
+exp(confint(fit9))
+round(exp(confint(fit9)),2)
+summary(fit9)$coefficients
+
+
+group34$radio_yn <- ifelse(substr(group34$TX,3,3)=="1","1","0")
+group34$radio_yn <-factor(group34$radio_yn,levels=c("0","1"))
+group34$radio_yn <- relevel(group34$radio_yn, ref="0")
+
+fit10<- glm(stop_yn~radio_yn,data=group34,family=binomial)
+exp(fit10$coefficients)
+round(exp(fit10$coefficients),2)
+exp(confint(fit10))
+round(exp(confint(fit10)),2)
+summary(fit10)$coefficients
+round(summary(fit10)$coefficients,3)
+
+group34$system_yn <- ifelse(substr(group34$TX,2,2)=="1"|substr(group34$TX,4,4)=="1"|substr(group34$TX,5,5)=="1",
+                            "1","0")
+group34$system_yn <- factor(group34$system_yn,levels=c("0","1"))
+group34$system_yn <- relevel(group34$system_yn, ref="0")
+
+fit11<- glm(stop_yn~system_yn,data=group34,family=binomial)
+exp(fit11$coefficients)
+round(exp(fit11$coefficients),2)
+exp(confint(fit11))
+round(exp(confint(fit11)),2)
+summary(fit11)$coefficients
+round(summary(fit11)$coefficients,3)
+
+group34$ntp_yn <-ifelse(group34$SN_KEY %in% c(group30$SN_KEY,group40$SN_KEY),"0","1")
+group34$ntp_yn <- factor(group34$ntp_yn)
+group34$ntp_yn <- relevel(group34$ntp_yn, ref="0")
+group34$stop_yn <- factor(group34$stop_yn)
+group34$stop_yn <- relevel(group34$stop_yn, ref="0")
+
+
+table(group34$ntp_yn)
+table(group34$stop_yn)
+
+fit12 <- glm(stop_yn~ntp_yn,data=group34,family=binomial)
+exp(fit12$coefficients)
+exp(confint(fit12))
+summary(fit12)$coefficients
+
+
+
+#table3 다중 로지스틱 회귀분석#
+
+fit12 <-glm(stop_yn~AGE+pack_year+G1E_BMI+income+cci_score+SEER_GRP+surgery_yn+system_yn,
+            data=group34,family=binomial)
+exp(fit12$coefficients)
+exp(confint(fit12))
+summary(fit12)$coefficients
+summary(fit12)
+
+fit13 <- glm(stop_yn~AGE+pack_year+G1E_BMI+income+cci_score+SEER_GRP+surgery_yn+system_yn+ntp_yn,
+             data=data.frame(group34),family=binomial)
+exp(fit13$coefficients)
+exp(confint(fit13))
+summary(fit13)$coefficients
+summary(fit13)
+
+#table4 로지스틱 회귀분석#
+data1$ntp_yn <-ifelse(data1$SN_KEY %in% c(group10$SN_KEY,group20$SN_KEY,group30$SN_KEY,group40$SN_KEY),"0","1")
+table(data1$ntp_yn)
+data1$ntp_yn <- factor(data1$ntp_yn)
+data1$ntp_yn <- relevel(data1$ntp_yn,ref="0")
+
+#age#
+data1$AGE <- as.numeric(data1$AGE)
+fit1<-glm(ntp_yn~AGE,data=data1,family=binomial)
+exp(fit1$coefficients)
+exp(confint(fit1))
+summary(fit1)$coefficients
+summary(fit1)
+round(6.068048e-09,3)
+
+
+#sex#
+data1$SEX <- factor(data1$SEX)
+data1$SEX <- relevel(data1$SEX,ref="2")
+fit2<-glm(ntp_yn~SEX,data=data1,family=binomial)
+exp(fit2$coefficients)
+exp(confint(fit2))
+summary(fit2)$coefficients
+
+#PY#
+data1$pack_year <- as.numeric(data1$pack_year)
+fit3<-glm(ntp_yn~pack_year,data=data1,family=binomial)
+exp(fit3$coefficients)
+exp(confint(fit3))
+summary(fit3)$coefficients
+
+#bmi#
+data1$G1E_BMI <- as.numeric(data1$G1E_BMI)
+fit4<-glm(ntp_yn~G1E_BMI,data=data1,family=binomial)
+exp(fit4$coefficients)
+exp(confint(fit4))
+summary(fit4)$coefficients
+round(summary(fit4)$coefficients,3)
+
+
+#INCOME#
+data1$income <- as.numeric(data1$income)
+fit5<-glm(ntp_yn~income,data=data1,family=binomial)
+exp(fit5$coefficients)
+exp(confint(fit5))
+summary(fit5)$coefficients
+
+#cci_score#
+data1$cci_score <- as.numeric(data1$cci_score)
+fit6<-glm(ntp_yn~cci_score,data=data1,family=binomial)
+exp(fit6$coefficients)
+exp(confint(fit6))
+summary(fit6)$coefficients
+summary(fit6)
+
+#non_small_lung_cancer#
+data1$non_small_yn <- ifelse(data1$mcode_grp2=="Small cell cracinoma","0","1")
+
+table(data1$non_small_yn)
+data1$non_small_yn <- factor(data1$non_small_yn,levels=c("0","1"))
+data1$non_small_yn <- relevel(data1$non_small_yn,ref="0")
+
+fit7<- glm(ntp_yn~non_small_yn,data=data1,family=binomial)
+exp(fit7$coefficients)
+exp(confint(fit7))
+summary(fit7)$coefficients
+round(summary(fit7)$coefficients,3)
+
+#seer_grp#
+data1$SEER_GRP <- factor(data1$SEER_GRP)
+data1$SEER_GRP <- relevel(data1$SEER_GRP,ref="1")
+fit8<- glm(ntp_yn~SEER_GRP,data=data1,family=binomial)
+exp(fit8$coefficients)
+exp(confint(fit8))
+summary(fit8)$coefficients
+
+
+#surgery_yn#
+data1$surgery_yn <- factor(data1$surgery_yn)
+data1$surgery_yn <- relevel(data1$surgery_yn, ref="no")
+fit9 <- glm(ntp_yn~surgery_yn,data=data1,family=binomial)
+exp(fit9$coefficients)
+exp(confint(fit9))
+summary(fit9)$coefficients
+
+#radio_yn#
+data1$radio_yn <- factor(data1$radio_yn)
+data1$radio_yn <- relevel(data1$radio_yn, ref="no")
+fit10 <- glm(ntp_yn~radio_yn,data=data1,family=binomial)
+exp(fit10$coefficients)
+exp(confint(fit10))
+summary(fit10)$coefficients
+
+#system_yn#
+data1$system_yn <- factor(data1$system_yn)
+data1$system_yn <- relevel(data1$system_yn, ref="no")
+fit11 <- glm(ntp_yn~system_yn,data=data1,family=binomial)
+exp(fit11$coefficients)
+exp(confint(fit11))
+summary(fit11)$coefficients
+
+
+#smoking_behavior#
+data1$smk_behave <-ifelse(data1$SN_KEY %in% group1$SN_KEY, "Never",
+                          ifelse(data1$SN_KEY %in% group2$SN_KEY, "before_stop",
+                                 ifelse(data1$SN_KEY %in% group3$SN_KEY,"after_stop","current")))
+table(data1$smk_behave)
+data1$smk_behave <-factor(data1$smk_behave)
+data1$smk_behave <-relevel(data1$smk_behave, ref="Never")
+
+fit12 <- glm(ntp_yn~smk_behave,data=data1,family=binomial)
+exp(fit12$coefficients)
+exp(confint(fit12))
+summary(fit12)$coefficients
+
+#table4 다중 로지스틱 회귀분석#
+
+data1$income <- as.numeric(data1$income)
+fit13 <- glm(ntp_yn~AGE+SEX+pack_year+G1E_BMI+income+surgery_yn+system_yn+smk_behave,
+             data=data1,family=binomial)
+exp(fit13$coefficients)
+exp(confint(fit13))
+summary(fit13)
+summary(fit13)$coefficients
+
+#table5 생존분석#
+
+
+#사망여부, 사망연월일, 사망원인코드#
+death_list <- read_sas("D:/a/death_list01.sas7bdat")
+data1 <- left_join(data1, death_list, by="SN_KEY")
+nrow(death_list) #148090개#
+
+nrow(data1)#30550개#
+data1[,"death_yn"] <- ifelse(is.na(data1[,"DREGDATE"]),0,1) 
+table(data1$death_yn)
+
+
+deathdate<- read_sas("D:/a/death6_1.sas7bdat") #날짜 월수 차이 구하기 용#
+nrow(deathdate)
+table(deathdate$day_diff)
+
+
+data1 <- merge(data1,deathdate[,c("SN_KEY","day_diff","person_years")],by="SN_KEY",all.x=FALSE)
+nrow(data1)
+
+table(data1$sain1new)
+table(data1$death_yn)
+
+library(survival)
+surv_all <- Surv(data1$day_diff,data1$death_yn=="1")
+data1$lung_cancer_yn <- ifelse(is.na(data1$sain1new),"0",ifelse(data1$sain1new=="1","1","0"))
+data1$nolung_cancer_yn <- ifelse(is.na(data1$sain1new),"0",ifelse(data1$sain1new=="1","0","1"))
+table(data1$lung_cancer_yn)
+table(data1$nolung_cancer_yn)
+surv_lungcancer <- Surv(data1$day_diff,data1$lung_cancer_yn =="1")
+surv_nolungcancer <- Surv(data1$day_diff,data1$nolung_cancer_yn == "1")
+
+#all-cause mortality#
+
+data1$person_yearnew <- round(data1$day_diff/365,1)
+person_years <- sum(data1$person_yearnew)
+person_years #91556.4
+person_years1 <- round(sum(data1$day_diff)/365,1)
+person_years1 #91715.8#
+number_of_events <- sum(data1$death_yn=="1")
+number_of_events #2147#
+print((number_of_events/person_years)*1000) #23.45003# 
+print((number_of_events/person_years1)*1000) #23.40927#
+
+table(data1$smk_behave)
+
+#all-cause mortality never#
+person_years <- sum(data1[data1$smk_behave=="Never",]$person_yearnew)
+person_years #54539.8#
+person_years1 <- round(sum(data1[data1$smk_behave=="Never",]$day_diff)/365,1)
+person_years1 #54635.6#
+number_of_events <- sum(data1[data1$smk_behave=="Never",]$death_yn=="1")
+number_of_events # 1027
+print((number_of_events/person_years)*1000) # 18.83028#
+print((number_of_events/person_years1)*1000) #18.79727#
+
+#all-cause mortality after_stop#
+person_years <- sum(data1[data1$smk_behave=="after_stop",]$person_yearnew)
+person_years #9916.1#
+person_years1 <- round(sum(data1[data1$smk_behave=="after_stop",]$day_diff)/365,1)
+person_years1 #9944.7#
+number_of_events <- sum(data1[data1$smk_behave=="after_stop",]$death_yn=="1")
+number_of_events # 305
+print((number_of_events/person_years)*1000) # 30.75806#
+print((number_of_events/person_years1)*1000) #30.6696#
+
+#all-cause mortality before_stop#
+person_years <- sum(data1[data1$smk_behave=="before_stop",]$person_yearnew)
+person_years #23305.3#
+person_years1 <- round(sum(data1[data1$smk_behave=="before_stop",]$day_diff)/365,1)
+person_years1 #23333.1#
+number_of_events <- sum(data1[data1$smk_behave=="before_stop",]$death_yn=="1")
+number_of_events #664
+print((number_of_events/person_years)*1000) # 28.49137#
+print((number_of_events/person_years1)*1000) #28.45743#
+
+
+#all-cause mortality current#
+person_years <- sum(data1[data1$smk_behave=="current",]$person_yearnew)
+person_years #3795.2#
+person_years1 <- round(sum(data1[data1$smk_behave=="current",]$day_diff)/365,1)
+person_years1 #3802.4#
+number_of_events <- sum(data1[data1$smk_behave=="current",]$death_yn=="1")
+number_of_events #151
+print((number_of_events/person_years)*1000) # 39.7871#
+print((number_of_events/person_years1)*1000) #39.71176#
+
+data1$smk_behave <- factor(data1$smk_behave)
+data1$smk_behave <- relevel(data1$smk_behave, ref="Never")
+coxfit1 <- coxph(surv_all~smk_behave,data=data1)
+summary(coxfit1)$coefficients
+exp(confint(coxfit1))
+
+
+
+#lung_cancer mortality#
+data1$person_yearnew <- round(data1$day_diff/365,1)
+person_years <- sum(data1$person_yearnew)
+person_years #91556.4#
+person_years1 <- round(sum(data1$day_diff)/365,1)
+person_years1 #91715.8#
+lung_cancer_group <- data1[data1$lung_cancer_yn=="1",]
+nrow(lung_cancer_group)#1811
+number_of_events <- sum(lung_cancer_group$death_yn=="1")
+number_of_events
+print((number_of_events/person_years)*1000) #19.78016# 
+print((number_of_events/person_years1)*1000) #19.74578#
+
+#lung_cancer mortality never#
+person_years <- sum(data1[data1$smk_behave=="Never",]$person_yearnew)
+person_years # 54539.8#
+person_years1 <- round(sum(data1[data1$smk_behave=="Never",]$day_diff)/365,1)
+person_years1#54635.6#
+number_of_events <- sum(lung_cancer_group[lung_cancer_group$smk_behave=="Never",]$death_yn=="1")
+number_of_events # 887
+print((number_of_events/person_years)*1000) # 16.26335#
+print((number_of_events/person_years1)*1000) # 16.23484#
+
+#lung_cancer mortality after_stop#
+person_years <- sum(data1[data1$smk_behave=="after_stop",]$person_yearnew)
+person_years # 9916.1#
+person_years1 <- round(sum(data1[data1$smk_behave=="after_stop",]$day_diff)/365,1)
+person_years1#9944.7#
+number_of_events <- sum(lung_cancer_group[lung_cancer_group$smk_behave=="after_stop",]$death_yn=="1")
+number_of_events # 256
+print((number_of_events/person_years)*1000) # 25.8166#
+print((number_of_events/person_years1)*1000) # 25.74236#
+
+#lung_cancer mortality before_stop#
+person_years <- sum(data1[data1$smk_behave=="before_stop",]$person_yearnew)
+person_years # 23305.3#
+person_years1 <- round(sum(data1[data1$smk_behave=="before_stop",]$day_diff)/365,1)
+person_years1#23333.1#
+number_of_events <- sum(lung_cancer_group[lung_cancer_group$smk_behave=="before_stop",]$death_yn=="1")
+number_of_events # 556
+print((number_of_events/person_years)*1000) #23.85723#
+print((number_of_events/person_years1)*1000) # 23.82881#
+
+#lung_cancer mortality current#
+person_years <- sum(data1[data1$smk_behave=="current",]$person_yearnew)
+person_years # 3795.2#
+person_years1 <- round(sum(data1[data1$smk_behave=="current",]$day_diff)/365,1)
+person_years1#3802.4#
+number_of_events <- sum(lung_cancer_group[lung_cancer_group$smk_behave=="current",]$death_yn=="1")
+number_of_events # 112
+print((number_of_events/person_years)*1000) #29.51096#
+print((number_of_events/person_years1)*1000) # 29.45508#
+
+data1$smk_behave <- factor(data1$smk_behave)
+data1$smk_behave <- relevel(data1$smk_behave, ref="Never")
+coxfit2 <- coxph(surv_lungcancer~smk_behave,data=data1)
+summary(coxfit2)$coefficients
+exp(confint(coxfit2))
+
+
+
+#nolung_cancer mortality#
+
+data1$person_yearnew <- round(data1$day_diff/365,1)
+person_years <- sum(data1$person_yearnew)
+person_years #91556.4#
+person_years1 <- round(sum(data1$day_diff)/365,1)
+person_years1 #91715.8#
+no_lung_cancer_group <- data1[data1$lung_cancer_yn=="0",]
+nrow(no_lung_cancer_group)#28739#
+number_of_events <- sum(no_lung_cancer_group$death_yn=="1")
+number_of_events
+print((number_of_events/person_years)*1000) #3.669869# 
+print((number_of_events/person_years1)*1000) #3.663491#
+
+
+#lung_cancer mortality never#
+person_years <- sum(data1[data1$smk_behave=="Never",]$person_yearnew)
+person_years # 54539.8#
+person_years1 <- round(sum(data1[data1$smk_behave=="Never",]$day_diff)/365,1)
+person_years1#54635.6#
+number_of_events <- sum(no_lung_cancer_group[no_lung_cancer_group$smk_behave=="Never",]$death_yn=="1")
+number_of_events # 140
+print((number_of_events/person_years)*1000) # 2.566933#
+print((number_of_events/person_years1)*1000) # 2.562432#
+
+
+
+
+#lung_cancer mortality after_stop#
+person_years <- sum(data1[data1$smk_behave=="after_stop",]$person_yearnew)
+person_years #9916.1#
+person_years1 <- round(sum(data1[data1$smk_behave=="after_stop",]$day_diff)/365,1)
+person_years1#9944.7#
+number_of_events <- sum(no_lung_cancer_group[no_lung_cancer_group$smk_behave=="after_stop",]$death_yn=="1")
+number_of_events # 49
+print((number_of_events/person_years)*1000) # 4.941459#
+print((number_of_events/person_years1)*1000) # 4.927248#
+
+#lung_cancer mortality before_stop#
+person_years <- sum(data1[data1$smk_behave=="before_stop",]$person_yearnew)
+person_years #23305.3#
+person_years1 <- round(sum(data1[data1$smk_behave=="before_stop",]$day_diff)/365,1)
+person_years1#23333.1#
+number_of_events <- sum(no_lung_cancer_group[no_lung_cancer_group$smk_behave=="before_stop",]$death_yn=="1")
+number_of_events # 108
+print((number_of_events/person_years)*1000) # 4.634139#
+print((number_of_events/person_years1)*1000) # 4.628618#
+
+
+#lung_cancer mortality current#
+person_years <- sum(data1[data1$smk_behave=="current",]$person_yearnew)
+person_years #3795.2#
+person_years1 <- round(sum(data1[data1$smk_behave=="current",]$day_diff)/365,1)
+person_years1#3802.4#
+number_of_events <- sum(no_lung_cancer_group[no_lung_cancer_group$smk_behave=="current",]$death_yn=="1")
+number_of_events # 39
+print((number_of_events/person_years)*1000) # 10.27614#
+print((number_of_events/person_years1)*1000) # 10.25668#
+
+data1$smk_behave <- factor(data1$smk_behave)
+data1$smk_behave <- relevel(data1$smk_behave, ref="Never")
+coxfit3 <- coxph(surv_nolungcancer~smk_behave,data=data1)
+summary(coxfit3)$coefficients
+exp(confint(coxfit3))
+
+#table 5&6&7 univariable(all_cause_mortality)#
+
+#age#
+data1$AGE <- as.numeric(data1$AGE)
+coxfitu1 <- coxph(surv_all~AGE,data=data1)
+summary(coxfitu1)$coefficients
+exp(confint(coxfitu1))
+
+#SEX#
+data1$SEX <-as.factor(data1$SEX)
+data1$SEX <- relevel(data1$SEX,ref="2")
+coxfitu2 <- coxph(surv_all~SEX, data=data1)
+summary(coxfitu2)$coefficients
+exp(confint(coxfitu2))
+
+#PACK_YEAR#
+sum(is.na(data1$pack_year))
+table(data1$pack_year)
+data1$pack_year <- as.numeric(data1$pack_year)
+coxfitu3 <- coxph(surv_all~pack_year,data=data1)
+summary(coxfitu3)$coefficients
+exp(confint(coxfitu3))
+
+#bmi#
+data1$G1E_BMI <- as.numeric(data1$G1E_BMI)
+coxfitu4 <- coxph(surv_all~G1E_BMI,data=data1)
+summary(coxfitu4)$coefficients
+exp(confint(coxfitu4))
+
+#income#
+data1$income <- as.factor(data1$income)
+data1$income <- relevel(data1$income, ref="1")
+coxfitu5 <- coxph(surv_all~income, data=data1)
+summary(coxfitu5)$coefficients
+exp(confint(coxfitu5))
+
+#cci group#
+data1$cci_group <- as.factor(data1$cci_group)
+table(data1$cci_group)
+data1$cci_group <- relevel(data1$cci_group, ref="0")
+coxfitu6<- coxph(surv_all~cci_group, data=data1)
+summary(coxfitu6)$coefficients
+exp(confint(coxfitu6))
+
+#physical activity#
+data1$activity <- as.factor(data1$activity)
+data1$activity <- relevel(data1$activity, ref="inactive")
+coxfitu7 <- coxph(surv_all~activity, data=data1)
+summary(coxfitu7)$coefficients
+exp(confint(coxfitu7))
+
+#non small cell carcinoma#
+data1$non_small_yn <- as.factor(data1$non_small_yn)
+table(data1$non_small_yn)
+data1$non_small_yn <- relevel(data1$non_small_yn, ref="0")
+coxfitu8 <- coxph(surv_all~non_small_yn, data=data1)
+summary(coxfitu8)$coefficients
+exp(confint(coxfitu8))
+
+#seer_grp#
+data1$SEER_GRP <- as.factor(data1$SEER_GRP)
+data1$SEER_GRP <- relevel(data1$SEER_GRP, ref ="1")
+coxfitu9 <- coxph(surv_all~SEER_GRP, data=data1)
+summary(coxfitu9)$coefficients
+exp(confint(coxfitu9))
+
+#surgery_yn#
+data1$surgery_yn <- as.factor(data1$surgery_yn)
+data1$surgery_yn <- relevel(data1$surgery_yn, ref="no")
+coxfitu10 <- coxph(surv_all~surgery_yn, data=data1)
+summary(coxfitu10)$coefficients
+exp(confint(coxfitu10))
+
+#radio_yn#
+data1$radio_yn <- as.factor(data1$radio_yn)
+data1$radio_yn <- relevel(data1$radio_yn, ref="no")
+coxfitu11 <- coxph(surv_all~radio_yn, data=data1)
+summary(coxfitu11)$coefficients
+exp(confint(coxfitu11))
+
+#system_yn#
+data1$system_yn <- as.factor(data1$system_yn)
+data1$system_yn <- relevel(data1$system_yn, ref="no")
+coxfitu12 <- coxph(surv_all~system_yn, data=data1)
+summary(coxfitu12)$coefficients
+exp(confint(coxfitu12))
+
+
+#table 5&6 univariable(lung_cancer_mortality)#
+
+#age#
+data1$AGE <- as.numeric(data1$AGE)
+coxfitu1 <- coxph(surv_lungcancer~AGE,data=data1)
+summary(coxfitu1)$coefficients
+exp(confint(coxfitu1))
+
+#SEX#
+data1$SEX <-as.factor(data1$SEX)
+data1$SEX <- relevel(data1$SEX,ref="2")
+coxfitu2 <- coxph(surv_lungcancer~SEX, data=data1)
+summary(coxfitu2)$coefficients
+exp(confint(coxfitu2))
+
+#PACK_YEAR#
+data1$pack_year <- as.numeric(data1$pack_year)
+coxfitu3 <- coxph(surv_lungcancer~pack_year,data=data1)
+summary(coxfitu3)$coefficients
+exp(confint(coxfitu3))
+
+#bmi#
+data1$G1E_BMI <- as.numeric(data1$G1E_BMI)
+coxfitu4 <- coxph(surv_lungcancer~G1E_BMI,data=data1)
+summary(coxfitu4)$coefficients
+exp(confint(coxfitu4))
+
+#income#
+data1$income <- as.factor(data1$income)
+data1$income <- relevel(data1$income, ref="1")
+coxfitu5 <- coxph(surv_lungcancer~income, data=data1)
+summary(coxfitu5)$coefficients
+exp(confint(coxfitu5))
+
+#cci group#
+data1$cci_group <- as.factor(data1$cci_group)
+table(data1$cci_group)
+data1$cci_group <- relevel(data1$cci_group, ref="0")
+coxfitu6<- coxph(surv_lungcancer~cci_group, data=data1)
+summary(coxfitu6)$coefficients
+exp(confint(coxfitu6))
+
+#physical activity#
+data1$activity <- as.factor(data1$activity)
+data1$activity <- relevel(data1$activity, ref="inactive")
+coxfitu7 <- coxph(surv_lungcancer~activity, data=data1)
+summary(coxfitu7)$coefficients
+exp(confint(coxfitu7))
+
+#non small cell carcinoma#
+data1$non_small_yn <- as.factor(data1$non_small_yn)
+table(data1$non_small_yn)
+data1$non_small_yn <- relevel(data1$non_small_yn, ref="0")
+coxfitu8 <- coxph(surv_lungcancer~non_small_yn, data=data1)
+summary(coxfitu8)$coefficients
+exp(confint(coxfitu8))
+
+#seer_grp#
+data1$SEER_GRP <- as.factor(data1$SEER_GRP)
+data1$SEER_GRP <- relevel(data1$SEER_GRP, ref ="1")
+coxfitu9 <- coxph(surv_lungcancer~SEER_GRP, data=data1)
+summary(coxfitu9)$coefficients
+exp(confint(coxfitu9))
+
+#surgery_yn#
+data1$surgery_yn <- as.factor(data1$surgery_yn)
+data1$surgery_yn <- relevel(data1$surgery_yn, ref="no")
+coxfitu10 <- coxph(surv_lungcancer~surgery_yn, data=data1)
+summary(coxfitu10)$coefficients
+exp(confint(coxfitu10))
+
+#radio_yn#
+data1$radio_yn <- as.factor(data1$radio_yn)
+data1$radio_yn <- relevel(data1$radio_yn, ref="no")
+coxfitu11 <- coxph(surv_lungcancer~radio_yn, data=data1)
+summary(coxfitu11)$coefficients
+exp(confint(coxfitu11))
+
+#system_yn#
+data1$system_yn <- as.factor(data1$system_yn)
+data1$system_yn <- relevel(data1$system_yn, ref="no")
+coxfitu12 <- coxph(surv_lungcancer~system_yn, data=data1)
+summary(coxfitu12)$coefficients
+exp(confint(coxfitu12))
+
+
+#table 5&6 univariable(no_lung_cancer_mortality)#
+
+#age#
+data1$AGE <- as.numeric(data1$AGE)
+coxfitu1 <- coxph(surv_nolungcancer~AGE,data=data1)
+summary(coxfitu1)$coefficients
+exp(confint(coxfitu1))
+
+#SEX#
+data1$SEX <-as.factor(data1$SEX)
+data1$SEX <- relevel(data1$SEX,ref="2")
+coxfitu2 <- coxph(surv_nolungcancer~SEX, data=data1)
+summary(coxfitu2)$coefficients
+exp(confint(coxfitu2))
+
+#PACK_YEAR#
+data1$pack_year <- as.numeric(data1$pack_year)
+coxfitu3 <- coxph(surv_nolungcancer~pack_year,data=data1)
+summary(coxfitu3)$coefficients
+exp(confint(coxfitu3))
+
+#bmi#
+data1$G1E_BMI <- as.numeric(data1$G1E_BMI)
+coxfitu4 <- coxph(surv_nolungcancer~G1E_BMI,data=data1)
+summary(coxfitu4)$coefficients
+exp(confint(coxfitu4))
+
+#income#
+data1$income <- as.factor(data1$income)
+data1$income <- relevel(data1$income, ref="1")
+coxfitu5 <- coxph(surv_nolungcancer~income, data=data1)
+summary(coxfitu5)$coefficients
+exp(confint(coxfitu5))
+
+#cci group#
+data1$cci_group <- as.factor(data1$cci_group)
+table(data1$cci_group)
+data1$cci_group <- relevel(data1$cci_group, ref="0")
+coxfitu6<- coxph(surv_nolungcancer~cci_group, data=data1)
+summary(coxfitu6)$coefficients
+exp(confint(coxfitu6))
+
+#physical activity#
+data1$activity <- as.factor(data1$activity)
+data1$activity <- relevel(data1$activity, ref="inactive")
+coxfitu7 <- coxph(surv_nolungcancer~activity, data=data1)
+summary(coxfitu7)$coefficients
+exp(confint(coxfitu7))
+
+#non small cell carcinoma#
+data1$non_small_yn <- as.factor(data1$non_small_yn)
+table(data1$non_small_yn)
+data1$non_small_yn <- relevel(data1$non_small_yn, ref="0")
+coxfitu8 <- coxph(surv_nolungcancer~non_small_yn, data=data1)
+summary(coxfitu8)$coefficients
+exp(confint(coxfitu8))
+
+#seer_grp#
+data1$SEER_GRP <- as.factor(data1$SEER_GRP)
+data1$SEER_GRP <- relevel(data1$SEER_GRP, ref ="1")
+coxfitu9 <- coxph(surv_nolungcancer~SEER_GRP, data=data1)
+summary(coxfitu9)$coefficients
+exp(confint(coxfitu9))
+
+#surgery_yn#
+data1$surgery_yn <- as.factor(data1$surgery_yn)
+data1$surgery_yn <- relevel(data1$surgery_yn, ref="no")
+coxfitu10 <- coxph(surv_nolungcancer~surgery_yn, data=data1)
+summary(coxfitu10)$coefficients
+exp(confint(coxfitu10))
+
+#radio_yn#
+data1$radio_yn <- as.factor(data1$radio_yn)
+data1$radio_yn <- relevel(data1$radio_yn, ref="no")
+coxfitu11 <- coxph(surv_nolungcancer~radio_yn, data=data1)
+summary(coxfitu11)$coefficients
+exp(confint(coxfitu11))
+
+#system_yn#
+data1$system_yn <- as.factor(data1$system_yn)
+data1$system_yn <- relevel(data1$system_yn, ref="no")
+coxfitu12 <- coxph(surv_nolungcancer~system_yn, data=data1)
+summary(coxfitu12)$coefficients
+exp(confint(coxfitu12))
+
+
+
+#table5&6 multivariable#
+
+data1$income <- factor(data1$income)
+data1$income <- relevel(data1$income, ref="1")
+data1$cci_group <- factor(data1$cci_group)
+table(data1$cci_group)
+data1$cci_group <- relevel(data1$cci_group, ref="0")
+data1$activity <- factor(data1$activity)
+data1$activity <- relevel(data1$activity, ref="inactive")
+
+
+
+coxfit4 <- coxph(surv_all~AGE+SEX+pack_year+G1E_BMI+income+cci_group+activity+non_small_yn+SEER_GRP+
+                   surgery_yn+radio_yn+system_yn,data=data1)
+summary(coxfit4)$coefficients
+exp(confint(coxfit4))
+
+coxfit5 <- coxph(surv_lungcancer~AGE+SEX+pack_year+G1E_BMI+income+cci_group+activity+non_small_yn+SEER_GRP+
+                   surgery_yn+radio_yn+system_yn,data=data1)
+summary(coxfit5)$coefficients
+exp(confint(coxfit5))
+
+coxfit6 <- coxph(surv_nolungcancer~AGE+SEX+pack_year+G1E_BMI+income+cci_group+activity+non_small_yn+SEER_GRP+
+                   surgery_yn+radio_yn+system_yn,data=data1)
+summary(coxfit6)$coefficients
+exp(confint(coxfit6))
+
+
+#table5 multivariable(smk_behave + characteristics variables)
+
+data1$smk_behave <- factor(data1$smk_behave)
+data1$smk_behave <- relevel(data1$smk_behave, ref="Never")
+table(data1$smk_behave)
+
+#all_cause_moratality#
+
+coxfit7 <- coxph(surv_all~smk_behave+AGE+SEX+pack_year+G1E_BMI+income+cci_group+activity+non_small_yn+SEER_GRP+
+                   surgery_yn+radio_yn+system_yn,data=data1)
+summary(coxfit7)$coefficients
+exp(confint(coxfit7))
+
+#lung_cancer mortality#
+
+coxfit8 <- coxph(surv_lungcancer~smk_behave+AGE+SEX+pack_year+G1E_BMI+income+cci_group+activity+non_small_yn+SEER_GRP+
+                   surgery_yn+radio_yn+system_yn,data=data1)
+summary(coxfit8)$coefficients
+exp(confint(coxfit8))
+
+coxfit9 <- coxph(surv_nolungcancer~smk_behave+AGE+SEX+pack_year+G1E_BMI+income+cci_group+activity+non_small_yn+SEER_GRP+
+                   surgery_yn+radio_yn+system_yn,data=data1)
+summary(coxfit9)$coefficients
+exp(confint(coxfit9))
+
+#table6 생존분석#
+#all cause mortality
+
+#all-cause mortality#
+
+data1$person_yearnew <- round(data1$day_diff/365,1)
+person_years <- sum(data1$person_yearnew)
+person_years #91556.4
+person_years1 <- round(sum(data1$day_diff)/365,1)
+person_years1 #91715.8#
+number_of_events <- sum(data1$death_yn=="1")
+number_of_events #2147#
+print((number_of_events/person_years)*1000) #23.45003# 
+print((number_of_events/person_years1)*1000) #23.40927#
+
+table(data1$smk_behave)
+
+#all-cause mortality group10#
+person_years <- sum(data1[data1$grouptype=="10",]$person_yearnew)
+person_years #54462.9#
+person_years1 <- round(sum(data1[data1$grouptype=="10",]$day_diff)/365,1)
+person_years1 #54558.5#
+number_of_events <- sum(data1[data1$grouptype=="10",]$death_yn=="1")
+number_of_events # 1026
+print((number_of_events/person_years)*1000) # 18.83851#
+print((number_of_events/person_years1)*1000) #18.8055#
+
+#all-cause mortality group11#
+person_years <- sum(data1[data1$grouptype=="11",]$person_yearnew)
+person_years #76.9#
+person_years1 <- round(sum(data1[data1$grouptype=="11",]$day_diff)/365,1)
+person_years1 #77.1#
+number_of_events <- sum(data1[data1$grouptype=="11",]$death_yn=="1")
+number_of_events # 1
+print((number_of_events/person_years)*1000) # 13.0039#
+print((number_of_events/person_years1)*1000) #12.97017#
+
+#all-cause mortality group20#
+person_years <- sum(data1[data1$grouptype=="20",]$person_yearnew)
+person_years #23247.4#
+person_years1 <- round(sum(data1[data1$grouptype=="20",]$day_diff)/365,1)
+person_years1 #23275#
+number_of_events <- sum(data1[data1$grouptype=="20",]$death_yn=="1")
+number_of_events # 662
+print((number_of_events/person_years)*1000) # 28.4763#
+print((number_of_events/person_years1)*1000) #28.44253#
+
+#all-cause mortality group21#
+person_years <- sum(data1[data1$grouptype=="21",]$person_yearnew)
+person_years #57.9#
+person_years1 <- round(sum(data1[data1$grouptype=="21",]$day_diff)/365,1)
+person_years1 #58.1#
+number_of_events <- sum(data1[data1$grouptype=="21",]$death_yn=="1")
+number_of_events # 2
+print((number_of_events/person_years)*1000) # 34.54231#
+print((number_of_events/person_years1)*1000) #34.42341#
+
+#all-cause mortality group30#
+person_years <- sum(data1[data1$grouptype=="30",]$person_yearnew)
+person_years #9776.7#
+person_years1 <- round(sum(data1[data1$grouptype=="30",]$day_diff)/365,1)
+person_years1 #9805.1#
+number_of_events <- sum(data1[data1$grouptype=="30",]$death_yn=="1")
+number_of_events # 300
+print((number_of_events/person_years)*1000) # 30.6852#
+print((number_of_events/person_years1)*1000) #30.59632#
+
+
+#all-cause mortality group31#
+person_years <- sum(data1[data1$grouptype=="31",]$person_yearnew)
+person_years #139.4#
+person_years1 <- round(sum(data1[data1$grouptype=="31",]$day_diff)/365,1)
+person_years1 #139.6#
+number_of_events <- sum(data1[data1$grouptype=="31",]$death_yn=="1")
+number_of_events # 5
+print((number_of_events/person_years)*1000) # 35.86801#
+print((number_of_events/person_years1)*1000) #35.81662#
+
+#all-cause mortality group40#
+person_years <- sum(data1[data1$grouptype=="40",]$person_yearnew)
+person_years #3669.7#
+person_years1 <- round(sum(data1[data1$grouptype=="40",]$day_diff)/365,1)
+person_years1 #3676.4#
+number_of_events <- sum(data1[data1$grouptype=="40",]$death_yn=="1")
+number_of_events # 148
+print((number_of_events/person_years)*1000) # 40.33027#
+print((number_of_events/person_years1)*1000) #40.25677#
+
+
+#all-cause mortality group41#
+person_years <- sum(data1[data1$grouptype=="41",]$person_yearnew)
+person_years #125.5#
+person_years1 <- round(sum(data1[data1$grouptype=="41",]$day_diff)/365,1)
+person_years1 #126#
+number_of_events <- sum(data1[data1$grouptype=="41",]$death_yn=="1")
+number_of_events #3
+print((number_of_events/person_years)*1000) # 23.90438#
+print((number_of_events/person_years1)*1000) #23.80952#
+
+coxfit7 <-coxph(surv_all~grouptype, data=data1)
+summary(coxfit7)$coefficients
+exp(confint(coxfit7))
+
+#table6 lung cancer#
+
+data1$person_yearnew <- round(data1$day_diff/365,1)
+person_years <- sum(data1$person_yearnew)
+person_years #91556.4
+person_years1 <- round(sum(data1$day_diff)/365,1)
+person_years1 #91715.8#
+number_of_events <- sum(lung_cancer_group$lung_cancer_yn=="1")
+number_of_events # 1811
+print((number_of_events/person_years)*1000) #19.78016# 
+print((number_of_events/person_years1)*1000) #19.74578#
+
+
+
+
+#lung_cancer mortality group10#
+person_years <- sum(data1[data1$grouptype=="10",]$person_yearnew)
+person_years #54462.9#
+person_years1 <- round(sum(data1[data1$grouptype=="10",]$day_diff)/365,1)
+person_years1 #54558.5#
+number_of_events <- sum(lung_cancer_group[lung_cancer_group$grouptype=="10",]$lung_cancer_yn=="1")
+number_of_events # 886
+print((number_of_events/person_years)*1000) # 16.26795#
+print((number_of_events/person_years1)*1000) #16.23945#
+
+
+#lung_cancer mortality group11#
+person_years <- sum(data1[data1$grouptype=="11",]$person_yearnew)
+person_years #76.9#
+person_years1 <- round(sum(data1[data1$grouptype=="11",]$day_diff)/365,1)
+person_years1 #77.1#
+number_of_events <- sum(lung_cancer_group[lung_cancer_group$grouptype=="11",]$lung_cancer_yn=="1")
+number_of_events # 1
+print((number_of_events/person_years)*1000) # 13.0039#
+print((number_of_events/person_years1)*1000) #12.97017#
+
+#lung_cancer mortality group20#
+person_years <- sum(data1[data1$grouptype=="20",]$person_yearnew)
+person_years #23247.4#
+person_years1 <- round(sum(data1[data1$grouptype=="20",]$day_diff)/365,1)
+person_years1 #23275#
+number_of_events <- sum(lung_cancer_group[lung_cancer_group$grouptype=="20",]$lung_cancer_yn=="1")
+number_of_events # 554
+print((number_of_events/person_years)*1000) # 23.83062#
+print((number_of_events/person_years1)*1000) #23.80236#
+
+
+#lung_cancer mortality group21#
+person_years <- sum(data1[data1$grouptype=="21",]$person_yearnew)
+person_years #57.9#
+person_years1 <- round(sum(data1[data1$grouptype=="21",]$day_diff)/365,1)
+person_years1 #58.1#
+number_of_events <- sum(lung_cancer_group[lung_cancer_group$grouptype=="21",]$lung_cancer_yn=="1")
+number_of_events #  2
+print((number_of_events/person_years)*1000) # 34.54231#
+print((number_of_events/person_years1)*1000) #34.42341#
+
+#lung_cancer mortality group30#
+person_years <- sum(data1[data1$grouptype=="30",]$person_yearnew)
+person_years #9776.7#
+person_years1 <- round(sum(data1[data1$grouptype=="30",]$day_diff)/365,1)
+person_years1 #9805.1#
+number_of_events <- sum(lung_cancer_group[lung_cancer_group$grouptype=="30",]$lung_cancer_yn=="1")
+number_of_events #  252
+print((number_of_events/person_years)*1000) # 25.77557#
+print((number_of_events/person_years1)*1000) #25.70091#
+
+#lung_cancer mortality group31#
+person_years <- sum(data1[data1$grouptype=="31",]$person_yearnew)
+person_years #139.4#
+person_years1 <- round(sum(data1[data1$grouptype=="31",]$day_diff)/365,1)
+person_years1 #139.6#
+number_of_events <- sum(lung_cancer_group[lung_cancer_group$grouptype=="31",]$lung_cancer_yn=="1")
+number_of_events #  4
+print((number_of_events/person_years)*1000) # 28.6944#
+print((number_of_events/person_years1)*1000) #28.6533#
+
+#lung_cancer mortality group40#
+person_years <- sum(data1[data1$grouptype=="40",]$person_yearnew)
+person_years #3669.7#
+person_years1 <- round(sum(data1[data1$grouptype=="40",]$day_diff)/365,1)
+person_years1 #3676.4#
+number_of_events <- sum(lung_cancer_group[lung_cancer_group$grouptype=="40",]$lung_cancer_yn=="1")
+number_of_events #  109
+print((number_of_events/person_years)*1000) # 29.7027#
+print((number_of_events/person_years1)*1000) #29.64857#
+
+#lung_cancer mortality group41#
+person_years <- sum(data1[data1$grouptype=="41",]$person_yearnew)
+person_years #125.5#
+person_years1 <- round(sum(data1[data1$grouptype=="41",]$day_diff)/365,1)
+person_years1 #126#
+number_of_events <- sum(lung_cancer_group[lung_cancer_group$grouptype=="41",]$lung_cancer_yn=="1")
+number_of_events #3
+print((number_of_events/person_years)*1000) # 23.90438#
+print((number_of_events/person_years1)*1000) #23.80952#
+
+
+coxfit8 <-coxph(surv_lungcancer~grouptype, data=data1)
+summary(coxfit8)$coefficients
+exp(confint(coxfit8))
+
+
+
+#table6 no lung cancer#
+
+
+data1$person_yearnew <- round(data1$day_diff/365,1)
+person_years <- sum(data1$person_yearnew)
+person_years #91556.4
+person_years1 <- round(sum(data1$day_diff)/365,1)
+person_years1 #91715.8#
+number_of_events <- sum(no_lung_cancer_group$nolung_cancer_yn=="1")
+number_of_events # 336
+print((number_of_events/person_years)*1000) #3.669869# 
+print((number_of_events/person_years1)*1000) #3.663491#
+
+
+
+#nolung_cancer mortality group10#
+person_years <- sum(data1[data1$grouptype=="10",]$person_yearnew)
+person_years #54462.9#
+person_years1 <- round(sum(data1[data1$grouptype=="10",]$day_diff)/365,1)
+person_years1 #54558.5#
+number_of_events <- sum(no_lung_cancer_group[no_lung_cancer_group$grouptype=="10",]$nolung_cancer_yn=="1")
+number_of_events # 140
+print((number_of_events/person_years)*1000) #2.570557# 
+print((number_of_events/person_years1)*1000) #2.566053#
+
+
+
+#nolung_cancer mortality group11#
+person_years <- sum(data1[data1$grouptype=="11",]$person_yearnew)
+person_years #76.9#
+person_years1 <- round(sum(data1[data1$grouptype=="11",]$day_diff)/365,1)
+person_years1 #77.1#
+number_of_events <- sum(no_lung_cancer_group[no_lung_cancer_group$grouptype=="11",]$nolung_cancer_yn=="1")
+number_of_events # 140
+print((number_of_events/person_years)*1000) #0# 
+print((number_of_events/person_years1)*1000) #0#
+
+#nolung_cancer mortality group20#
+person_years <- sum(data1[data1$grouptype=="20",]$person_yearnew)
+person_years #23247.4#
+person_years1 <- round(sum(data1[data1$grouptype=="20",]$day_diff)/365,1)
+person_years1 #23275#
+number_of_events <- sum(no_lung_cancer_group[no_lung_cancer_group$grouptype=="20",]$nolung_cancer_yn=="1")
+number_of_events # 108
+print((number_of_events/person_years)*1000) #4.645681# 
+print((number_of_events/person_years1)*1000) #4.640172#
+
+#nolung_cancer mortality group21#
+person_years <- sum(data1[data1$grouptype=="21",]$person_yearnew)
+person_years #57.9#
+person_years1 <- round(sum(data1[data1$grouptype=="21",]$day_diff)/365,1)
+person_years1 #58.1#
+number_of_events <- sum(no_lung_cancer_group[no_lung_cancer_group$grouptype=="21",]$nolung_cancer_yn=="1")
+number_of_events # 0
+print((number_of_events/person_years)*1000) #0# 
+print((number_of_events/person_years1)*1000) #0#
+
+
+#nolung_cancer mortality group30#
+person_years <- sum(data1[data1$grouptype=="30",]$person_yearnew)
+person_years #9446.7#
+person_years1 <- round(sum(data1[data1$grouptype=="30",]$day_diff)/365,1)
+person_years1 #9805.1#
+number_of_events <- sum(no_lung_cancer_group[no_lung_cancer_group$grouptype=="30",]$nolung_cancer_yn=="1")
+number_of_events #48
+print((number_of_events/person_years)*1000) #4.909632# 
+print((number_of_events/person_years1)*1000) #4.895412#
+
+#nolung_cancer mortality group31#
+person_years <- sum(data1[data1$grouptype=="31",]$person_yearnew)
+person_years #139.4#
+person_years1 <- round(sum(data1[data1$grouptype=="31",]$day_diff)/365,1)
+person_years1 #139.6#
+number_of_events <- sum(no_lung_cancer_group[no_lung_cancer_group$grouptype=="31",]$nolung_cancer_yn=="1")
+number_of_events #1
+print((number_of_events/person_years)*1000) #7.173601# 
+print((number_of_events/person_years1)*1000) #7.163324#
+
+#nolung_cancer mortality group40#
+person_years <- sum(data1[data1$grouptype=="40",]$person_yearnew)
+person_years #3669.7#
+person_years1 <- round(sum(data1[data1$grouptype=="40",]$day_diff)/365,1)
+person_years1 #3676.4#
+number_of_events <- sum(no_lung_cancer_group[no_lung_cancer_group$grouptype=="40",]$nolung_cancer_yn=="1")
+number_of_events #39
+print((number_of_events/person_years)*1000) #10.62757# 
+print((number_of_events/person_years1)*1000) #10.6082#
+
+
+#nolung_cancer mortality group41#
+person_years <- sum(data1[data1$grouptype=="41",]$person_yearnew)
+person_years #125.5#
+person_years1 <- round(sum(data1[data1$grouptype=="41",]$day_diff)/365,1)
+person_years1 #126#
+number_of_events <- sum(no_lung_cancer_group[no_lung_cancer_group$grouptype=="41",]$nolung_cancer_yn=="1")
+number_of_events #0
+print((number_of_events/person_years)*1000) #0# 
+print((number_of_events/person_years1)*1000) #0#
+
+
+coxfit9 <-coxph(surv_nolungcancer~grouptype, data=data1)
+summary(coxfit9)$coefficients
+exp(confint(coxfit9))
+
+
+#table6 multivariable (grouptype + 개인특성)#
+
+table(data1$grouptype)
+data1$grouptype <- as.factor(data1$grouptype)
+data1$grouptype <- relevel(data1$grouptype, ref="10")
+
+#all_cause_moratality#
+
+coxfit10 <- coxph(surv_all~grouptype+AGE+SEX+pack_year+G1E_BMI+income+cci_group+activity+non_small_yn+SEER_GRP+
+                    surgery_yn+radio_yn+system_yn,data=data1)
+summary(coxfit10)$coefficients
+exp(confint(coxfit10))
+
+#lung_cancer mortality#
+
+coxfit11 <- coxph(surv_lungcancer~grouptype+AGE+SEX+pack_year+G1E_BMI+income+cci_group+activity+non_small_yn+SEER_GRP+
+                    surgery_yn+radio_yn+system_yn,data=data1)
+summary(coxfit11)$coefficients
+exp(confint(coxfit11))
+
+coxfit12 <- coxph(surv_nolungcancer~grouptype+AGE+SEX+pack_year+G1E_BMI+income+cci_group+activity+non_small_yn+SEER_GRP+
+                    surgery_yn+radio_yn+system_yn,data=data1)
+summary(coxfit12)$coefficients
+exp(confint(coxfit12))
+
+
+#keplan-meier#
+
+nrow(data1)
+class(data1)
+
+data1$smk_behave <- as.factor(data1$smk_behave)
+table(data1$smk_behave)
+
+
+data1$smk_behave <- factor(data1$smk_behave, levels=c("Never","before_stop",
+                                                      "after_stop", "current"))
+table(data1$smk_behave)
+getwd()
+data1$smk_behave <- relevel(data1$smk_behave,ref="Never")
+surv_fit1 <- survfit(surv_all ~smk_behave, data=data1)
+
+png(filename = "survplot1.png",width=2200,height= 1400,res=100)
+
+p<- ggsurvplot(surv_fit1,legend.title="",palette = c("darkblue","darkred","darkgreen","darkorange"),xlim=c(0,1825),break.time.by=365,censor= FALSE, risk.table=TRUE, risk.table.y.text.col= FALSE,  xlab= "Time since diagnosis (Years)",legend.labs=c("Individuals who have never smoked","Smoking quitters before diagnosis",
+                                                                                                                                                                                             "Smoking quitters after diagnosis", "Continuous smokers after diagnosis"))
+p1 <- p$plot + scale_x_continuous(labels= c(0,1,2,3,4,5),breaks=c(0,365,730,1095,1460,1825)) +theme(axis.title.x=element_text(size=20),plot.margin=margin(5,70,5,190),axis.title.y=element_text(size=20,hjust=0.5),legend.text=element_text(size=15),axis.text.x=element_text(size=20),axis.text.y=element_text(size=20))
+p2<- p$table + theme(axis.text.y=element_text(size=15),plot.margin=margin(5,70,5,190),plot.title=element_text(size=20),axis.text.x=element_blank(),axis.ticks.x=element_blank(),axis.title.x=element_blank(),panel.grid.major=element_blank(),panel.grid.minor=element_blank(),axis.line.x=element_blank(),axis.line.y=element_blank(),axis.ticks.y=element_blank())
+
+g1 <- ggplotGrob(p1)
+g2 <- ggplotGrob(p2)
+
+g2$widths <- g1$widths
+
+g <- arrangeGrob(g1,g2,ncol=1, heights=c(3,1))
+
+grid.newpage()
+grid.draw(g)
+
+dev.off()
+
+ggsave(filename="survplot1-1.png",width=20,height=12,plot=g,dpi=300)
+
+png(filename = "survplot2.png",width=2200,height= 1400,res=100)
+p<- ggsurvplot(surv_fit1,legend.title="",palette = c("darkblue","darkred","darkgreen","darkorange"),xlim=c(0,2190),break.time.by=365,censor= FALSE, risk.table=TRUE, risk.table.y.text.col= FALSE,  xlab= "Time since diagnosis (Years)",legend.labs=c("Individuals who have never smoked","Smoking quitters before diagnosis",
+                                                                                                                                                                                                                                  "Smoking quitters after diagnosis", "Continuous smokers after diagnosis"))
+p1 <- p$plot + scale_x_continuous(labels= c(0,1,2,3,4,5,6),breaks=c(0,365,730,1095,1460,1825,2190)) + theme(axis.title.x=element_text(size=20),plot.margin=margin(5,70,5,190),axis.title.y=element_text(size=20,hjust=0.5),legend.text=element_text(size=15),axis.text.x=element_text(size=20),axis.text.y=element_text(size=20))
+p2 <- p$table +  theme(axis.text.y=element_text(size=15),plot.margin=margin(5,70,5,190),plot.title=element_text(size=20),axis.text.x=element_blank(),axis.ticks.x=element_blank(),axis.line.x=element_blank(),axis.line.y=element_blank(),axis.ticks.y=element_blank(),axis.title.x=element_blank(),panel.grid.major=element_blank(),panel.grid.minor=element_blank())
+
+g1 <- ggplotGrob(p1)
+g2 <- ggplotGrob(p2)
+
+g2$widths <- g1$widths
+
+g <- arrangeGrob(g1,g2,ncol=1, heights=c(3,1))
+
+grid.newpage()
+grid.draw(g)
+dev.off()
+
+ggsave(filename="survplot2-1.png",width=20,height=12,plot=g,dpi=300)
+
+levels(data1$smk_behave)
+
+surv_fit2 <- survfit(surv_lungcancer ~smk_behave, data=data1)
+png(filename = "survplot3.png",width=2200,height=1400,res=100)
+p<- ggsurvplot(surv_fit2,legend.title="",xlim=c(0,1825),break.time.by=365,palette = c("darkblue","darkred","darkgreen","darkorange"),censor= FALSE, risk.table=TRUE, risk.table.y.text.col= FALSE,  xlab= "Time since diagnosis (Years)",legend.labs=c("Individuals who have never smoked","Smoking quitters before diagnosis",
+                                                                                                                                                                                                                                  "Smoking quitters after diagnosis", "Continuous smokers after diagnosis"))
+p1 <- p$plot + scale_x_continuous(labels= c(0,1,2,3,4,5),breaks=c(0,365,730,1095,1460,1825)) + theme(axis.title.x=element_text(size=20),plot.margin=margin(5,70,5,190),axis.title.y=element_text(size=20,hjust=0.5),legend.text=element_text(size=15),axis.text.x=element_text(size=20),axis.text.y=element_text(size=20))
+p2<- p$table + theme(axis.text.y=element_text(size=15),plot.margin=margin(5,70,5,190),plot.title=element_text(size=20),axis.text.x=element_blank(),axis.ticks.x=element_blank(),axis.title.x=element_blank(),panel.grid.major=element_blank(),panel.grid.minor=element_blank(),axis.line.x=element_blank(),axis.line.y=element_blank(),axis.ticks.y=element_blank())
+
+g1 <- ggplotGrob(p1)
+g2 <- ggplotGrob(p2)
+
+g2$widths <- g1$widths
+
+g <- arrangeGrob(g1,g2,ncol=1, heights=c(3,1))
+
+grid.newpage()
+grid.draw(g)
+dev.off()
+
+ggsave(filename="survplot3-1.png",width=20,height=12,plot=g,dpi=300)
+
+png(filename = "survplot4.png",width=2200,height= 1400,res=100)
+p<- ggsurvplot(surv_fit2,legend.title="",xlim=c(0,2190),break.time.by=365,palette = c("darkblue","darkred","darkgreen","darkorange"),censor= FALSE, risk.table=TRUE, risk.table.y.text.col= FALSE,  xlab= "Time since diagnosis (Years)",legend.labs=c("Individuals who have never smoked","Smoking quitters before diagnosis",
+                                                                                                                                                                                                                                  "Smoking quitters after diagnosis", "Continuous smokers after diagnosis"))
+p1 <- p$plot + scale_x_continuous(labels= c(0,1,2,3,4,5,6),breaks=c(0,365,730,1095,1460,1825,2190)) +theme(axis.title.x=element_text(size=20),plot.margin=margin(5,70,5,190),axis.title.y=element_text(size=20,hjust=0.5),legend.text=element_text(size=15),axis.text.x=element_text(size=20),axis.text.y=element_text(size=20))
+p2 <- p$table +  theme(axis.text.y=element_text(size=15),plot.margin=margin(5,70,5,190),plot.title=element_text(size=20),axis.text.x=element_blank(),axis.ticks.x=element_blank(),axis.line.x=element_blank(),axis.line.y=element_blank(),axis.ticks.y=element_blank(),axis.title.x=element_blank(),panel.grid.major=element_blank(),panel.grid.minor=element_blank())
+
+g1 <- ggplotGrob(p1)
+g2 <- ggplotGrob(p2)
+
+g2$widths <- g1$widths
+
+g <- arrangeGrob(g1,g2,ncol=1, heights=c(3,1))
+
+grid.newpage()
+grid.draw(g)
+dev.off()
+ggsave(filename="survplot4-1.png",width=20,height=12,plot=g,dpi=300)
+
+# smk_behave 별로 log-rank test#
+result1 <- pairwise_survdiff(Surv(day_diff,death_yn=="1") ~ smk_behave, data=data1)
+result1
+result1$p.value
+result2 <- pairwise_survdiff(Surv(day_diff,lung_cancer_yn=="1") ~ smk_behave, data=data1)
+result2
+result2$p.value
+
+#multivariable coxph#
+# all cause mortality#
+table(data1$smk_behave)
+data1$smk_behave <- relevel(data1$smk_behave, ref="Never")
+coxph1 <- coxph(surv_all ~ smk_behave+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+summary(coxph1)
+summary(coxph1)$coefficients
+exp(confint(coxph1))
+
+
+data1$smk_behave <- relevel(data1$smk_behave, ref="before_stop")
+coxph2 <- coxph(surv_all ~ smk_behave+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+summary(coxph2)
+summary(coxph2)$coefficients
+exp(confint(coxph2))
+
+
+data1$smk_behave <- relevel(data1$smk_behave, ref="after_stop")
+coxph3 <- coxph(surv_all ~ smk_behave+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+summary(coxph3)
+summary(coxph3)$coefficients
+exp(confint(coxph3))
+
+
+
+data1$smk_behave <- relevel(data1$smk_behave, ref="current")
+coxph4 <- coxph(surv_all ~ smk_behave+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+summary(coxph4)
+summary(coxph4)$coefficients
+exp(confint(coxph4))
+
+
+#lung cancer mortality#
+table(data1$smk_behave)
+data1$smk_behave <- relevel(data1$smk_behave, ref="Never")
+coxph5 <- coxph(surv_lungcancer ~ smk_behave+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+summary(coxph5)
+summary(coxph5)$coefficients
+exp(confint(coxph5))
+
+
+data1$smk_behave <- relevel(data1$smk_behave, ref="before_stop")
+coxph6 <- coxph(surv_lungcancer ~ smk_behave+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+summary(coxph6)
+summary(coxph6)$coefficients
+exp(confint(coxph6))
+
+
+data1$smk_behave <- relevel(data1$smk_behave, ref="after_stop")
+coxph7 <- coxph(surv_lungcancer ~ smk_behave+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+summary(coxph7)
+summary(coxph7)$coefficients
+exp(confint(coxph7))
+
+
+data1$smk_behave <- relevel(data1$smk_behave, ref="current")
+coxph8 <- coxph(surv_lungcancer ~ smk_behave+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+summary(coxph8)
+summary(coxph8)$coefficients
+exp(confint(coxph8))
+
+
+#smoking status(8가지)로 분석 #
+
+data1$grouptype <- as.factor(data1$grouptype)
+table(data1$grouptype)
+data1$grouptype <- factor(data1$grouptype, levels=c("10","11","20","21","30","31","40","41"))
+table(data1$grouptype)
+data1$grouptype <- relevel(data1$grouptype, ref="10")
+
+
+
+
+
+# grouptype 별로 log-rank test#
+result3 <- pairwise_survdiff(Surv(day_diff,death_yn=="1") ~ grouptype, data=data1)
+result3
+result3$p.value
+result4 <- pairwise_survdiff(Surv(day_diff,lung_cancer_yn=="1") ~ grouptype, data=data1)
+result4
+result4$p.value
+
+
+# multivariable cox#
+# all cause mortality#
+table(data1$grouptype)
+data1$grouptype <- relevel(data1$grouptype, ref="10")
+coxph9 <- coxph(surv_all ~ grouptype+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+summary(coxph9)
+summary(coxph9)$coefficients
+exp(confint(coxph9))
+
+
+data1$grouptype <- relevel(data1$grouptype, ref="11")
+coxph10 <- coxph(surv_all ~ grouptype+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+summary(coxph10)
+summary(coxph10)$coefficients
+exp(confint(coxph10))
+
+data1$grouptype <- relevel(data1$grouptype, ref="20")
+coxph11 <- coxph(surv_all ~ grouptype+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+summary(coxph11)
+summary(coxph11)$coefficients
+exp(confint(coxph11))
+
+data1$grouptype <- relevel(data1$grouptype, ref="21")
+coxph12 <- coxph(surv_all ~ grouptype+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+summary(coxph12)
+summary(coxph12)$coefficients
+exp(confint(coxph12))
+
+data1$grouptype <- relevel(data1$grouptype, ref="30")
+coxph13 <- coxph(surv_all ~ grouptype+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+summary(coxph13)
+summary(coxph13)$coefficients
+exp(confint(coxph13))
+
+
+data1$grouptype <- relevel(data1$grouptype, ref="31")
+coxph14 <- coxph(surv_all ~ grouptype+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+summary(coxph14)
+summary(coxph14)$coefficients
+exp(confint(coxph14))
+
+data1$grouptype <- relevel(data1$grouptype, ref="40")
+coxph15 <- coxph(surv_all ~ grouptype+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+summary(coxph15)
+summary(coxph15)$coefficients
+exp(confint(coxph15))
+
+
+data1$grouptype <- relevel(data1$grouptype, ref="41")
+coxph16 <- coxph(surv_all ~ grouptype+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+summary(coxph16)
+summary(coxph16)$coefficients
+exp(confint(coxph16))
+
+# lung cancer mortality#
+
+table(data1$grouptype)
+data1$grouptype <- as.factor(data1$grouptype)
+data1$grouptype <- relevel(data1$grouptype, ref="10")
+coxph17 <- coxph(surv_lungcancer ~ grouptype+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+summary(coxph17)
+summary(coxph17)$coefficients
+exp(confint(coxph17))
+
+data1$grouptype <- factor(data1$grouptype, levels=c("10","11","20","21","30","31","40","41"))
+table(data1$grouptype)
+data1$grouptype <- as.factor(data1$grouptype)
+data1$grouptype <- relevel(data1$grouptype, ref="11")
+coxph18 <- coxph(surv_lungcancer ~ grouptype+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+summary(coxph18)
+summary(coxph18)$coefficients
+exp(confint(coxph18))
+
+data1$grouptype <- as.factor(data1$grouptype)
+data1$grouptype <- relevel(data1$grouptype, ref="20")
+coxph19 <- coxph(surv_lungcancer ~ grouptype+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+summary(coxph19)
+summary(coxph19)$coefficients
+exp(confint(coxph19))
+
+
+data1$grouptype <- relevel(data1$grouptype, ref="21")
+coxph20 <- coxph(surv_lungcancer ~ grouptype+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+summary(coxph20)
+summary(coxph20)$coefficients
+exp(confint(coxph20))
+
+
+data1$grouptype <- relevel(data1$grouptype, ref="30")
+coxph21 <- coxph(surv_lungcancer ~ grouptype+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+summary(coxph21)
+summary(coxph21)$coefficients
+exp(confint(coxph21))
+
+data1$grouptype <- relevel(data1$grouptype, ref="31")
+coxph22 <- coxph(surv_lungcancer ~ grouptype+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+summary(coxph22)
+summary(coxph22)$coefficients
+exp(confint(coxph22))
+
+data1$grouptype <- relevel(data1$grouptype, ref="40")
+coxph23 <- coxph(surv_lungcancer ~ grouptype+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+summary(coxph23)
+summary(coxph23)$coefficients
+exp(confint(coxph23))
+
+
+data1$grouptype <- relevel(data1$grouptype, ref="41")
+coxph24 <- coxph(surv_lungcancer ~ grouptype+AGE+SEX+non_small_yn+SEER_GRP,data=data1)
+summary(coxph24)
+summary(coxph24)$coefficients
+exp(confint(coxph24))
+
+
+# 추가 분석#
+
+data1$smk_status <-ifelse(data1$SN_KEY %in% c(group20$SN_KEY,group30$SN_KEY), "Smoking quitters without NTP use",
+                                              ifelse(data1$SN_KEY %in% c(group21$SN_KEY,group31$SN_KEY), "Smoking quitters after NTP use",
+                                                     ifelse(data1$SN_KEY %in% c(group40$SN_KEY,group41$SN_KEY),"Continuous smokers",NA)))
+table(data1$smk_status)
+sum(is.na(data1$smk_status))
+nrow(data1)
+
+data2 <- data1[!is.na(data1$smk_status),]
+nrow(data2)
+sum(is.na(data2$smk_status))
+table(data2$smk_status)
+
+
+#person years, number of events, events per 1000 person years#
+
+data2$person_yearnew <- round(data2$day_diff/365,1)
+person_years <- sum(data2$person_yearnew)
+person_years #37016.6
+person_years1 <- round(sum(data2$day_diff)/365,1)
+person_years1 #37080.2#
+number_of_events <- sum(data2$death_yn=="1")
+number_of_events #1120#
+print((number_of_events/person_years)*1000) #30.2567# 
+print((number_of_events/person_years1)*1000) #30.2048#
+
+
+
+#all-cause mortality never#
+
+person_years <- sum(data2[data2$smk_status=="Smoking quitters without NTP use",]$person_yearnew)
+person_years #33024.1#
+person_years1 <- round(sum(data2[data2$smk_status=="Smoking quitters without NTP use",]$day_diff)/365,1)
+person_years1 #33080.1#
+number_of_events <- sum(data2[data2$smk_status=="Smoking quitters without NTP use",]$death_yn=="1")
+number_of_events # 962
+print((number_of_events/person_years)*1000) # 29.13024#
+print((number_of_events/person_years1)*1000) #29.08093#
+
+
+person_years <- sum(data2[data2$smk_status=="Smoking quitters after NTP use",]$person_yearnew)
+person_years #197.3#
+person_years1 <- round(sum(data2[data2$smk_status=="Smoking quitters after NTP use",]$day_diff)/365,1)
+person_years1 #197.7#
+number_of_events <- sum(data2[data2$smk_status=="Smoking quitters after NTP use",]$death_yn=="1")
+number_of_events # 7
+print((number_of_events/person_years)*1000) # 35.47897#
+print((number_of_events/person_years1)*1000) #35.40718#
+
+person_years <- sum(data2[data2$smk_status=="Continuous smokers",]$person_yearnew)
+person_years #3795.2#
+person_years1 <- round(sum(data2[data2$smk_status=="Continuous smokers",]$day_diff)/365,1)
+person_years1 #3802.4#
+number_of_events <- sum(data2[data2$smk_status=="Continuous smokers",]$death_yn=="1")
+number_of_events # 151
+print((number_of_events/person_years)*1000) # 39.7871#
+print((number_of_events/person_years1)*1000) #39.71176#
+#lung cancer mortality#
+
+table(data2$lung_cancer_yn)
+lung_cancer_group2 <- data2[data2$lung_cancer_yn=="1",]
+no_lung_cancer_group2 <- data2[data2$lung_cancer_yn=="0",]
+
+#lung cancer mortality#
+data2$person_yearnew <- round(data2$day_diff/365,1)
+person_years <- sum(data2$person_yearnew)
+person_years #37016.6
+person_years1 <- round(sum(data2$day_diff)/365,1)
+person_years1 #37080.2#
+number_of_events <- sum(lung_cancer_group2$death_yn=="1")
+number_of_events # 924
+print((number_of_events/person_years)*1000) #24.96177# 
+print((number_of_events/person_years1)*1000) #24.91896#
+
+
+
+
+person_years <- sum(data2[data2$smk_status=="Smoking quitters without NTP use",]$person_yearnew)
+person_years # 33024.1
+person_years1 <- round(sum(data2[data2$smk_status=="Smoking quitters without NTP use",]$day_diff)/365,1)
+person_years1 #33080.1#
+number_of_events <- sum(lung_cancer_group2[lung_cancer_group2$smk_status=="Smoking quitters without NTP use",]$death_yn=="1")
+number_of_events # 806
+print((number_of_events/person_years)*1000) #24.40642# 
+print((number_of_events/person_years1)*1000) #24.3651#
+
+
+person_years <- sum(data2[data2$smk_status=="Smoking quitters after NTP use",]$person_yearnew)
+person_years # 197.3
+person_years1 <- round(sum(data2[data2$smk_status=="Smoking quitters after NTP use",]$day_diff)/365,1)
+person_years1 #197.7#
+number_of_events <- sum(lung_cancer_group2[lung_cancer_group2$smk_status=="Smoking quitters after NTP use",]$death_yn=="1")
+number_of_events # 6
+print((number_of_events/person_years)*1000) #30.41054# 
+print((number_of_events/person_years1)*1000) #30.34901#
+
+
+person_years <- sum(data2[data2$smk_status=="Continuous smokers",]$person_yearnew)
+person_years # 3795.2
+person_years1 <- round(sum(data2[data2$smk_status=="Continuous smokers",]$day_diff)/365,1)
+person_years1 #3802.4#
+number_of_events <- sum(lung_cancer_group2[lung_cancer_group2$smk_status=="Continuous smokers",]$death_yn=="1")
+number_of_events # 112
+print((number_of_events/person_years)*1000) #29.51096# 
+print((number_of_events/person_years1)*1000) #29.45508#
+
+
+
+#univariable cox 회귀분석#
+
+surv_all2 <- Surv(data2$day_diff,data2$death_yn=="1")
+surv_lungcancer2 <- Surv(data2$day_diff,data2$lung_cancer_yn =="1")
+surv_nolungcancer2 <- Surv(data2$day_diff,data2$nolung_cancer_yn == "1")
+
+#smk_status#
+data2$smk_status <- as.factor(data2$smk_status)
+data2$smk_status <- factor(data2$smk_status,levels=c("Smoking quitters without NTP use","Smoking quitters after NTP use","Continuous smokers"))
+data2$smk_status <- relevel(data2$smk_status,ref="Smoking quitters without NTP use")
+cox1<- coxph(surv_all2 ~ smk_status, data=data2)
+summary(cox1)$coefficients
+exp(confint(cox1))
+
+
+data2$smk_status <- relevel(data2$smk_status,ref="Smoking quitters after NTP use")
+cox2<- coxph(surv_all2 ~ smk_status, data=data2)
+summary(cox2)$coefficients
+exp(confint(cox2))
+
+
+data2$smk_status <- relevel(data2$smk_status,ref="Continuous smokers")
+cox3<- coxph(surv_all2 ~ smk_status, data=data2)
+summary(cox3)$coefficients
+exp(confint(cox3))
+
+
+#age#
+cox4<- coxph(surv_all2 ~ AGE, data=data2)
+summary(cox4)$coefficients
+exp(confint(cox4))
+
+#SEX#
+cox5<- coxph(surv_all2 ~ SEX, data=data2)
+summary(cox5)$coefficients
+exp(confint(cox5)) 
+
+
+#non small cell carcinoma#
+cox6 <- coxph(surv_all2 ~ non_small_yn, data=data2)
+summary(cox6)$coefficients
+exp(confint(cox6)) 
+
+#stage#
+cox7 <- coxph(surv_all2 ~ SEER_GRP, data=data2)
+summary(cox7)$coefficients
+exp(confint(cox7)) 
+
+
+#lung cancer mortality#
+
+#smk_status#
+data2$smk_status <- as.factor(data2$smk_status)
+data2$smk_status <- factor(data2$smk_status,levels=c("Smoking quitters without NTP use","Smoking quitters after NTP use","Continuous smokers"))
+
+
+data2$smk_status <- relevel(data2$smk_status,ref="Smoking quitters without NTP use")
+cox8<- coxph(surv_lungcancer2 ~ smk_status, data=data2)
+summary(cox8)
+summary(cox8)$coefficients
+exp(confint(cox8))
+
+data2$smk_status <- relevel(data2$smk_status,ref="Smoking quitters after NTP use")
+cox9<- coxph(surv_lungcancer2 ~ smk_status, data=data2)
+summary(cox9)
+summary(cox9)$coefficients
+exp(confint(cox9))
+
+
+data2$smk_status <- relevel(data2$smk_status,ref="Continuous smokers")
+cox10<- coxph(surv_lungcancer2 ~ smk_status, data=data2)
+summary(cox10)
+summary(cox10)$coefficients
+exp(confint(cox10))
+
+
+#age#
+cox11<- coxph(surv_lungcancer2 ~ AGE, data=data2)
+summary(cox11)
+summary(cox11)$coefficients
+exp(confint(cox11))
+
+#SEX#
+cox12<- coxph(surv_lungcancer2 ~ SEX, data=data2)
+summary(cox12)
+summary(cox12)$coefficients
+exp(confint(cox12)) 
+
+
+#non small cell carcinoma#
+cox13 <- coxph(surv_lungcancer2 ~ non_small_yn, data=data2)
+summary(cox13)
+summary(cox13)$coefficients
+exp(confint(cox13)) 
+
+#stage#
+cox14 <- coxph(surv_lungcancer2 ~ SEER_GRP, data=data2)
+summary(cox14)
+summary(cox14)$coefficients
+exp(confint(cox14)) 
+
+
+#multivariable cox 회귀분석#
+#all cause mortality#
+
+
+table(data2$smk_status)
+data2$smk_status <- as.factor(data2$smk_status)
+data2$smk_status <- factor(data2$smk_status,levels=c("Smoking quitters without NTP use","Smoking quitters after NTP use","Continuous smokers"))
+data2$smk_status <- relevel(data2$smk_status,ref="Smoking quitters without NTP use")
+
+cox15 <- coxph(surv_all2 ~ smk_status+AGE+SEX+non_small_yn+SEER_GRP,data=data2)
+summary(cox15)
+summary(cox15)$coefficients
+exp(confint(cox15))
+
+
+data2$smk_status <- relevel(data2$smk_status,ref="Smoking quitters after NTP use")
+cox16 <- coxph(surv_all2 ~ smk_status+AGE+SEX+non_small_yn+SEER_GRP,data=data2)
+summary(cox16)
+summary(cox16)$coefficients
+exp(confint(cox16))
+
+data2$smk_status <- relevel(data2$smk_status,ref="Continuous smokers")
+cox17 <- coxph(surv_all2 ~ smk_status+AGE+SEX+non_small_yn+SEER_GRP,data=data2)
+summary(cox17)
+summary(cox17)$coefficients
+exp(confint(cox17))
+
+
+#lung cancer mortality#
+table(data2$smk_status)
+data2$smk_status <- as.factor(data2$smk_status)
+data2$smk_status <- factor(data2$smk_status,levels=c("Smoking quitters without NTP use","Smoking quitters after NTP use","Continuous smokers"))
+data2$smk_status <- relevel(data2$smk_status,ref="Smoking quitters without NTP use")
+
+cox18 <- coxph(surv_lungcancer2 ~ smk_status+AGE+SEX+non_small_yn+SEER_GRP,data=data2)
+summary(cox18)
+summary(cox18)$coefficients
+exp(confint(cox18))
+
+
+data2$smk_status <- relevel(data2$smk_status,ref="Smoking quitters after NTP use")
+cox19 <- coxph(surv_lungcancer2 ~ smk_status+AGE+SEX+non_small_yn+SEER_GRP,data=data2)
+summary(cox19)
+summary(cox19)$coefficients
+exp(confint(cox19))
+
+data2$smk_status <- relevel(data2$smk_status,ref="Continuous smokers")
+cox20 <- coxph(surv_lungcancer2 ~ smk_status+AGE+SEX+non_small_yn+SEER_GRP,data=data2)
+summary(cox20)
+summary(cox20)$coefficients
+exp(confint(cox20))
+
+
+# survplot#
+table(data2$smk_status)
+data2$smk_status <- as.factor(data2$smk_status)
+data2$smk_status <- factor(data2$smk_status,levels=c("Smoking quitters without NTP use","Smoking quitters after NTP use","Continuous smokers"))
+data2$smk_status <- relevel(data2$smk_status,ref="Smoking quitters without NTP use")
+
+surv_fit5 <- survfit(surv_all2 ~smk_status, data=data2)
+
+png(filename = "survplot5.png",width=2200,height=1400,res=100)
+p<- ggsurvplot(surv_fit5,legend.title="",xlim=c(0,1825),break.time.by=365,palette = c("darkblue","darkred","darkgreen","darkorange"),censor= FALSE, risk.table=TRUE, risk.table.y.text.col= FALSE,  xlab= "Time since diagnosis (Years)",legend.labs=c("Smoking quitters without NTP use","Smoking quitters after NTP use","Continuous smokers"))
+p1 <- p$plot + scale_x_continuous(labels= c(0,1,2,3,4,5),breaks=c(0,365,730,1095,1460,1825)) + theme(axis.title.x=element_text(size=20),plot.margin=margin(5,70,5,190),axis.title.y=element_text(size=20,hjust=0.5),legend.text=element_text(size=15),axis.text.x=element_text(size=20),axis.text.y=element_text(size=20))
+p2<- p$table + theme(axis.text.y=element_text(size=15),plot.margin=margin(5,70,5,190),plot.title=element_text(size=20),axis.text.x=element_blank(),axis.ticks.x=element_blank(),axis.title.x=element_blank(),panel.grid.major=element_blank(),panel.grid.minor=element_blank(),axis.line.x=element_blank(),axis.line.y=element_blank(),axis.ticks.y=element_blank())
+
+g1 <- ggplotGrob(p1)
+g2 <- ggplotGrob(p2)
+
+g2$widths <- g1$widths
+
+g <- arrangeGrob(g1,g2,ncol=1, heights=c(3,1))
+
+grid.newpage()
+grid.draw(g)
+
+dev.off()
+ggsave(filename="survplot5-1.png",width=20,height=12,plot=g,dpi=300)
+
+png(filename = "survplot6.png",width=2200,height= 1400,res=100)
+p<- ggsurvplot(surv_fit5,legend.title="",xlim=c(0,2190),break.time.by=365,palette = c("darkblue","darkred","darkgreen","darkorange"),censor= FALSE, risk.table=TRUE, risk.table.y.text.col= FALSE,  xlab= "Time since diagnosis (Years)",legend.labs=c("Smoking quitters without NTP use","Smoking quitters after NTP use","Continuous smokers"))
+p1 <- p$plot + scale_x_continuous(labels= c(0,1,2,3,4,5,6),breaks=c(0,365,730,1095,1460,1825,2190)) + theme(axis.title.x=element_text(size=20),plot.margin=margin(5,70,5,190),axis.title.y=element_text(size=20,hjust=0.5),legend.text=element_text(size=15),axis.text.x=element_text(size=20),axis.text.y=element_text(size=20))
+p2 <- p$table + theme(axis.text.y=element_text(size=15),plot.margin=margin(5,70,5,190),plot.title=element_text(size=20),axis.text.x=element_blank(),axis.ticks.x=element_blank(),axis.line.x=element_blank(),axis.line.y=element_blank(),axis.ticks.y=element_blank(),axis.title.x=element_blank(),panel.grid.major=element_blank(),panel.grid.minor=element_blank())
+
+g1 <- ggplotGrob(p1)
+g2 <- ggplotGrob(p2)
+
+g2$widths <- g1$widths
+
+g <- arrangeGrob(g1,g2,ncol=1, heights=c(3,1))
+
+grid.newpage()
+grid.draw(g)
+dev.off()
+ggsave(filename="survplot6-1.png",width=20,height=12,plot=g,dpi=300)
+
+
+
+surv_fit6 <- survfit(surv_lungcancer2 ~smk_status, data=data2)
+
+png(filename = "survplot7.png",width=2200,height=1400,res=100)
+p<- ggsurvplot(surv_fit6,legend.title="",xlim=c(0,1825),break.time.by=365,palette = c("darkblue","darkred","darkgreen","darkorange"),censor= FALSE, risk.table=TRUE, risk.table.y.text.col= FALSE,  xlab= "Time since diagnosis (Years)",legend.labs=c("Smoking quitters without NTP use","Smoking quitters after NTP use","Continuous smokers"))
+p1 <- p$plot + scale_x_continuous(labels= c(0,1,2,3,4,5),breaks=c(0,365,730,1095,1460,1825)) + theme(axis.title.x=element_text(size=20),plot.margin=margin(5,70,5,190),axis.title.y=element_text(size=20,hjust=0.5),legend.text=element_text(size=15),axis.text.x=element_text(size=20),axis.text.y=element_text(size=20))
+p2<- p$table + theme(axis.text.y=element_text(size=15),plot.margin=margin(5,70,5,190),plot.title=element_text(size=20),axis.text.x=element_blank(),axis.ticks.x=element_blank(),axis.title.x=element_blank(),panel.grid.major=element_blank(),panel.grid.minor=element_blank(),axis.line.x=element_blank(),axis.line.y=element_blank(),axis.ticks.y=element_blank())
+
+g1 <- ggplotGrob(p1)
+g2 <- ggplotGrob(p2)
+
+g2$widths <- g1$widths
+
+g <- arrangeGrob(g1,g2,ncol=1, heights=c(3,1))
+
+grid.newpage()
+grid.draw(g)
+
+dev.off()
+ggsave(filename="survplot7-1.png",width=20,height=12,plot=g,dpi=300)
+
+png(filename = "survplot8.png",width=2200,height=1400,res=100)
+p<- ggsurvplot(surv_fit6,legend.title="",xlim=c(0,2190),break.time.by= 365, palette = c("darkblue","darkred","darkgreen","darkorange"),censor= FALSE, risk.table=TRUE, risk.table.y.text.col= FALSE,  xlab= "Time since diagnosis (Years)",legend.labs=c("Smoking quitters without NTP use","Smoking quitters after NTP use","Continuous smokers"))
+p1 <- p$plot + scale_x_continuous(labels= c(0,1,2,3,4,5,6),breaks=c(0,365,730,1095,1460,1825,2190)) + theme(axis.title.x=element_text(size=20),plot.margin=margin(5,70,5,190),axis.title.y=element_text(size=20,hjust=0.5),legend.text=element_text(size=15),axis.text.x=element_text(size=20),axis.text.y=element_text(size=20))
+p2 <- p$table + theme(axis.text.y=element_text(size=15),plot.margin=margin(5,70,5,190),plot.title=element_text(size=20),axis.text.x=element_blank(),axis.ticks.x=element_blank(),axis.line.x=element_blank(),axis.line.y=element_blank(),axis.ticks.y=element_blank(),axis.title.x=element_blank(),panel.grid.major=element_blank(),panel.grid.minor=element_blank())
+
+g1 <- ggplotGrob(p1)
+g2 <- ggplotGrob(p2)
+
+g2$widths <- g1$widths
+
+g <- arrangeGrob(g1,g2,ncol=1, heights=c(3,1))
+
+grid.newpage()
+grid.draw(g)
+dev.off()
+
+ggsave(filename="survplot8-1.png",width=20,height=12,plot=g,dpi=300)
+#log rank test#
+result5 <- pairwise_survdiff(Surv(day_diff,death_yn=="1") ~ smk_status, data=data2)
+result5
+result5$p.value
+result6 <- pairwise_survdiff(Surv(day_diff,lung_cancer_yn=="1") ~ smk_status, data=data2)
+result6
+result6$p.value
+
